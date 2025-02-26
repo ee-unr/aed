@@ -1,0 +1,2407 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>4&nbsp; Comunicación de Resultados: R Markdown – Análisis Exploratorio de Datos</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../capitulos/02_reportes_parametrizados.html" rel="next">
+<link href="../capitulos/02.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-7dc4809af68284bc67e7de96a4bd5e3c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-83123365b82d3e0a114b8a4caf34d831.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Sin resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+<link href="../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="../site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="../site_libs/datatables-binding-0.33/datatables.js"></script>
+<script src="../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="../site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="../site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+<script src="../site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="../site_libs/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet">
+<script src="../site_libs/nouislider-7.0.10/jquery.nouislider.min.js"></script>
+<link href="../site_libs/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet">
+<script src="../site_libs/selectize-0.12.0/selectize.min.js"></script>
+<link href="../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+<script src="../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<script src="../site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../webexercises/webex.css">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../capitulos/02.html">Unidad 2. R Markdown</a></li><li class="breadcrumb-item"><a href="../capitulos/02_Rmarkdown.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Comunicación de Resultados: R Markdown</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Análisis Exploratorio de Datos</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/ee-unr/aed" title="Ejecutar el código" class="quarto-navigation-tool px-1" aria-label="Ejecutar el código"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Alternar modo oscuro"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bienvenida</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/00_info.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Información general sobre la asignatura</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../capitulos/01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Unidad 1. Introducción</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/01_teoria_de_la_visualizacion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Teoría de la Visualización</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/01_buenas_practicas_visualizacion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Buenas Prácticas para la Visualización de Datos</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/01_introduccion_a_ggplot2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introducción a <code>ggplot2</code></span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../capitulos/02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Unidad 2. R Markdown</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/02_Rmarkdown.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Comunicación de Resultados: R Markdown</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/02_reportes_parametrizados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Comunicación de Resultados: Reportes Parametrizados</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#introducción" id="toc-introducción" class="nav-link active" data-scroll-target="#introducción"><span class="header-section-number">4.1</span> Introducción</a></li>
+  <li><a href="#qué-es-r-markdown" id="toc-qué-es-r-markdown" class="nav-link" data-scroll-target="#qué-es-r-markdown"><span class="header-section-number">4.2</span> Qué es R Markdown</a></li>
+  <li><a href="#primeros-pasos" id="toc-primeros-pasos" class="nav-link" data-scroll-target="#primeros-pasos"><span class="header-section-number">4.3</span> Primeros Pasos</a>
+  <ul class="collapse">
+  <li><a href="#encabezado" id="toc-encabezado" class="nav-link" data-scroll-target="#encabezado"><span class="header-section-number">4.3.1</span> Encabezado</a></li>
+  <li><a href="#texto" id="toc-texto" class="nav-link" data-scroll-target="#texto"><span class="header-section-number">4.3.2</span> Texto</a></li>
+  <li><a href="#código" id="toc-código" class="nav-link" data-scroll-target="#código"><span class="header-section-number">4.3.3</span> Código</a></li>
+  <li><a href="#compilar" id="toc-compilar" class="nav-link" data-scroll-target="#compilar"><span class="header-section-number">4.3.4</span> Compilar</a></li>
+  </ul></li>
+  <li><a href="#herramientas-útiles" id="toc-herramientas-útiles" class="nav-link" data-scroll-target="#herramientas-útiles"><span class="header-section-number">4.4</span> Herramientas útiles</a>
+  <ul class="collapse">
+  <li><a href="#listas" id="toc-listas" class="nav-link" data-scroll-target="#listas"><span class="header-section-number">4.4.1</span> Listas</a></li>
+  <li><a href="#enlaces" id="toc-enlaces" class="nav-link" data-scroll-target="#enlaces"><span class="header-section-number">4.4.2</span> Enlaces</a></li>
+  <li><a href="#imágenes" id="toc-imágenes" class="nav-link" data-scroll-target="#imágenes"><span class="header-section-number">4.4.3</span> Imágenes</a></li>
+  <li><a href="#tablas" id="toc-tablas" class="nav-link" data-scroll-target="#tablas"><span class="header-section-number">4.4.4</span> Tablas</a></li>
+  <li><a href="#código-dinámico" id="toc-código-dinámico" class="nav-link" data-scroll-target="#código-dinámico"><span class="header-section-number">4.4.5</span> Código dinámico</a></li>
+  <li><a href="#escritura-matemática" id="toc-escritura-matemática" class="nav-link" data-scroll-target="#escritura-matemática"><span class="header-section-number">4.4.6</span> Escritura matemática</a></li>
+  </ul></li>
+  <li><a href="#detalles-específicos-para-html" id="toc-detalles-específicos-para-html" class="nav-link" data-scroll-target="#detalles-específicos-para-html"><span class="header-section-number">4.5</span> Detalles específicos para html</a></li>
+  <li><a href="#detalles-específicos-para-pdf" id="toc-detalles-específicos-para-pdf" class="nav-link" data-scroll-target="#detalles-específicos-para-pdf"><span class="header-section-number">4.6</span> Detalles específicos para pdf</a>
+  <ul class="collapse">
+  <li><a href="#instalación-de-latex" id="toc-instalación-de-latex" class="nav-link" data-scroll-target="#instalación-de-latex"><span class="header-section-number">4.6.1</span> Instalación de LaTeX</a></li>
+  <li><a href="#opciones-para-latex" id="toc-opciones-para-latex" class="nav-link" data-scroll-target="#opciones-para-latex"><span class="header-section-number">4.6.2</span> Opciones para LaTeX</a></li>
+  <li><a href="#diapositivas" id="toc-diapositivas" class="nav-link" data-scroll-target="#diapositivas"><span class="header-section-number">4.6.3</span> Diapositivas</a></li>
+  </ul></li>
+  <li><a href="#comentarios-finales" id="toc-comentarios-finales" class="nav-link" data-scroll-target="#comentarios-finales"><span class="header-section-number">4.7</span> Comentarios finales</a>
+  <ul class="collapse">
+  <li><a href="#lenguajes-de-marcado-ligero-markdown-y-r-markdown" id="toc-lenguajes-de-marcado-ligero-markdown-y-r-markdown" class="nav-link" data-scroll-target="#lenguajes-de-marcado-ligero-markdown-y-r-markdown"><span class="header-section-number">4.7.1</span> Lenguajes de Marcado Ligero, Markdown y R Markdown</a></li>
+  <li><a href="#el-proceso-detrás-de-r-markdown" id="toc-el-proceso-detrás-de-r-markdown" class="nav-link" data-scroll-target="#el-proceso-detrás-de-r-markdown"><span class="header-section-number">4.7.2</span> El proceso detrás de R Markdown</a></li>
+  <li><a href="#otros-recursos-relacionados-al-mundo-de-r-markdown" id="toc-otros-recursos-relacionados-al-mundo-de-r-markdown" class="nav-link" data-scroll-target="#otros-recursos-relacionados-al-mundo-de-r-markdown"><span class="header-section-number">4.7.3</span> Otros recursos relacionados al mundo de R Markdown</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/ee-unr/aed/edit/main/capitulos/02_Rmarkdown.qmd" class="toc-action"><i class="bi bi-github"></i>Editar esta página</a></li><li><a href="https://github.com/ee-unr/aed/issues/new" class="toc-action"><i class="bi empty"></i>Informar de un problema</a></li><li><a href="https://github.com/ee-unr/aed/blob/main/capitulos/02_Rmarkdown.qmd" class="toc-action"><i class="bi empty"></i>Ver el código</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../capitulos/02.html">Unidad 2. R Markdown</a></li><li class="breadcrumb-item"><a href="../capitulos/02_Rmarkdown.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Comunicación de Resultados: R Markdown</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Comunicación de Resultados: R Markdown</span></h1>
+<p class="subtitle lead">Análisis Exploratorio de Datos | Licenciatura en Estadística | FCEyE | UNR</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- themes: https://bootswatch.com/ -->
+<section id="introducción" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="introducción"><span class="header-section-number">4.1</span> Introducción</h2>
+<ul>
+<li><p>Los contenidos de esta unidad están motivados por el concepto de <strong>comunicación eficiente</strong>.</p></li>
+<li><p>Esta idea se encuentra íntimamente ligada al contexto en el cual nos desempeñamos. No es lo mismo escribir una tesis académica, que un reporte para uso interno dentro de una empresa, que generar un informe que será publicado en redes sociales. La manera en que presentamos los resultados, el lenguaje que utilizamos, el formato de salida y muchas otras características dependerán del público al que va dirigido el mensaje.</p></li>
+<li><p>Como ya sabemos, la aparición de nuevas herramientas informáticas ha revolucionado la manera en que nos comunicamos, no sólo a través del lenguaje oral, sino también del escrito. En particular, consideramos que existen dos paradigmas muy arraigados que necesitan ser repensados (no eliminados) dado el contexto actual:</p>
+<ol type="1">
+<li><p>El concepto de informe <strong>estático</strong>, generalmente impreso en papel o compartido en formato Word, PDF, PowerPoint, etc. En ocasiones es aconsejable otorgarle cierto poder de decisión al usuario/a que leerá el informe, dándole la posibilidad de elegir qué variables o categorías graficar, cómo ordenar las tablas presentadas, etc. En este sentido, repasaremos algunas herramientas para dinamizar y hacer interactivos los informes que elaboramos: <strong>R Markdown</strong>, y más adelante, <strong>R Shiny</strong> y <strong>Power BI</strong>.</p></li>
+<li><p>El concepto de informe <strong>definitivo</strong>. Muchas veces parece que hemos llegado a un punto final, a partir del cual no hay lugar para la actualización, la mejora o la revisión del trabajo realizado. ¿Qué pasa si descubrimos un error de carga en los datos y es necesario cambiar todos los resultados? O bien, ¿qué hacemos si hay nueva información disponible y también queremos actualizar el material? En este punto, R sale otra vez al rescate, gracias a su flujo de trabajo <strong>integrado</strong> y fácilmente <strong>reproducible</strong>.</p></li>
+</ol></li>
+<li><p>Para reproducir los ejemplos de este apunte, necesitamos los siguientes paquetes:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tinytex)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rmarkdown)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Disclaimer:</strong> la autoría de este material corresponde en parte al profesor Marcos Prunello.</p>
+</section>
+<section id="qué-es-r-markdown" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="qué-es-r-markdown"><span class="header-section-number">4.2</span> Qué es R Markdown</h2>
+<ul>
+<li><p>En R, la posibilidad de entrelazar el análisis estadístico con la generación de reportes se logra a través de <strong>R Markdown</strong> y todos sus productos derivados. Estas herramientas pueden ser utilizadas, entre otras cosas, para construir:</p>
+<ul>
+<li>Informes o reportes laborales</li>
+<li>Presentaciones con diapositivas</li>
+<li>Artículos académicos (papers)</li>
+<li>Páginas web</li>
+<li>Blogs</li>
+<li>Libros (sí, libros enteros)</li>
+</ul></li>
+</ul>
+<p>
+</p>
+<ul>
+<li><p>Estamos acostumbrados a realizar estas tareas con diferentes programas: Word para documentos que contienen una gran cantidad de texto, PowerPoint para presentaciones, Excel para reportes que incluyen tablas y gráficos, etc. ¿Por qué deberíamos pensar en cambiar estas costumbres? Existen tres razones que podemos agregar a los ya mencionados cambios de paradigma:</p>
+<ol type="1">
+<li><p><strong>Integración:</strong> si trabajamos con R podemos llevar a cabo todos los pasos del proceso de análisis mediante el mismo software (no más copiado y pegado de resultados de R a otros programas). Es posible escribir artículos, lanzar páginas web o publicar libros sin salir de RStudio.</p></li>
+<li><p><strong>Replicación:</strong> la estructura de trabajo de R Markdown facilita su replicabilidad, ya que gracias a la mencionada integración, todos los pasos del proceso se encuentran contenidos en un solo lugar: lectura y limpieza de datos, análisis estadístico, ajuste de modelos, escritura de texto y conclusiones, generación de un reporte que incluya resultados, tablas, gráficos, código utilizado, etc. <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6255984/">Algunos autores</a> definen la replicación como una parte esencial del método científico.</p></li>
+<li><p><strong>Salto de Categoría:</strong> la calidad de los archivos generados y las opciones de personalización que podemos alcanzar con R son enormes, dándole un aspecto mucho más profesional a nuestro trabajo.</p></li>
+</ol></li>
+<li><p>Pero, ¿qué es <strong>Markdown</strong>? Es el nombre de un lenguaje de <em>marcado ligero</em> que sirve para producir distintos tipos de documentos, a partir de una sintaxis donde las sentencias incluyen exclusivamente el uso de caracteres básicos. Además, se guardan en archivos de texto plano, sin formato.</p></li>
+<li><p>Si bien este lenguaje fue desarrollado originalmente para producir textos de páginas web y así simplificar la escritura de código HTML, su diseño permite convertir un documento de tipo <em>markdown</em> a una gran variedad de formatos de salida. Generalmente se usa para escribir archivos <em>README</em> o documentación, publicaciones en foros online, servicios de mensajería instantánea, etc.</p></li>
+<li><p>El formato de documentos <strong>R Markdown</strong> se encarga de incorporar este tipo de escritura en R para poder combinar texto, código y salidas en la creación de archivos publicables de excelente calidad, resultando en un proceso de creación <em>relativamente</em> sencillo.</p></li>
+<li><p>Los paquetes que implementan todo esto son <code>rmarkdown</code> y <code>knitr</code>:</p></li>
+</ul>
+<center>
+<img src="rmarkdown.png" id="id" class="class img-fluid" width="150"> <img src="knitr.png" id="id" class="class img-fluid" width="150">
+</center>
+<p>
+</p>
+<ul>
+<li>Podemos elegir diferentes formatos de salida, entre ellos <strong>HTML</strong>, <strong>PDF</strong>, <strong>Word</strong> y <strong>PowerPoint</strong>. Si bien en esta clase nos enfocaremos únicamente en los dos primeros, aquellos interesados en conocer más sobre la conexión entre R Markdown y Word pueden consultar este <a href="https://rmarkdown.rstudio.com/articles_docx.html">tutorial</a>. Por otro lado, una pequeña introducción a la relación R Markdown - PowerPoint puede encontrarse en el capítulo 4.4 de <a href="https://bookdown.org/yihui/rmarkdown/">R Markdown - The Definitive Guide</a>.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Aclaración
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>En 2022 <strong>Posit</strong> (la compañía antes llamada RStudio) relanzó R Markdown bajo el nombre de <strong>Quarto</strong>. Si bien este nuevo producto posee algunas diferencias con respecto al original, estas son mínimas, y todo lo que figura a continuación puede aplicarse en cualquiera de las dos versiones.</p>
+</div>
+</div>
+</section>
+<section id="primeros-pasos" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="primeros-pasos"><span class="header-section-number">4.3</span> Primeros Pasos</h2>
+<ul>
+<li>Un documento R Markdown básico puede crearse de forma sencilla con RStudio accediendo a <em>File &gt; New File &gt; R Markdown</em>, o bien haciendo click en la cruz blanca sobre fondo verde y eligiendo R Markdown en el menú desplegable:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad02/iniciarRmd.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="../imagenes/unidad02/iniciarRmd.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>En la siguiente ventana se nos pregunta qué tipo de documento queremos crear, con varias opciones disponibles:</p>
+<ul>
+<li>Documento de texto (HTML, PDF o Word)</li>
+<li>Presentación (diapositivas)</li>
+<li>Shiny (<em>app</em> que puede ejecutarse a través de un navegador web e incorpora contenido interactivo)</li>
+<li>Desde un <em>template</em> (documentos con formato pre-seteado provistos por algunos paquetes)</li>
+</ul></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad02/elformato.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="../imagenes/unidad02/elformato.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Podemos tomar de ejemplo un documento de texto en formato <strong>HTML</strong>.</li>
+<li>Una vez elegido el tipo de documento, RStudio ofrece por defecto una plantilla que incluye varias secciones, las cuales analizaremos en detalle a continuación. Es importante notar que, a diferencia de los archivos de código comunes (con extensión <strong>.R</strong>), este archivo posee la extensión <strong>.Rmd</strong> (o bien <em>.qmd</em> si usamos Quarto).</li>
+<li>Debemos guardar este documento en alguna carpeta de nuestra compu.</li>
+<li>Su estructura general se representa en la siguiente imagen:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad02/partesRmd.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="../imagenes/unidad02/partesRmd.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="encabezado" class="level3" data-number="4.3.1">
+<h3 data-number="4.3.1" class="anchored" data-anchor-id="encabezado"><span class="header-section-number">4.3.1</span> Encabezado</h3>
+<ul>
+<li><p>El encabezado, también conocido como <em>YAML Metadata</em>, se coloca al comienzo del documento entre dos tiras de guiones. Aquí se incluyen el título del documento y subtítulo si lo tuviera, autor, fecha y varias opciones más.</p></li>
+<li><p>En <code>output</code> se indica el formato de salida que se desea; si bien esta opción se genera automáticamente al elegir el formato en la pantalla anterior, podemos modificarlo manualmente si cambiamos de opinión.</p></li>
+</ul>
+<pre><code>---
+title: "Mi Primer Markdown en HTML"
+subtitle: "AED | Lic. en Estadística | FCEyE | UNR"
+author: "Diego &amp; Iván"
+date: "Agosto 2024"
+output: html_document
+---</code></pre>
+<ul>
+<li>Más adelante mencionaremos más opciones que dependen del output elegido.</li>
+</ul>
+</section>
+<section id="texto" class="level3" data-number="4.3.2">
+<h3 data-number="4.3.2" class="anchored" data-anchor-id="texto"><span class="header-section-number">4.3.2</span> Texto</h3>
+<ul>
+<li><p>Para la escritura de texto se usa el lenguaje <strong>Pandoc’s Markdown</strong>, una extensión del Markdown original. Un amplio manual sobre esta herramienta puede consultarse en la <a href="https://pandoc.org/MANUAL.html">web oficial de Pandoc</a>, un software libre que se utiliza para convertir documentos de un formato a otro.</p></li>
+<li><p>En la siguiente tabla mostramos algunos <em>trucos</em> para darle un aspecto más interesante al texto que escribimos en R Markdown:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad02/formatotxt.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="../imagenes/unidad02/formatotxt.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Los encabezados de cada sección se definen mediante numerales: un numeral equivale a un título principal, dos numerales a un subtítulo, tres numerales a un sub-subtítulo, etc.:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad02/titulos.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="../imagenes/unidad02/titulos.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>Por defecto, el índice de un documento R Markdown incluye los encabezados de nivel 1, 2 y 3. Si queremos cambiar este comportamiento, podemos utilizar la opción <code>toc_depth: x</code> dentro del encabezado, para mostrar los niveles 1 a <em>x</em>.</p></li>
+<li><p>Recomendamos dejar un espacio entre el numeral y el título de la sección (<code># Título</code>), ya que para ciertos formatos de salida de R Markdown, la expresión <code>#Título</code> no será reconocida como tal.</p></li>
+<li><p>Para iniciar un nuevo párrafo en <em>Pandoc</em> debemos dejar dos espacios al final de una línea de texto o bien un renglón vacío entre una cadena de texto y la otra. Con un solo <strong>Enter</strong> no lograremos nada.</p></li>
+</ul>
+</section>
+<section id="código" class="level3" data-number="4.3.3">
+<h3 data-number="4.3.3" class="anchored" data-anchor-id="código"><span class="header-section-number">4.3.3</span> Código</h3>
+<ul>
+<li><p>Para añadir código dentro de un documento <strong>Rmd</strong> es necesario insertar un <code>chunk</code>, término que podemos traducir como <em>pedazo</em> o <em>bloque</em>. Las dos maneras más directas de hacerlo son:</p>
+<ol type="1">
+<li>Apretar las teclas Ctrl + Alt + i, o bien…</li>
+<li>Hacer click en el ícono <code>Insert</code> en la barra de edición y elegir la primera opción (R). También es posible insertar chunks que contengan sentencias escritas en otros lenguajes (Python, SQL, Stan, etc.)</li>
+</ol></li>
+</ul>
+<p>
+</p>
+<ul>
+<li><p>Dentro de estos bloques podemos escribir código de R, tal como lo hacemos regularmente en un archivo de sentencias común y corriente. En lo posible, se recomienda crear bloques relativamente autónomos y enfocados en una sola tarea: por ejemplo, un bloque para importar datos, otro para ajustes, otro para generar gráficos, etc.</p></li>
+<li><p>Para correr todo el código presente en un bloque se puede usar el atajo <code>Ctrl + Shift + Enter</code> o bien el triángulo verde ubicado en la parte superior derecha del chunk.</p></li>
+<li><p>La salida generada por cada chunk puede personalizarse con distintos argumentos que se indican en su encabezado. El paquete <strong>knitr</strong> provee casi 60 opciones para personalizar chunks: <a href="http://yihui.name/knitr/options/">acá podemos consultar la lista completa</a>.</p></li>
+<li><p>A continuación repasamos algunas de los más útiles:</p>
+<ul>
+<li><p><code>eval = TRUE/FALSE</code> define si el código de ese chunk debe ejecutarse, o no (en este caso no se generan resultados). Esta opción es útil para mostrar ejemplos de sentencias que no deseamos correr, o bien para deshabilitar la ejecución de un gran bloque de código sin comentar cada línea.</p></li>
+<li><p><code>echo = TRUE/FALSE</code> define si el código se muestra en el documento final, o no. Por defecto todo chunk se ejecuta y se imprime. Dado que en numerosas ocasiones no deseamos que nuestro código se haga público, la opción <code>echo = FALSE</code> es una de las más utilizadas.</p></li>
+<li><p><code>message</code>, <code>warning</code> y <code>error</code> definen si los mensajes, advertencias o errores generados por las funciones ejecutadas dentro del chunk deben mostrarse (<code>TRUE</code>) o no (<code>FALSE</code>).</p></li>
+<li><p><code>results</code> define qué hacer con los resultados del código presente en ese chunk: imprimir con formato (<code>"markup"</code>), sin formato (<code>"asis"</code>), no imprimir (<code>"hide"</code>) o imprimir todo junto al final (<code>"hold"</code>).</p></li>
+<li><p><code>fig.height</code> y <code>fig.width</code> definen el alto y el ancho (en pulgadas) de los gráficos generados por ese chunk.</p></li>
+<li><p><code>out.width</code> define el ancho de los gráficos generados por ese chunk, con respecto al tamaño relativo de la página; por ejemplo <code>out.width="75%"</code> imprime un gráfico que ocupa las tres cuartas partes del ancho total.</p></li>
+<li><p><code>fig.align</code> define la justificación de la imagen: a la izquierda (<code>"left"</code>), centradas (<code>"center"</code>) o a la derecha (<code>"right"</code>).</p></li>
+<li><p><code>fig.cap</code> define el texto que describe el gráfico generado (<em>caption</em>), el cual se ubica debajo de la imagen.</p></li>
+</ul></li>
+</ul>
+<p>
+</p>
+<ul>
+<li><p>Los chunks pueden recibir nombres, que no deben repetirse a lo largo del documento. Esta opción facilita la organización en archivos extensos, permite crear vínculos a resultados de chunks específicos a lo largo del documento, y además, nos ayuda a encontrar y resolver problemas de forma más eficaz.</p></li>
+<li><p>Un ejemplo de chunk bautizado <em>BloqueMuyImportante</em> con algunas opciones luce así:</p></li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r BloqueMuyImportante, warning=TRUE, echo=TRUE}</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="in"> datos &lt;- read_excel("Plantilla.xlsx")</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="in"> summary(datos)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><p>Las opciones de personalización de chunks, tal como las escribimos hasta ahora, afectan sólo al código contenido dentro de ese bloque. Si deseamos definir estas opciones de manera <strong>global</strong>, de tal manera que abarquen a todos los chunks del documento, podemos hacerlo mediante la función <code>opts_chunk()</code> del paquete <code>knitr</code>.</p></li>
+<li><p>Es común que el primer chunk del archivo contenga un llamado a esta función, definiendo los detalles globales de todos los bloques generados en el resto del documento. Generalmente se le da el nombre <em>setup</em>, aunque esto es opcional. Por ejemplo:</p></li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include = FALSE}</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, </span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="in">                      comment = NA, fig.align = "center", out.width = "100%")</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Si quiero cambiar el comportamiento definido en <code>opts_chunk()</code> sólo en algunos bloques determinados, alcanza con volver a definir las opciones en sus respectivos encabezados.</p>
+</section>
+<section id="compilar" class="level3" data-number="4.3.4">
+<h3 data-number="4.3.4" class="anchored" data-anchor-id="compilar"><span class="header-section-number">4.3.4</span> Compilar</h3>
+<p>Para generar el documento definitivo basta con cliquear el botón <strong>Knit</strong> (literalmente, <em>tejer</em>) que se encuentra en la barra de herramientas de RStudio:</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad02/botonknitr.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6"><img src="../imagenes/unidad02/botonknitr.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:60.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Otra opción para generar documentos es utilizar la función <code>render()</code> del paquete <code>rmarkdown</code>:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">render</span>(<span class="st">"MiArchivo.Rmd"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Para tener en cuenta:</strong></p>
+<ul>
+<li><p>Al momento de generar un documento, R sólo podrá utilizar los objetos definidos dentro del <strong>Rmd</strong> mismo: de nada sirve cargar un objeto en nuestro ambiente de trabajo, si luego no replicamos esa sentencia en el Markdown.</p></li>
+<li><p>Al lado del botón <strong>Knit</strong> hay una lista desplegable que nos permite elegir otro formato de salida, diferente al que tenemos indicado por default.</p></li>
+</ul>
+</section>
+</section>
+<section id="herramientas-útiles" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="herramientas-útiles"><span class="header-section-number">4.4</span> Herramientas útiles</h2>
+<section id="listas" class="level3" data-number="4.4.1">
+<h3 data-number="4.4.1" class="anchored" data-anchor-id="listas"><span class="header-section-number">4.4.1</span> Listas</h3>
+<ul>
+<li><p>Para crear listas de elementos no numerados, podemos usar un asterisco (*) o bien un guion (-). Si deseamos agregar sublistas dentro de algunas listas, el asterisco o guion debe estar precedido una tabulación o cuatro espacios.</p></li>
+<li><p>Por otro lado, para listas numeradas debemos agregar al principio de cada elemento el número correspondiente a cada ítem, seguido de un punto (1., 2., etc.). Si no tenemos ganas de contar la cantidad de ítems, podemos usar la numeración 1. para cada elemento y R hará los incrementos automáticamente:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad02/listas.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7"><img src="../imagenes/unidad02/listas.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="enlaces" class="level3" data-number="4.4.2">
+<h3 data-number="4.4.2" class="anchored" data-anchor-id="enlaces"><span class="header-section-number">4.4.2</span> Enlaces</h3>
+<ul>
+<li><p>Para añadir links a páginas web se puede escribir lo siguiente: <code>[Link a la página web de la FCEyE-UNR](https://www.fcecon.unr.edu.ar/)</code>, lo cual se mostrará así: <a href="https://www.fcecon.unr.edu.ar/">Link a la página web de la FCEyE-UNR</a>.</p></li>
+<li><p>Si queremos que el link quede visible, podemos escribir <code>&lt;https://www.fcecon.unr.edu.ar&gt;</code> y se verá así: <a href="https://www.fcecon.unr.edu.ar" class="uri">https://www.fcecon.unr.edu.ar</a>.</p></li>
+</ul>
+</section>
+<section id="imágenes" class="level3" data-number="4.4.3">
+<h3 data-number="4.4.3" class="anchored" data-anchor-id="imágenes"><span class="header-section-number">4.4.3</span> Imágenes</h3>
+<ul>
+<li>Si queremos insertar imágenes dentro de nuestro documento, recomendamos utilizar la función <code>include_graphics()</code> de <code>knitr</code>:</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, out.width="50%"}</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::include_graphics("../imagenes/unidad02/C:/Mis Documentos/messi.jpg")</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad02/messi.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-8"><img src="../imagenes/unidad02/messi.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>Este recurso es válido para imágenes de formato <em>png</em>, <em>jpg</em>, <em>gif</em>, <em>pdf</em> (entre otros) que estén guardadas en nuestra PC o que se encuentren alojadas online.</p></li>
+<li><p>No es necesario utilizar esta función si queremos incluir un gráfico generado dentro de R, directamente escribimos el código correspondiente en un chunk (que seguramente queramos dejar oculto):</p></li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, out.width = "60%", echo = TRUE}</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="in">ggplot(mpg) +</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="in">  aes(x = cty, fill = factor(cyl)) +</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="in">  geom_density(alpha = 0.8) +</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="in">  labs(title = "Gráfico de densidad", </span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="in">       subtitle = "Millaje en ciudad según número de cilindros",</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="in">       caption = "Fuente: datos mpg",</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="in">       x = "Millas por galón", y = "Densidad",</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="in">       fill = "Nro de cilindros") +</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="in">  theme(legend.position = "bottom")</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="02_Rmarkdown_files/figure-html/unnamed-chunk-11-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9"><img src="02_Rmarkdown_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:60.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="tablas" class="level3" data-number="4.4.4">
+<h3 data-number="4.4.4" class="anchored" data-anchor-id="tablas"><span class="header-section-number">4.4.4</span> Tablas</h3>
+<ul>
+<li>Frecuentemente necesitamos presentar tablas con resultados de nuestros análisis.</li>
+<li>Por ejemplo, el promedio de algunas variables calculado según la cantidad de cilindros que tienen los autos listados en el dataset <code>mtcars</code>, como vemos a continuación:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>resultado <span class="ot">&lt;-</span> mtcars <span class="sc">%&gt;%</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cyl) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise_at</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span><span class="sc">:</span><span class="dv">7</span>), mean)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>resultado</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 7
+    cyl   mpg    hp  drat    wt  qsec    vs
+  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1     4  26.7  82.6  4.07  2.29  19.1 0.909
+2     6  19.7 122.   3.59  3.12  18.0 0.571
+3     8  15.1 209.   3.23  4.00  16.8 0    </code></pre>
+</div>
+</div>
+<p><br></p>
+<ul>
+<li><p>También podemos recurrir a la sintaxis de Markdown para crear tablas, que indica que hay definir el encabezado separándolo con guiones del resto de las filas e identificar las columnas con barras verticales.</p></li>
+<li><p>Por ejemplo:</p>
+<pre><code>| cyl|   mpg|     hp| drat|   wt|  qsec|   vs|
+|:--:|-----:|------:|----:|----:|-----:|----:|
+|   4| 26.66|  82.64| 4.07| 2.29| 19.14| 0.91|
+|   6| 19.74| 122.29| 3.59| 3.12| 17.98| 0.57|
+|   8| 15.10| 209.21| 3.23| 4.00| 16.77| 0.00|</code></pre></li>
+<li><p>Debajo vemos los resultados en nuestros archivos compilados, primero en versión html y luego en pdf:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">cyl</th>
+<th style="text-align: right;">mpg</th>
+<th style="text-align: right;">hp</th>
+<th style="text-align: right;">drat</th>
+<th style="text-align: right;">wt</th>
+<th style="text-align: right;">qsec</th>
+<th style="text-align: right;">vs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: right;">26.66</td>
+<td style="text-align: right;">82.64</td>
+<td style="text-align: right;">4.07</td>
+<td style="text-align: right;">2.29</td>
+<td style="text-align: right;">19.14</td>
+<td style="text-align: right;">0.91</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">6</td>
+<td style="text-align: right;">19.74</td>
+<td style="text-align: right;">122.29</td>
+<td style="text-align: right;">3.59</td>
+<td style="text-align: right;">3.12</td>
+<td style="text-align: right;">17.98</td>
+<td style="text-align: right;">0.57</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">8</td>
+<td style="text-align: right;">15.10</td>
+<td style="text-align: right;">209.21</td>
+<td style="text-align: right;">3.23</td>
+<td style="text-align: right;">4.00</td>
+<td style="text-align: right;">16.77</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad02/tabla1_pdf.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10"><img src="../imagenes/unidad02/tabla1_pdf.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:60.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>Hay páginas que nos ayudan a generar esas tablas con guiones y barras (recomendamos explorar la web <a href="https://www.tablesgenerator.com/markdown_tables">Tables Generator</a>), pero la idea es no hacerlo a mano.</p></li>
+<li><p>Existen muchos paquetes muy potentes para este configurar cualquier aspecto de las tablas (como <code>xtable</code>, <code>huxtable</code>, <code>formattable</code>, <code>kableExtra</code> y varios otros) con opciones que en algunos casos son específicas para cada formato de salida. Cada uno provee herramientas particulares para generar tablas con formato a partir código de R.</p></li>
+</ul>
+</section>
+<section id="código-dinámico" class="level3" data-number="4.4.5">
+<h3 data-number="4.4.5" class="anchored" data-anchor-id="código-dinámico"><span class="header-section-number">4.4.5</span> Código dinámico</h3>
+<ul>
+<li><p>Una manera de insertar resultados dentro del texto escrito es utilizando el formato <code>`r MiObjeto`</code>, donde <code>MiObjeto</code> es cualquier valor definido en los chunks del documento. Por ejemplo, puedo definir un objeto llamado <em>pvalue</em> en un reporte que genero mensualmente; cada vez que vuelvo a correr las sentencias, <em>pvalue</em> cambiará de valor.</p></li>
+<li><p>Si dentro del texto del reporte deseo mencionar el valor exacto de <em>pvalue</em>, el formato de código dinámico nos ayuda a imprimir de forma automática este valor, sin tener que preocuparnos por cambiarlo manualmente.</p></li>
+<li><p>Probamos esta técnica con un <strong>test t</strong> a dos colas, donde la hipótesis nula es <span class="math inline">\(H_0)\mu=0\)</span> y la alternativa <span class="math inline">\(H_1)\mu\neq0\)</span>. En nuestro documento <em>.Rmd</em> tenemos este chunk:</p></li>
+</ul>
+<div class="sourceCode" id="cb11"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, echo = FALSE}</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="in">prueba &lt;- t.test(rnorm(30), alternative = "two.sided", mu = 0) </span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="in">pvalue &lt;- prueba$p.value</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>En algún lugar del documento escribimos:</li>
+</ul>
+<div class="sourceCode" id="cb12"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>Se realizó la prueba T-Student (pvalue = <span class="in">`r pvalue`</span>).</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Y el resultado final en el archivo compilado será:</li>
+</ul>
+<div class="sourceCode" id="cb13"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>Se realizó la prueba T-Student (pvalue = 0.7024458).</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Incluso el texto podría estar controlado por objetos de R, como se puede ver en esta otra versión más “sofisticada” del caso anterior. En el documento ponemos:</li>
+</ul>
+<div class="sourceCode" id="cb14"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>El promedio <span class="in">`r ifelse(pvalue &lt;= 0.05, "", "no")`</span> difiere significativamente de cero (pvalue = <span class="in">`r round(pvalue, 4)`</span>).</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Y el resultado final en el archivo compilado será:</li>
+</ul>
+<div class="sourceCode" id="cb15"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>El promedio no difiere significativamente de cero (pvalue = 0.7024).</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="escritura-matemática" class="level3" data-number="4.4.6">
+<h3 data-number="4.4.6" class="anchored" data-anchor-id="escritura-matemática"><span class="header-section-number">4.4.6</span> Escritura matemática</h3>
+<ul>
+<li><p>R Markdown también admite el uso de notación matemática para la escritura de fórmulas, siempre que encerremos la expresión en cuestión con un símbolo “$” si deseamos ecuaciones ubicadas en la misma línea que el texto escrito, o bien mediante un doble símbolo “$$”, para ecuaciones ubicadas en un nuevo renglón.</p></li>
+<li><p>Por ejemplo <code>$\sum_{i=1}^{N} (x_i-\mu)^2$</code> se muestra como <span class="math inline">\(\sum_{i=1}^{N} (x_i-\mu)^2\)</span>, mientras que <code>$$\sum_{i=1}^{N} (x_i-\mu)^2$$</code> se muestra como <span class="math display">\[\sum_{i=1}^{N} (x_i-\mu)^2\]</span></p></li>
+<li><p>¿De dónde sale esa sucesión extraña de caracteres para definir la fórmula? R Markdown, como muchos otros lenguajes de marcado ligero, toma prestada la sintaxis de LaTeX para la escritura de fórmulas.</p></li>
+</ul>
+<!-- * Una *interminable* lista de operadores matemáticos puede encontrarse [en este link](https://en.wikibooks.org/wiki/LaTeX/Mathematics). -->
+<ul>
+<li><p>Una gran lista de ejemplos de notación matemática puede encontrarse <a href="https://rpruim.github.io/s341/S19/from-class/MathinRmd.html">en este link</a>.</p></li>
+<li><p>Veamos ahora algunos ejemplos de símbolos y formatos comunes a la hora de escribir textos matemáticos:</p></li>
+</ul>
+<pre><code>Operadores: 
+$5 + z \leq 4 \times \sqrt[3]{x}$</code></pre>
+<p><span class="math inline">\(5 + z \leq 4 \times \sqrt[3]{x}\)</span></p>
+<pre><code>Subíndices y superíndices:
+$x^2 + y^3 - z_0$</code></pre>
+<p><span class="math inline">\(x^2 + y^3 - z_0\)</span></p>
+<pre><code>Letras griegas:
+$\delta + \Delta + \gamma + \Gamma - \pi - \phi$</code></pre>
+<p><span class="math inline">\(\delta + \Delta + \gamma + \Gamma - \pi - \phi\)</span></p>
+<pre><code>Fracciones:
+$\frac{3}{4} + \frac{\lambda}{\omega}$</code></pre>
+<p><span class="math inline">\(\frac{3}{4} + \frac{\lambda}{\omega}\)</span></p>
+<pre><code>Sumatorias:
+$\sum_{i=1}^{N} (x_i-\mu)^2$</code></pre>
+<p><span class="math inline">\(\sum_{i=1}^{N} (x_i-\mu)^2\)</span> <span class="math inline">\(\displaystyle\sum_{i=1}^{N} (x_i-\mu)^2\)</span></p>
+<pre><code>Integrales:
+$\int_{0}^{+\infty} \cos{(x)}dx$</code></pre>
+<p><span class="math inline">\(\int_{0}^{+\infty} \cos{(x)}dx\)</span> <span class="math inline">\(\displaystyle\int_{0}^{+\infty} \cos{(x)}dx\)</span></p>
+<pre><code>Especiales:
+$\hat{\mu} = \bar{x} \iff \bar{x} = \hat{\mu}$</code></pre>
+<p><span class="math inline">\(\hat{\mu} = \bar{x} \iff \bar{x} = \hat{\mu}\)</span></p>
+</section>
+</section>
+<section id="detalles-específicos-para-html" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="detalles-específicos-para-html"><span class="header-section-number">4.5</span> Detalles específicos para html</h2>
+<ul>
+<li><p>Todo lo que vimos hasta acá funciona para cualquier formato de salida deseado. Esta es una de las mayores virtudes de R Markdown, ya que podemos independizar nuestro trabajo de los detalles propios de cada sistema, generando cualquiera de ellos a partir del mismo script.</p></li>
+<li><p>Ahora bien, si tenemos en mente un formato de salida en particular, podemos personalizar aún más detalles con opciones específicas para ese formato.</p></li>
+<li><p>Una posible manera de lograr esto consiste en agregar detalles en la sección <code>output</code> del encabezado <em>YAML</em>.</p></li>
+<li><p>Por ejemplo, el encabezado del archivo que genera este HTML luce así:</p></li>
+</ul>
+<pre><code>---
+title: "Comunicación de Resultados: R Markdown"
+subtitle: "Análisis Exploratorio de Datos | Licenciatura en Estadística | FCEyE | UNR"
+author: 
+  - Mg. Diego Marfetán Molina
+  - Lic. Iván Millanes
+date: "8/26/24"
+lang: es
+toc: true
+format: 
+  html:
+    self-contained: true
+    df-print: paged
+    theme:
+      light: journal
+      dark: darkly
+knitr:
+  opts_chunk: 
+    echo: true
+    message: false
+    warning: false
+    fig.align: center
+---</code></pre>
+<ul>
+<li><p><code>self-contained</code> indica que las figuras se deben incrustar en el código, con lo cual el documento es “portable” (cualquiera que tenga el HTML puede ver todas las imágenes incluidas).</p></li>
+<li><p><code>theme</code> define el aspecto general del documento, con respecto a colores, sombreados, estilo del texto, etc. (<a href="https://www.datadreaming.org/posts/2018-04-11-r-markdown-theme-gallery/2018-04-11-r-markdown-theme-gallery">link a lista de temas disponibles</a>).</p></li>
+</ul>
+<!-- * Las opciones que comienzan con `toc` hacen referencia a la "tabla de contenidos": queremos que esté presente (`yes`), que incluya hasta el tercer nivel de títulos y que sea flotante para que siempre esté visible. -->
+<ul>
+<li>Quienes se sientan cómodos/as escribiendo código HTML, pueden definir más opciones de personalización (colores, tamaños, fuentes, espaciados, etc.) en otro archivo de formato <code>.css</code> (<em>cascading style sheet</em>) y avisarle a R Markdown que lo tenga en cuenta nombrándolo en el encabezado:</li>
+</ul>
+<pre><code>--- 
+title: "Comunicación de Resultados: R Markdown"
+format: 
+  html:
+    self-contained: true
+    df-print: paged
+    css: archivo_de_estilo.css
+---</code></pre>
+<ul>
+<li><p>Otro aspecto que se puede personalizar bastante al trabajar con salida en html es la forma en la que se conjuntos de datos o tablas. Veamos algunas opciones:</p></li>
+<li><p><strong>Opción 1</strong>: agregar <code>df_print: paged</code> entre las opciones del output en el YAML, logrando que los conjuntos de datos se puedan explorar interactivamente.</p></li>
+<li><p><strong>Opción 2</strong>: usando el paquete <code>DT</code>, que con su función <code>datatable()</code>, que hace que los conjuntos de datos se presenten en tablas filtrables y reordenables. Ejemplo:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>mtcars <span class="sc">%&gt;%</span> </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">datatable</span>(<span class="at">filter =</span> <span class="st">"top"</span>, <span class="at">options =</span> <span class="fu">list</span>(<span class="at">scrollX =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatStyle</span>(<span class="at">columns =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">11</span>, <span class="at">fontSize =</span> <span class="st">"75%"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-0e53db51a64129103bbb" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0e53db51a64129103bbb">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td><\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"10.4\" data-max=\"33.9\" data-scale=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"4\" data-max=\"8\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"71.1\" data-max=\"472\" data-scale=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"52\" data-max=\"335\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"2.76\" data-max=\"4.93\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"1.513\" data-max=\"5.424\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"14.5\" data-max=\"22.9\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0\" data-max=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0\" data-max=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"3\" data-max=\"5\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"1\" data-max=\"8\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","data":[["Mazda RX4","Mazda RX4 Wag","Datsun 710","Hornet 4 Drive","Hornet Sportabout","Valiant","Duster 360","Merc 240D","Merc 230","Merc 280","Merc 280C","Merc 450SE","Merc 450SL","Merc 450SLC","Cadillac Fleetwood","Lincoln Continental","Chrysler Imperial","Fiat 128","Honda Civic","Toyota Corolla","Toyota Corona","Dodge Challenger","AMC Javelin","Camaro Z28","Pontiac Firebird","Fiat X1-9","Porsche 914-2","Lotus Europa","Ford Pantera L","Ferrari Dino","Maserati Bora","Volvo 142E"],[21,21,22.8,21.4,18.7,18.1,14.3,24.4,22.8,19.2,17.8,16.4,17.3,15.2,10.4,10.4,14.7,32.4,30.4,33.9,21.5,15.5,15.2,13.3,19.2,27.3,26,30.4,15.8,19.7,15,21.4],[6,6,4,6,8,6,8,4,4,6,6,8,8,8,8,8,8,4,4,4,4,8,8,8,8,4,4,4,8,6,8,4],[160,160,108,258,360,225,360,146.7,140.8,167.6,167.6,275.8,275.8,275.8,472,460,440,78.7,75.7,71.09999999999999,120.1,318,304,350,400,79,120.3,95.09999999999999,351,145,301,121],[110,110,93,110,175,105,245,62,95,123,123,180,180,180,205,215,230,66,52,65,97,150,150,245,175,66,91,113,264,175,335,109],[3.9,3.9,3.85,3.08,3.15,2.76,3.21,3.69,3.92,3.92,3.92,3.07,3.07,3.07,2.93,3,3.23,4.08,4.93,4.22,3.7,2.76,3.15,3.73,3.08,4.08,4.43,3.77,4.22,3.62,3.54,4.11],[2.62,2.875,2.32,3.215,3.44,3.46,3.57,3.19,3.15,3.44,3.44,4.07,3.73,3.78,5.25,5.424,5.345,2.2,1.615,1.835,2.465,3.52,3.435,3.84,3.845,1.935,2.14,1.513,3.17,2.77,3.57,2.78],[16.46,17.02,18.61,19.44,17.02,20.22,15.84,20,22.9,18.3,18.9,17.4,17.6,18,17.98,17.82,17.42,19.47,18.52,19.9,20.01,16.87,17.3,15.41,17.05,18.9,16.7,16.9,14.5,15.5,14.6,18.6],[0,0,1,1,0,1,0,1,1,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,0,1,0,0,0,1],[1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1],[4,4,4,3,3,3,3,4,4,4,4,3,3,3,3,3,3,4,4,4,3,3,3,3,3,4,5,5,5,5,5,4],[4,4,1,1,2,1,4,2,2,4,4,3,3,3,4,4,4,1,2,1,1,2,2,4,2,1,2,2,4,6,8,2]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>mpg<\/th>\n      <th>cyl<\/th>\n      <th>disp<\/th>\n      <th>hp<\/th>\n      <th>drat<\/th>\n      <th>wt<\/th>\n      <th>qsec<\/th>\n      <th>vs<\/th>\n      <th>am<\/th>\n      <th>gear<\/th>\n      <th>carb<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6,7,8,9,10,11]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"mpg","targets":1},{"name":"cyl","targets":2},{"name":"disp","targets":3},{"name":"hp","targets":4},{"name":"drat","targets":5},{"name":"wt","targets":6},{"name":"qsec","targets":7},{"name":"vs","targets":8},{"name":"am","targets":9},{"name":"gear","targets":10},{"name":"carb","targets":11}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[0]; $(this.api().cell(row, 0).node()).css({'font-size':'75%'});\nvar value=data[1]; $(this.api().cell(row, 1).node()).css({'font-size':'75%'});\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'font-size':'75%'});\nvar value=data[3]; $(this.api().cell(row, 3).node()).css({'font-size':'75%'});\nvar value=data[4]; $(this.api().cell(row, 4).node()).css({'font-size':'75%'});\nvar value=data[5]; $(this.api().cell(row, 5).node()).css({'font-size':'75%'});\nvar value=data[6]; $(this.api().cell(row, 6).node()).css({'font-size':'75%'});\nvar value=data[7]; $(this.api().cell(row, 7).node()).css({'font-size':'75%'});\nvar value=data[8]; $(this.api().cell(row, 8).node()).css({'font-size':'75%'});\nvar value=data[9]; $(this.api().cell(row, 9).node()).css({'font-size':'75%'});\nvar value=data[10]; $(this.api().cell(row, 10).node()).css({'font-size':'75%'});\nvar value=data[11]; $(this.api().cell(row, 11).node()).css({'font-size':'75%'});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
+</div>
+</div>
+<p><br></p>
+<ul>
+<li><strong>Opción 3</strong>: combinar la función <code>kable()</code> del paquete <code>knitr</code> con funciones de configuración adicionales provistas por el paquete <code>kableExtra</code>. Por ejemplo, con las funciones <code>row_spec()</code> y <code>column_spec()</code> podemos modificar el aspecto del texto (color, formato, etc.) de columnas y filas determinadas; además, agregamos una barra de desplazamiento para evitar imprimir la tabla entera mediante <code>scroll_box()</code>. Muchas más opciones de personalización de tablas con <code>kableExtra</code> pueden consultarse en <a href="https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html">su viñeta oficial</a>.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>mtcars <span class="sc">%&gt;%</span> </span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">font_size =</span> <span class="dv">10</span>, <span class="at">bootstrap_options =</span> <span class="st">"hover"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">background =</span> <span class="st">"#DF0101"</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">background =</span> <span class="st">"#2E2E2E"</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">4</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">italic =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#2E9AFE"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scroll_box</span>(<span class="at">height =</span> <span class="st">"300px"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; ">
+<table class="table table-hover caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(46, 46, 46, 255) !important; position: sticky; top: 0; background-color: #FFFFFF;"></th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(46, 46, 46, 255) !important; position: sticky; top: 0; background-color: #FFFFFF;">mpg</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(46, 46, 46, 255) !important; position: sticky; top: 0; background-color: #FFFFFF;">cyl</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(46, 46, 46, 255) !important; position: sticky; top: 0; background-color: #FFFFFF;">disp</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(46, 46, 46, 255) !important; position: sticky; top: 0; background-color: #FFFFFF;">hp</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(46, 46, 46, 255) !important; position: sticky; top: 0; background-color: #FFFFFF;">drat</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(46, 46, 46, 255) !important; position: sticky; top: 0; background-color: #FFFFFF;">wt</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(46, 46, 46, 255) !important; position: sticky; top: 0; background-color: #FFFFFF;">qsec</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(46, 46, 46, 255) !important; position: sticky; top: 0; background-color: #FFFFFF;">vs</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(46, 46, 46, 255) !important; position: sticky; top: 0; background-color: #FFFFFF;">am</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(46, 46, 46, 255) !important; position: sticky; top: 0; background-color: #FFFFFF;">gear</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(46, 46, 46, 255) !important; position: sticky; top: 0; background-color: #FFFFFF;">carb</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Mazda RX4</td>
+<td style="text-align: right;">21.0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">160.0</td>
+<td style="text-align: right;">110</td>
+<td style="text-align: right;">3.90</td>
+<td style="text-align: right;">2.620</td>
+<td style="text-align: right;">16.46</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Mazda RX4 Wag</td>
+<td style="text-align: right;">21.0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">160.0</td>
+<td style="text-align: right;">110</td>
+<td style="text-align: right;">3.90</td>
+<td style="text-align: right;">2.875</td>
+<td style="text-align: right;">17.02</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Datsun 710</td>
+<td style="text-align: right;">22.8</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">108.0</td>
+<td style="text-align: right;">93</td>
+<td style="text-align: right;">3.85</td>
+<td style="text-align: right;">2.320</td>
+<td style="text-align: right;">18.61</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important; font-style: italic; color: rgba(46, 154, 254, 255) !important;">Hornet 4 Drive</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">21.4</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">6</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">258.0</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">110</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">3.08</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">3.215</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">19.44</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">1</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">0</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">3</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important; font-style: italic; color: rgba(46, 154, 254, 255) !important;">Hornet Sportabout</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">18.7</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">8</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">360.0</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">175</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">3.15</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">3.440</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">17.02</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">0</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">0</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">3</td>
+<td style="text-align: right; font-style: italic; color: rgba(46, 154, 254, 255) !important;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Valiant</td>
+<td style="text-align: right;">18.1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">225.0</td>
+<td style="text-align: right;">105</td>
+<td style="text-align: right;">2.76</td>
+<td style="text-align: right;">3.460</td>
+<td style="text-align: right;">20.22</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Duster 360</td>
+<td style="text-align: right;">14.3</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">360.0</td>
+<td style="text-align: right;">245</td>
+<td style="text-align: right;">3.21</td>
+<td style="text-align: right;">3.570</td>
+<td style="text-align: right;">15.84</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Merc 240D</td>
+<td style="text-align: right;">24.4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">146.7</td>
+<td style="text-align: right;">62</td>
+<td style="text-align: right;">3.69</td>
+<td style="text-align: right;">3.190</td>
+<td style="text-align: right;">20.00</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Merc 230</td>
+<td style="text-align: right;">22.8</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">140.8</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">3.92</td>
+<td style="text-align: right;">3.150</td>
+<td style="text-align: right;">22.90</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Merc 280</td>
+<td style="text-align: right;">19.2</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">167.6</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">3.92</td>
+<td style="text-align: right;">3.440</td>
+<td style="text-align: right;">18.30</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Merc 280C</td>
+<td style="text-align: right;">17.8</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">167.6</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">3.92</td>
+<td style="text-align: right;">3.440</td>
+<td style="text-align: right;">18.90</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Merc 450SE</td>
+<td style="text-align: right;">16.4</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">275.8</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;">3.07</td>
+<td style="text-align: right;">4.070</td>
+<td style="text-align: right;">17.40</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Merc 450SL</td>
+<td style="text-align: right;">17.3</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">275.8</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;">3.07</td>
+<td style="text-align: right;">3.730</td>
+<td style="text-align: right;">17.60</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Merc 450SLC</td>
+<td style="text-align: right;">15.2</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">275.8</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;">3.07</td>
+<td style="text-align: right;">3.780</td>
+<td style="text-align: right;">18.00</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Cadillac Fleetwood</td>
+<td style="text-align: right;">10.4</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">472.0</td>
+<td style="text-align: right;">205</td>
+<td style="text-align: right;">2.93</td>
+<td style="text-align: right;">5.250</td>
+<td style="text-align: right;">17.98</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Lincoln Continental</td>
+<td style="text-align: right;">10.4</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">460.0</td>
+<td style="text-align: right;">215</td>
+<td style="text-align: right;">3.00</td>
+<td style="text-align: right;">5.424</td>
+<td style="text-align: right;">17.82</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Chrysler Imperial</td>
+<td style="text-align: right;">14.7</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">440.0</td>
+<td style="text-align: right;">230</td>
+<td style="text-align: right;">3.23</td>
+<td style="text-align: right;">5.345</td>
+<td style="text-align: right;">17.42</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Fiat 128</td>
+<td style="text-align: right;">32.4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">78.7</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: right;">4.08</td>
+<td style="text-align: right;">2.200</td>
+<td style="text-align: right;">19.47</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Honda Civic</td>
+<td style="text-align: right;">30.4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">75.7</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">4.93</td>
+<td style="text-align: right;">1.615</td>
+<td style="text-align: right;">18.52</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Toyota Corolla</td>
+<td style="text-align: right;">33.9</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">71.1</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">4.22</td>
+<td style="text-align: right;">1.835</td>
+<td style="text-align: right;">19.90</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Toyota Corona</td>
+<td style="text-align: right;">21.5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">120.1</td>
+<td style="text-align: right;">97</td>
+<td style="text-align: right;">3.70</td>
+<td style="text-align: right;">2.465</td>
+<td style="text-align: right;">20.01</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Dodge Challenger</td>
+<td style="text-align: right;">15.5</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">318.0</td>
+<td style="text-align: right;">150</td>
+<td style="text-align: right;">2.76</td>
+<td style="text-align: right;">3.520</td>
+<td style="text-align: right;">16.87</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">AMC Javelin</td>
+<td style="text-align: right;">15.2</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">304.0</td>
+<td style="text-align: right;">150</td>
+<td style="text-align: right;">3.15</td>
+<td style="text-align: right;">3.435</td>
+<td style="text-align: right;">17.30</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Camaro Z28</td>
+<td style="text-align: right;">13.3</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">350.0</td>
+<td style="text-align: right;">245</td>
+<td style="text-align: right;">3.73</td>
+<td style="text-align: right;">3.840</td>
+<td style="text-align: right;">15.41</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Pontiac Firebird</td>
+<td style="text-align: right;">19.2</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">400.0</td>
+<td style="text-align: right;">175</td>
+<td style="text-align: right;">3.08</td>
+<td style="text-align: right;">3.845</td>
+<td style="text-align: right;">17.05</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Fiat X1-9</td>
+<td style="text-align: right;">27.3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">79.0</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: right;">4.08</td>
+<td style="text-align: right;">1.935</td>
+<td style="text-align: right;">18.90</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Porsche 914-2</td>
+<td style="text-align: right;">26.0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">120.3</td>
+<td style="text-align: right;">91</td>
+<td style="text-align: right;">4.43</td>
+<td style="text-align: right;">2.140</td>
+<td style="text-align: right;">16.70</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Lotus Europa</td>
+<td style="text-align: right;">30.4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">95.1</td>
+<td style="text-align: right;">113</td>
+<td style="text-align: right;">3.77</td>
+<td style="text-align: right;">1.513</td>
+<td style="text-align: right;">16.90</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Ford Pantera L</td>
+<td style="text-align: right;">15.8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">351.0</td>
+<td style="text-align: right;">264</td>
+<td style="text-align: right;">4.22</td>
+<td style="text-align: right;">3.170</td>
+<td style="text-align: right;">14.50</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Ferrari Dino</td>
+<td style="text-align: right;">19.7</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">145.0</td>
+<td style="text-align: right;">175</td>
+<td style="text-align: right;">3.62</td>
+<td style="text-align: right;">2.770</td>
+<td style="text-align: right;">15.50</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Maserati Bora</td>
+<td style="text-align: right;">15.0</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">301.0</td>
+<td style="text-align: right;">335</td>
+<td style="text-align: right;">3.54</td>
+<td style="text-align: right;">3.570</td>
+<td style="text-align: right;">14.60</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(223, 1, 1, 255) !important;">Volvo 142E</td>
+<td style="text-align: right;">21.4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">121.0</td>
+<td style="text-align: right;">109</td>
+<td style="text-align: right;">4.11</td>
+<td style="text-align: right;">2.780</td>
+<td style="text-align: right;">18.60</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</div>
+<p><br></p>
+<ul>
+<li><strong>Opción 4</strong>: para tablas pequeñas, podemos recurrir a <a href="https://www.tablesgenerator.com/markdown_tables">Tables Generator</a>. Generamos allí la tabla a mano, copiamos el código html y lo pegamos directamente en el Rmd.</li>
+</ul>
+<p>
+</p>
+</section>
+<section id="detalles-específicos-para-pdf" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="detalles-específicos-para-pdf"><span class="header-section-number">4.6</span> Detalles específicos para pdf</h2>
+<ul>
+<li><p>Si queremos producir documentos en formato PDF desde RStudio, necesitamos tener instalado <code>LaTeX</code> en nuestra computadora… pero ¿qué es <code>LaTeX</code>? Según <a href="https://www.latex-project.org/">su propia web</a>, <code>LaTeX</code> (pronunciado <em>latech</em>) es un sistema para preparación de documentos “de alta calidad”.</p></li>
+<li><p>Incluye herramientas diseñadas para producir muchos tipos de documentación técnica, gracias a lo cual se ha convertido en el programa <em>estándar</em> dentro del ámbito académico y, sobre todo, de la divulgación científica (especialmente entre las ciencias duras).</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad02/latex.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11"><img src="../imagenes/unidad02/latex.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:30.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>La principal diferencia entre <code>LaTeX</code> y otros sistemas de generación de documentos de texto, como por ejemplo <strong>Word</strong>, puede resumirse en dos puntos:</p>
+<ul>
+<li>En Word, lo que escribo (lo que veo en la pantalla) es lo que obtengo cuando guardo el documento</li>
+<li>Con <code>LaTeX</code> no obtengo lo mismo que veo, sino que describo cómo quiero que luzca el documento mediante comandos específicos</li>
+</ul></li>
+<li><p>Al igual que R y RStudio, <code>LaTeX</code> es un software gratuito y de distribución libre. Una muestra de la gran cantidad de documentos que podemos crear mediante <code>LaTeX</code> puede consultarse en <a href="https://www.overleaf.com/latex/templates">Overleaf</a>, donde se listan ejemplos de libros, currículums, posters, tesis y muchos otros formatos.</p></li>
+</ul>
+<section id="instalación-de-latex" class="level3" data-number="4.6.1">
+<h3 data-number="4.6.1" class="anchored" data-anchor-id="instalación-de-latex"><span class="header-section-number">4.6.1</span> Instalación de LaTeX</h3>
+<ul>
+<li><p>La descarga y posterior instalación de <code>LaTeX</code> ha sido siempre proceso generalmente tedioso que puede variar mucho de una PC a otra, sobre todo debido a configuraciones de red, versiones de sistemas operativos, permisos para agregar paquetes, etc.</p></li>
+<li><p>Para usuarios/as de Windows, la manera más recomendable de instalar <code>LaTeX</code> es a través de <a href="https://miktex.org/">MiKTeX</a>, una especie de “distribuidor oficial”. Para usuarios/as de otros sistemas operativos, sugerimos consultar las mejores opciones <a href="https://www.latex-project.org/get/">en la web oficial del proyecto LaTeX</a>, o bien <a href="https://en.wikibooks.org/wiki/LaTeX/Installation">aquí</a>.</p></li>
+<li><p><strong>Sin embargo, quienes usan R no tienen de qué preocuparse</strong>. Se puede usar R para instalar una distribución de LaTeX minimalista que funciona como un encanto, con estos pasos:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Primero, instalá el paquete tinytex:</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"tinytex"</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Luego, instalá LaTeX corriendo en R:</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>tinytex<span class="sc">::</span><span class="fu">install_tinytex</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li><p>Una vez instalado <code>LaTeX</code> (ya sea por fuera de R o con este paquete) no es necesario abrir este programa para poder utilizarlo, ya que RStudio se comunicará directamente con él <em>detrás de escena</em>, tal como lo hace con R.</p></li>
+<li><p>Cabe mencionar nuevamente a <a href="https://es.overleaf.com/">Overleaf</a>, que nos ofrece un editor online de <code>LaTeX</code> totalmente gratuito (requiere que nos registremos definiendo usuario y contraseña) por si queremos hacer cosas en LaTeX sin instalar nada o en forma colaborativa.</p></li>
+</ul>
+</section>
+<section id="opciones-para-latex" class="level3" data-number="4.6.2">
+<h3 data-number="4.6.2" class="anchored" data-anchor-id="opciones-para-latex"><span class="header-section-number">4.6.2</span> Opciones para LaTeX</h3>
+<ul>
+<li>La principal diferencia con lo visto hasta aquí es que en el encabezado YAML vamos a tener que especificar el tipo de salida que estamos buscando:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="sc">---</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>title<span class="sc">:</span> <span class="st">"Mi Primer Markdown en PDF"</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>subtitle<span class="sc">:</span> <span class="st">"AED | Lic. en Estadística | FCEyE | UNR"</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>author<span class="sc">:</span> <span class="st">"Diego &amp; Iván"</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>date<span class="sc">:</span> <span class="st">"Agosto 2024"</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>output<span class="sc">:</span> pdf_document</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="sc">---</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li><p>Para salidas en PDF, las opciones de personalización del <em>YAML Metadata</em> se multiplican. Algunas de las más comunes son:</p>
+<ul>
+<li><strong>fontsize:</strong> tamaño de la fuente (<em>10pt</em>, <em>11pt</em>, <em>12pt</em>)</li>
+<li><strong>geometry:</strong> márgenes, orientación de la hoja, tamaño del papel (<em>a4paper</em>, <em>letterpaper</em>, etc.)</li>
+<li><strong>documentclass:</strong> tipo de documento (<em>article</em>, <em>report</em>, <em>book</em>, etc.)</li>
+</ul></li>
+</ul>
+<p>
+</p>
+<ul>
+<li><p>Al igual que R, el sistema <code>LaTeX</code> depende en gran medida de funciones que se encuentran disponibles en paquetes que deberemos instalar a medida que sean necesarios. La inclusión de paquetes puede realizarse directamente en el encabezado, siguiendo el formato <code>\usepackage[opciones]{nombre_del_paquete}</code>.</p></li>
+<li><p>Durante la instalación, es posible configurar <code>LaTeX</code> para que los paquetes mencionados dentro del archivo que estamos ejecutando se instalen automáticamente, ahorrándonos la molestia de hacerlo manualmente (como en RStudio):</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="sc">---</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>title<span class="sc">:</span> <span class="st">"Mi Primer Markdown en PDF"</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>subtitle<span class="sc">:</span> <span class="st">"AED | Lic. en Estadística | FCEyE | UNR"</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>author<span class="sc">:</span> <span class="st">"Diego &amp; Iván"</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>date<span class="sc">:</span> <span class="st">"Agosto 2024"</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>fontsize<span class="sc">:</span> <span class="dv">12</span>pt</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>geometry<span class="sc">:</span> a4paper</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>documentclass<span class="sc">:</span> article</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>output<span class="sc">:</span> pdf_document</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>header<span class="sc">-</span>includes<span class="sc">:</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  <span class="sc">-</span> \usepackage[spanish]{babel}</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a><span class="sc">---</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li><p>En este caso, estamos utilizando el paquete <code>babel</code> con la opción <em>spanish</em> para que ciertos aspectos del documento se generen en idioma español.</p></li>
+<li><p>Un comentario al paso: si lo que necesitamos es crear tablas, las funciones ya mencionadas del paquete <code>kableExtra</code> también ofrecen opciones específicas para trabajar con LaTeX y poder generar lo que se necesita. También podemos generar la tabla en otro entorno, como el ya mencionado <a href="https://www.tablesgenerator.com/markdown_tables">Tables Generator</a>, y pegar el código de LaTeX directamente en el Rmd.</p></li>
+</ul>
+</section>
+<section id="diapositivas" class="level3" data-number="4.6.3">
+<h3 data-number="4.6.3" class="anchored" data-anchor-id="diapositivas"><span class="header-section-number">4.6.3</span> Diapositivas</h3>
+<ul>
+<li>Un formato útil de salida PDF es la presentación de diapositivas, la cual estamos acostumbrados a crear mediante programas como PowerPoint. En este caso la opción que debemos elegir en el menú es <strong>Presentation</strong> y luego <strong>PDF (Beamer)</strong>:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad02/beamer1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12"><img src="../imagenes/unidad02/beamer1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>El encabezado de nuestro <strong>Rmd</strong> luce así:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="sc">---</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>title<span class="sc">:</span> <span class="st">"Mi Primer Documento Beamer"</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>subtitle<span class="sc">:</span> <span class="st">"Análisis Exploratorio de Datos"</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>author<span class="sc">:</span> <span class="st">"Diego &amp; Iván"</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>date<span class="sc">:</span> <span class="st">"Lic. en Estadística - FCEyE - UNR"</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>output<span class="sc">:</span> beamer_presentation</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="sc">---</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li><p>Si bien los comandos de <code>LaTeX</code> presentados en este tutorial son válidos tanto para reportes PDF como para diapositivas, diagramar informes o artículos es totalmente diferente a preparar una presentación en diapositivas.</p></li>
+<li><p>De forma <em>exageradamente</em> resumida podemos remarcar ciertas ventajas y desventajas al comparar las estructuras de estos diversos formatos:</p>
+<ul>
+<li><strong>Ventajas</strong> de utilizar Beamer: documento más compacto, el formato diapositiva permite una mejor separación de ideas</li>
+<li><strong>Desventajas</strong> de utilizar Beamer: hay que dedicarle mucho tiempo a organizar código, texto e imágenes para lograr que algunas ideas entren en una misma diapositiva</li>
+</ul></li>
+<li><p>En Beamer, podemos crear una nueva diapositiva mediante encabezados de primer (<code>#</code>) o segundo orden (<code>##</code>), o bien con tres asteriscos (<code>***</code>) o puntos (<code>---</code>) consecutivos.</p></li>
+</ul>
+<pre><code># Titulo de la Diapo 1
+Texto de la diapositiva 1
+
+# Titulo de la Diapo 2
+Texto de la diapositiva 2
+
+***
+Texto de la diapositiva 3 (esta diapo no tiene título)</code></pre>
+<ul>
+<li><p>Las presentaciones en Beamer se caracterizan por contar con una gran cantidad de <strong>temas</strong> (<em>themes</em>) disponibles para personalizar el aspecto de las diapositivas, con respecto a fuentes, colores y demás formatos.</p></li>
+<li><p>En el encabezado del documento podemos definir los temas a utilizar de la siguiente manera:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="sc">---</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>title<span class="sc">:</span> <span class="st">"Mi Primer Documento Beamer"</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>subtitle<span class="sc">:</span> <span class="st">"Análisis Exploratorio de Datos"</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>author<span class="sc">:</span> <span class="st">"Diego &amp; Iván"</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>date<span class="sc">:</span> <span class="st">"Lic. en Estadística - FCEyE - UNR"</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>output<span class="sc">:</span> beamer_presentation</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>theme<span class="sc">:</span> <span class="st">"Madrid"</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>colortheme<span class="sc">:</span> <span class="st">"orchid"</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>fonttheme<span class="sc">:</span> <span class="st">"serif"</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="sc">---</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li><p>Una lista de los temas disponibles, tanto generales como de colores y fuentes, puede consultarse <a href="http://deic.uab.es/~iblanes/beamer_gallery/">en esta web</a>.</p></li>
+<li><p>En la siguiente imagen podemos apreciar el aspecto de las diapositivas generadas con el tema <em>Madrid</em>, color <em>orchid</em> y fuente <em>serif</em>:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad02/beamer2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13"><img src="../imagenes/unidad02/beamer2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="comentarios-finales" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="comentarios-finales"><span class="header-section-number">4.7</span> Comentarios finales</h2>
+<ul>
+<li><p>Con tantos términos dando vueltas (Markdown, RMarkdown, Knit, Pandoc, html, LaTeX… 😖), lo natural es perderse y no saber quién es quién ni qué hace qué.</p></li>
+<li><p>Lo bueno es que en general podemos usar todo esto sin tenerlo muy en claro, pero acá van algunas aclaraciones solo para los que estén interesados en saber más.</p></li>
+</ul>
+<section id="lenguajes-de-marcado-ligero-markdown-y-r-markdown" class="level3" data-number="4.7.1">
+<h3 data-number="4.7.1" class="anchored" data-anchor-id="lenguajes-de-marcado-ligero-markdown-y-r-markdown"><span class="header-section-number">4.7.1</span> Lenguajes de Marcado Ligero, Markdown y R Markdown</h3>
+<ul>
+<li><p>Un lenguaje de marcado ligero (<em>markup language</em>) es un sistema estandarizado con reglas para insertar símbolos en un documento de texto plano para controlar su estructura, formato y relación entre sus partes.</p></li>
+<li><p>Los símbolos que se utilizan para este “marcado” son caracteres básicos interpretables por algún dispositivo (computadora, impresora, navegador, etc.). Un documento con marcado ligero tiene entonces dos tipos de texto: texto para ser mostrado y caracteres que controlan la forma de mostrarlo.</p></li>
+<li><p>Dos lenguajes de marcado ligero muy conocidos y utilizados, aunque no muy sencillos de usar, son <strong>XML</strong> (Extensive Markup Language) y <strong>HTML</strong> (Hypertext Markup Language).</p></li>
+<li><p>Markdown es un lenguaje de marcado ligero muy sencillo de usar que sólo emplea caracteres simples (como numerales o asteriscos) para indicar el formato y la estructura del texto. Surgió con la idea de simplificar algunos aspectos del lenguaje HTML, de modo que sea más fácil editar contenido para páginas web.</p></li>
+<li><p>La idea de su desarrollador, John Gruber, era que sea una sintaxis fácil de escribir, pero sobre todo de leer. A diferencia de lo que pasa con HTML, tranquilamente podemos abrir un documento marcado con Markdown (.md) y leer su texto sin problemas.</p></li>
+<li><p>Con el tiempo fueron surgiendo varios derivados, haciendo que no haya una sintaxis única de Markdown. Por ejemplo:</p>
+<ul>
+<li><p><strong>Pandoc Markdown</strong> es el nombre de una de estas versiones que extienden Markdown con sintaxis para incluir tablas, listas, pies de página, citas, etc.</p></li>
+<li><p><strong>R Markdown</strong> se basa en Pandoc Markdown pero agrega sus propias reglas para poder incluir bloques de código de R y reglas, tanto para controlar su ejecución como la forma en la que se muestran los resultados. Los documentos escritos en R Markdown son de extensión .Rmd (.qmd desde el lanzamiento de Quarto). Este lenguaje está implementado en el paquete <code>rmarkdown</code>.</p></li>
+</ul></li>
+<li><p>Además de RStudio/Posit, algunas compañías que también utilizan Markdown son OpenAI (desarrolladora de ChatGPT), Discord, GitHub, Microsoft, Mozilla, entre otras.</p></li>
+</ul>
+</section>
+<section id="el-proceso-detrás-de-r-markdown" class="level3" data-number="4.7.2">
+<h3 data-number="4.7.2" class="anchored" data-anchor-id="el-proceso-detrás-de-r-markdown"><span class="header-section-number">4.7.2</span> El proceso detrás de R Markdown</h3>
+<ul>
+<li><p>Una vez que hemos creado un archivo Rmd siguiendo las reglas de R Markdown y estamos listos para producir el resultado final, hacemos clic en el botón Knit o, equivalentemente, corremos la función <code>render()</code> del paquete <code>rmarkdown</code>.</p></li>
+<li><p>Esta acción genera un proceso de dos etapas:</p>
+<ul>
+<li><p>El paquete <code>knitr</code> toma al archivo, identifica cuáles son las porciones de código a ejecutar, lo evalúa, toma los resultados y los “incrusta” en el archivo siguiendo las reglas de markdown. Es decir, genera un archivo .md intermedio que no vemos, ni nos interesa.</p></li>
+<li><p>Luego viene Pandoc, toma el archivo .md y lo convierte en un archivo de salida con el formato deseado: .html, .pdf o .docx, entre otros. Este programa ya viene instalado con RStudio, y lo mencionamos antes porque, además de convertir los .md en el formato que queramos, es el software que implementa la versión extendida del lenguaje <em>Pandoc’s Markdown</em>.</p></li>
+<li><p>Cuando el formato de salida es un PDF, hay un paso más. Pandoc convierte el .md en un archivo .tex, que sigue la sintaxis de LaTeX (por default este archivo es elimnado pero podríamos pedir que se conserve). Para convertir el .tex a un .pdf, se necesita que venga uno de los motores de compilación de LaTeX para hacer su tarea. Por defecto, se usa el motor <code>pdflatex</code>, pero hay otros disponibles (<code>xelatex</code> o <code>lualatex</code>). De estas instalaciones se encarga, por ejemplo, <code>tinytex</code>.</p></li>
+</ul></li>
+<li><p>¡Voilà! Con esos pasos mágicos tenemos nuestro ansiado archivo. Debajo vemos un esquema que representa el proceso de compilación:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad02/proceso.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14"><img src="../imagenes/unidad02/proceso.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:60.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="otros-recursos-relacionados-al-mundo-de-r-markdown" class="level3" data-number="4.7.3">
+<h3 data-number="4.7.3" class="anchored" data-anchor-id="otros-recursos-relacionados-al-mundo-de-r-markdown"><span class="header-section-number">4.7.3</span> Otros recursos relacionados al mundo de R Markdown</h3>
+<p>Si tenés ganas de seguir aprendiendo sobre <code>R Markdown</code>, podés consultar esta pequeña lista de guías y tutoriales:</p>
+<ul>
+<li><a href="https://rmarkdown.rstudio.com/">Sitio oficial de R Markdown</a></li>
+<li><a href="https://bookdown.org/yihui/rmarkdown/">R Markdown - The Definitive Guide (Libro de Yihui Xie)</a></li>
+<li><a href="https://rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf">Guía de Referencia en la web de RStudio</a></li>
+<li><a href="https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf">Machete en la web de RStudio</a></li>
+<li><a href="https://holtzy.github.io/Pimp-my-rmd/">Tips para mejorar el aspecto de un documento R Markdown</a></li>
+<li><a href="https://yihui.org/knitr/">Paquete <em>knitr</em></a></li>
+<li><a href="https://bookdown.org/">Paquete <em>bookdown</em></a>: para escribir y publicar nuestros propios libros desde R. Incluye formatos de salida HTML, PDF, ePub o Kindle, estos dos últimos para lectores de <em>ebooks</em>. El libro creado se puede hospedar de forma gratuita y sencilla en <em>GitHub</em> e integrarse a plataformas de Moodle.</li>
+<li><a href="https://bookdown.org/yihui/blogdown/">Paquete <em>blogdown</em></a>: permite desarrollar páginas web desde R.</li>
+<li><a href="https://rstudio.github.io/learnr/">Paquete <em>learnr</em></a>: permite transformar documentos Rmd en tutoriales interactivos para ser usados como material didáctico.</li>
+<li><a href="http://www.r-exams.org/">Paquete <em>exams</em></a>: basándose en R Markdown, permite generar automáticamente ejercicios para exámenes de Moodle, con la posibilidad de no sólo emplear valores aleatorios sino también preguntas aleatorias dentro de un mismo enunciado.</li>
+<li>Tutoriales de <em>gganimate</em>: <a href="https://www.datanovia.com/en/blog/gganimate-how-to-create-plots-with-beautiful-animation-in-r/">Post en <em>datanovia.com</em></a>, <a href="https://gganimate.com/articles/gganimate.html">Viñetas del paquete</a> y <a href="https://github.com/ropenscilabs/learngganimate">Laboratorio de experimentación de rOpenSci</a>.</li>
+</ul>
+<!-- ## Trabajo en Equipo -->
+<!-- * Crear un archivo **Rmd** con las siguientes especificaciones: -->
+<!--     * **Título:** "Análisis de datos de cultivos" -->
+<!--     * **Autor:** nombre de los integrantes del grupo -->
+<!--     * **Formato de salida:** HTML -->
+<!--     * **Código de R:** visible -->
+<!-- <p></p> -->
+<!-- * El objetivo del reporte es mostrar las siguientes figuras, armadas a partir de la base de cultivos presentada en clases anteriores. -->
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+
+/* update total correct if #webex-total_correct exists */
+update_total_correct = function() {
+  console.log("webex: update total_correct");
+
+  var t = document.getElementsByClassName("webex-total_correct");
+  for (var i = 0; i < t.length; i++) {
+    p = t[i].parentElement;
+    var correct = p.getElementsByClassName("webex-correct").length;
+    var solvemes = p.getElementsByClassName("webex-solveme").length;
+    var radiogroups = p.getElementsByClassName("webex-radiogroup").length;
+    var selects = p.getElementsByClassName("webex-select").length;
+
+    t[i].innerHTML = correct + " of " + (solvemes + radiogroups + selects) + " correct";
+  }
+}
+
+/* webex-solution button toggling function */
+b_func = function() {
+  console.log("webex: toggle hide");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('open')) {
+    cl.remove("open");
+  } else {
+    cl.add("open");
+  }
+}
+
+/* check answers */
+check_func = function() {
+  console.log("webex: check answers");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('unchecked')) {
+    cl.remove("unchecked");
+    this.innerHTML = "Hide Answers";
+  } else {
+    cl.add("unchecked");
+    this.innerHTML = "Show Answers";
+  }
+}
+
+/* function for checking solveme answers */
+solveme_func = function(e) {
+  console.log("webex: check solveme");
+
+  var real_answers = JSON.parse(this.dataset.answer);
+  var my_answer = this.value;
+  var cl = this.classList;
+  if (cl.contains("ignorecase")) {
+    my_answer = my_answer.toLowerCase();
+  }
+  if (cl.contains("nospaces")) {
+    my_answer = my_answer.replace(/ /g, "")
+  }
+
+  if (my_answer == "") {
+    cl.remove("webex-correct");
+    cl.remove("webex-incorrect");
+  } else if (real_answers.includes(my_answer)) {
+    cl.add("webex-correct");
+    cl.remove("webex-incorrect");
+  } else {
+    cl.add("webex-incorrect");
+    cl.remove("webex-correct");
+  }
+
+  // match numeric answers within a specified tolerance
+  if(this.dataset.tol > 0){
+    var tol = JSON.parse(this.dataset.tol);
+    var matches = real_answers.map(x => Math.abs(x - my_answer) < tol)
+    if (matches.reduce((a, b) => a + b, 0) > 0) {
+      cl.add("webex-correct");
+    } else {
+      cl.remove("webex-correct");
+    }
+  }
+
+  // added regex bit
+  if (cl.contains("regex")){
+    answer_regex = RegExp(real_answers.join("|"))
+    if (answer_regex.test(my_answer)) {
+      cl.add("webex-correct");
+    }
+  }
+
+  update_total_correct();
+}
+
+/* function for checking select answers */
+select_func = function(e) {
+  console.log("webex: check select");
+
+  var cl = this.classList
+
+  /* add style */
+  cl.remove("webex-incorrect");
+  cl.remove("webex-correct");
+  if (this.value == "answer") {
+    cl.add("webex-correct");
+  } else if (this.value != "blank") {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+/* function for checking radiogroups answers */
+radiogroups_func = function(e) {
+  console.log("webex: check radiogroups");
+
+  var checked_button = document.querySelector('input[name=' + this.id + ']:checked');
+  var cl = checked_button.parentElement.classList;
+  var labels = checked_button.parentElement.parentElement.children;
+
+  /* get rid of styles */
+  for (i = 0; i < labels.length; i++) {
+    labels[i].classList.remove("webex-incorrect");
+    labels[i].classList.remove("webex-correct");
+  }
+
+  /* add style */
+  if (checked_button.value == "answer") {
+    cl.add("webex-correct");
+  } else {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+window.onload = function() {
+  console.log("webex onload");
+  /* set up solution buttons */
+  var buttons = document.getElementsByTagName("button");
+
+  for (var i = 0; i < buttons.length; i++) {
+    if (buttons[i].parentElement.classList.contains('webex-solution')) {
+      buttons[i].onclick = b_func;
+    }
+  }
+
+  var check_sections = document.getElementsByClassName("webex-check");
+  console.log("check:", check_sections.length);
+  for (var i = 0; i < check_sections.length; i++) {
+    check_sections[i].classList.add("unchecked");
+
+    let btn = document.createElement("button");
+    btn.innerHTML = "Show Answers";
+    btn.classList.add("webex-check-button");
+    btn.onclick = check_func;
+    check_sections[i].appendChild(btn);
+
+    let spn = document.createElement("span");
+    spn.classList.add("webex-total_correct");
+    check_sections[i].appendChild(spn);
+  }
+
+  /* set up webex-solveme inputs */
+  var solveme = document.getElementsByClassName("webex-solveme");
+
+  for (var i = 0; i < solveme.length; i++) {
+    /* make sure input boxes don't auto-anything */
+    solveme[i].setAttribute("autocomplete","off");
+    solveme[i].setAttribute("autocorrect", "off");
+    solveme[i].setAttribute("autocapitalize", "off");
+    solveme[i].setAttribute("spellcheck", "false");
+    solveme[i].value = "";
+
+    /* adjust answer for ignorecase or nospaces */
+    var cl = solveme[i].classList;
+    var real_answer = solveme[i].dataset.answer;
+    if (cl.contains("ignorecase")) {
+      real_answer = real_answer.toLowerCase();
+    }
+    if (cl.contains("nospaces")) {
+      real_answer = real_answer.replace(/ /g, "");
+    }
+    solveme[i].dataset.answer = real_answer;
+
+    /* attach checking function */
+    solveme[i].onkeyup = solveme_func;
+    solveme[i].onchange = solveme_func;
+
+    solveme[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  /* set up radiogroups */
+  var radiogroups = document.getElementsByClassName("webex-radiogroup");
+  for (var i = 0; i < radiogroups.length; i++) {
+    radiogroups[i].onchange = radiogroups_func;
+  }
+
+  /* set up selects */
+  var selects = document.getElementsByClassName("webex-select");
+  for (var i = 0; i < selects.length; i++) {
+    selects[i].onchange = select_func;
+    selects[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  update_total_correct();
+}
+
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copiado");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copiado");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../capitulos/02.html" class="pagination-link" aria-label="Unidad 2. R Markdown">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Unidad 2. R Markdown</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../capitulos/02_reportes_parametrizados.html" class="pagination-link" aria-label="Comunicación de Resultados: Reportes Parametrizados">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Comunicación de Resultados: Reportes Parametrizados</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Developed by Diego Marfetán Molina and Ivan Millanes</p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/ee-unr/aed/edit/main/capitulos/02_Rmarkdown.qmd" class="toc-action"><i class="bi bi-github"></i>Editar esta página</a></li><li><a href="https://github.com/ee-unr/aed/issues/new" class="toc-action"><i class="bi empty"></i>Informar de un problema</a></li><li><a href="https://github.com/ee-unr/aed/blob/main/capitulos/02_Rmarkdown.qmd" class="toc-action"><i class="bi empty"></i>Ver el código</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>

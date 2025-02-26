@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>2&nbsp; Buenas Prácticas para la Visualización de Datos – Análisis Exploratorio de Datos</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../capitulos/01_introduccion_a_ggplot2.html" rel="next">
+<link href="../capitulos/01_teoria_de_la_visualizacion.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-7dc4809af68284bc67e7de96a4bd5e3c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-83123365b82d3e0a114b8a4caf34d831.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Sin resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../webexercises/webex.css">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../capitulos/01.html">Unidad 1. Introducción</a></li><li class="breadcrumb-item"><a href="../capitulos/01_buenas_practicas_visualizacion.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Buenas Prácticas para la Visualización de Datos</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Análisis Exploratorio de Datos</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/ee-unr/aed" title="Ejecutar el código" class="quarto-navigation-tool px-1" aria-label="Ejecutar el código"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Alternar modo oscuro"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bienvenida</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/00_info.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Información general sobre la asignatura</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../capitulos/01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Unidad 1. Introducción</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/01_teoria_de_la_visualizacion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Teoría de la Visualización</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/01_buenas_practicas_visualizacion.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Buenas Prácticas para la Visualización de Datos</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/01_introduccion_a_ggplot2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introducción a <code>ggplot2</code></span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../capitulos/02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Unidad 2. R Markdown</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/02_Rmarkdown.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Comunicación de Resultados: R Markdown</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/02_reportes_parametrizados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Comunicación de Resultados: Reportes Parametrizados</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#principio-de-la-tinta-proporcional" id="toc-principio-de-la-tinta-proporcional" class="nav-link active" data-scroll-target="#principio-de-la-tinta-proporcional"><span class="header-section-number">2.1</span> Principio de la tinta proporcional</a>
+  <ul class="collapse">
+  <li><a href="#tinta-proporcional-usando-áreas" id="toc-tinta-proporcional-usando-áreas" class="nav-link" data-scroll-target="#tinta-proporcional-usando-áreas"><span class="header-section-number">2.1.1</span> Tinta proporcional usando áreas</a></li>
+  </ul></li>
+  <li><a href="#puntos-superpuestos" id="toc-puntos-superpuestos" class="nav-link" data-scroll-target="#puntos-superpuestos"><span class="header-section-number">2.2</span> Puntos superpuestos</a>
+  <ul class="collapse">
+  <li><a href="#transparencia-perturbación" id="toc-transparencia-perturbación" class="nav-link" data-scroll-target="#transparencia-perturbación"><span class="header-section-number">2.2.1</span> Transparencia + Perturbación</a></li>
+  <li><a href="#hexágonos" id="toc-hexágonos" class="nav-link" data-scroll-target="#hexágonos"><span class="header-section-number">2.2.2</span> Hexágonos</a></li>
+  <li><a href="#gráficos-de-contorno" id="toc-gráficos-de-contorno" class="nav-link" data-scroll-target="#gráficos-de-contorno"><span class="header-section-number">2.2.3</span> Gráficos de contorno</a></li>
+  </ul></li>
+  <li><a href="#colores" id="toc-colores" class="nav-link" data-scroll-target="#colores"><span class="header-section-number">2.3</span> Colores</a>
+  <ul class="collapse">
+  <li><a href="#muchos-colores" id="toc-muchos-colores" class="nav-link" data-scroll-target="#muchos-colores"><span class="header-section-number">2.3.1</span> Muchos colores</a></li>
+  <li><a href="#colores-innecesarios" id="toc-colores-innecesarios" class="nav-link" data-scroll-target="#colores-innecesarios"><span class="header-section-number">2.3.2</span> Colores innecesarios</a></li>
+  <li><a href="#escalas-confusas" id="toc-escalas-confusas" class="nav-link" data-scroll-target="#escalas-confusas"><span class="header-section-number">2.3.3</span> Escalas confusas</a></li>
+  <li><a href="#paletas-para-personas-daltónicas" id="toc-paletas-para-personas-daltónicas" class="nav-link" data-scroll-target="#paletas-para-personas-daltónicas"><span class="header-section-number">2.3.4</span> Paletas para personas daltónicas</a></li>
+  <li><a href="#blanco-y-negro" id="toc-blanco-y-negro" class="nav-link" data-scroll-target="#blanco-y-negro"><span class="header-section-number">2.3.5</span> Blanco y negro</a></li>
+  </ul></li>
+  <li><a href="#leyendas" id="toc-leyendas" class="nav-link" data-scroll-target="#leyendas"><span class="header-section-number">2.4</span> Leyendas</a></li>
+  <li><a href="#paneles" id="toc-paneles" class="nav-link" data-scroll-target="#paneles"><span class="header-section-number">2.5</span> Paneles</a>
+  <ul class="collapse">
+  <li><a href="#subgrupos" id="toc-subgrupos" class="nav-link" data-scroll-target="#subgrupos"><span class="header-section-number">2.5.1</span> Subgrupos</a></li>
+  <li><a href="#paneles-para-múltiples-visualizaciones" id="toc-paneles-para-múltiples-visualizaciones" class="nav-link" data-scroll-target="#paneles-para-múltiples-visualizaciones"><span class="header-section-number">2.5.2</span> Paneles para múltiples visualizaciones</a></li>
+  </ul></li>
+  <li><a href="#grillas" id="toc-grillas" class="nav-link" data-scroll-target="#grillas"><span class="header-section-number">2.6</span> Grillas</a></li>
+  <li><a href="#d" id="toc-d" class="nav-link" data-scroll-target="#d"><span class="header-section-number">2.7</span> 3D</a></li>
+  <li><a href="#comentarios-finales" id="toc-comentarios-finales" class="nav-link" data-scroll-target="#comentarios-finales"><span class="header-section-number">2.8</span> Comentarios finales</a>
+  <ul class="collapse">
+  <li><a href="#contexto" id="toc-contexto" class="nav-link" data-scroll-target="#contexto"><span class="header-section-number">2.8.1</span> Contexto</a></li>
+  <li><a href="#tamaño" id="toc-tamaño" class="nav-link" data-scroll-target="#tamaño"><span class="header-section-number">2.8.2</span> Tamaño</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/ee-unr/aed/edit/main/capitulos/01_buenas_practicas_visualizacion.qmd" class="toc-action"><i class="bi bi-github"></i>Editar esta página</a></li><li><a href="https://github.com/ee-unr/aed/issues/new" class="toc-action"><i class="bi empty"></i>Informar de un problema</a></li><li><a href="https://github.com/ee-unr/aed/blob/main/capitulos/01_buenas_practicas_visualizacion.qmd" class="toc-action"><i class="bi empty"></i>Ver el código</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../capitulos/01.html">Unidad 1. Introducción</a></li><li class="breadcrumb-item"><a href="../capitulos/01_buenas_practicas_visualizacion.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Buenas Prácticas para la Visualización de Datos</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Buenas Prácticas para la Visualización de Datos</span></h1>
+<p class="subtitle lead">Análisis Exploratorio de Datos | Licenciatura en Estadística | FCEyE | UNR</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="principio-de-la-tinta-proporcional" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="principio-de-la-tinta-proporcional"><span class="header-section-number">2.1</span> Principio de la tinta proporcional</h2>
+<ul>
+<li><p>En ciertos gráficos, los valores representados se asocian a dos elementos distintos de la visualización empleada. Pensemos por ejemplo en un gráfico de barras: el valor que le corresponde a cada una se puede transmitir a través de la escala del eje Y (o del eje X, si usamos barras horizontales), pero también se transmite visualmente mediante la longitud de la barra.</p></li>
+<li><p>En estos casos, si elegimos iniciar el eje en un valor distinto de 0, la longitud de la barra puede no representar fielmente el valor que le corresponde, creando una inconsistencia en el mensaje transmitido.</p></li>
+<li><p>Ante esta situación, ciertos autores proponen respetar el <strong>“principio de la tinta proporcional”</strong>: las áreas sombreadas en un gráfico deben ser proporcionales a los valores numéricos que representan.</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-1-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>En el panel A del gráfico de arriba, vemos que la altura de la barra correspondiente a CABA (7.97%) es consistente con la altura de la barra correspondiente a Santa Fe (11.3%). La razón entre las alturas de ambas barras, <span class="math inline">\(7.97/11.3 = 0.7\)</span>, coincide con la razón entre los valores numéricos que representan.</p></li>
+<li><p>Esto no ocurre con el gráfico del panel B. En este caso, la razón entre las alturas de las barras resulta (<span class="math inline">\(0.97/4.3 = 0.22\)</span>), muy lejano del 70% correcto. Al modificar el punto inicial del eje, podemos hacer que la <strong>diferencia percibida</strong> entre individuos se exagere considerablemente.</p></li>
+<li><p>En consecuencia, el gráfico del panel B no cumple con el principio de tinta proporcional. La moraleja de esta historia es que <strong>los gráficos de barra deben comenzar su escala en el valor 0</strong>.</p></li>
+<li><p>Algo similar ocurre con los gráficos para series de tiempo, sobre todo si elegimos sombrear el área bajo la línea. Debajo vemos la evolución de la cantidad de nacimientos registrados en la Maternidad Martin de Rosario, entre enero de 2015 y diciembre de 2018 (datos descargados del <a href="https://datos.rosario.gob.ar/">Portal de Datos Abiertos de la Municipalidad de Rosario</a>):</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-2-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Una vez más, vemos que los cambios entre períodos adyacentes se exageran cuando recortamos la escala del eje Y. Si bien hubo una baja pronunciada de nacimientos entre julio y agosto de 2017 (bajaron de 365 a 262, más del 28%), esta diferencia se percibe mucho mayor en el gráfico B que en el gráfico A.</li>
+</ul>
+<section id="tinta-proporcional-usando-áreas" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="tinta-proporcional-usando-áreas"><span class="header-section-number">2.1.1</span> Tinta proporcional usando áreas</h3>
+<ul>
+<li><p>En los ejemplos anteriores, vimos cómo respetar este principio mediante alturas de barras o líneas, es decir, cuando la dimensión a considerar es una sola.</p></li>
+<li><p>Ahora veremos casos donde los valores representados comprenden 2 dimensiones. En particular, analizaremos 2 tipos de gráficos: el de sectores circulares (torta) y el de áreas rectangulares (<em>treemap</em>).</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-3-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-4-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>En estos dos ejemplos se verifica el principio de tinta proporcional: el área ocupada por cada región (ya sean porciones de círculo o rectángulos) con respecto al área total del gráfico, resulta proporcional a su valor correspondiente.</p></li>
+<li><p>Por ejemplo, teniendo en cuenta que el 58% de la población que vive en la región pampeana lo hace en la provincia de Buenos Aires, sabemos que el 58% del área del círculo corresponde a Buenos Aires (ángulo de <span class="math inline">\(0.58\times360º = 211º\)</span>) y también que el rectángulo rojo ocupa un 58% del área total del gráfico <em>treemap</em>.</p></li>
+<li><p>En ambos casos, al no haber un origen de eje desde el cual comenzar a contar, el principio de tinta proporcional es “difícil” de incumplir.</p></li>
+<li><p>Para concluir, mencionamos que los gráficos que utilizan el recurso del área para comparar magnitudes tienden a achicar visualmente las diferencias entre individuos, en comparación a lo que ocurre en un gráfico de barras, donde estas diferencias se magnifican.</p></li>
+<li><p>Veamos una vez más los datos de población para provincias pampeanas, pero a través de un gráfico de barras verticales: la proporción correspondiente a Buenos Aires parece mucho mayor que el 58%:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-5-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="puntos-superpuestos" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="puntos-superpuestos"><span class="header-section-number">2.2</span> Puntos superpuestos</h2>
+<ul>
+<li><p>Cuando queremos armar un diagrama de dispersión a partir de un conjunto de datos muy extenso, usualmente nos encontramos con el problema de la <strong>superposición</strong> de puntos: muchas observaciones con valores similares que se “pisan” unas a otras en el gráfico resultante, ocultando información valiosa.</p></li>
+<li><p>Algo similar suele ocurrir si trabajamos con variables discretas, o cuyos valores hayan sido redondeados: en estos casos, aún con un conjunto de datos pequeño, es común encontrar perfiles idénticos de respuesta que se superponen en un diagrama de dispersión.</p></li>
+<li><p><strong>Ejemplo:</strong> partos en Rosario durante 2015/2018:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-6-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>A continuación veremos algunas maneras de remediar, al menos parcialmente, este problema.</li>
+</ul>
+<section id="transparencia-perturbación" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="transparencia-perturbación"><span class="header-section-number">2.2.1</span> Transparencia + Perturbación</h3>
+<ul>
+<li><p>La más común de las propuestas consiste en utilizar puntos con cierto nivel de transparencia para representar a cada observación. En el código de <code>ggplot2</code> se la define mediante el parámetro <code>alpha</code>, el cual puede tomar valores desde 0 (totalmente transparente, es decir, no se ve el punto) hasta 1 (color sólido, el valor por defecto).</p></li>
+<li><p>De todas maneras, graficar 10 puntos transparentes uno encima de otro no cambia nada: vamos a seguir perdiendo información a la hora de visualizar los datos. Por esto es que se agrega una <strong>perturbación aleatoria</strong> (<em>jitter</em> en inglés) que modifica levemente la posición original de cada punto.</p></li>
+<li><p>Ejemplo: puntos originales (azul) y puntos nuevos (rojo) luego de aplicar una perturbación de a lo sumo 0.25 unidades en cualquier dirección (horizontal y/o vertical).</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-7-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Retomando el ejemplo de los partos, aplicamos una transparencia de 0.25 y un nivel de perturbación de 1 unidad en el sentido del eje X (es decir, sumamos o restamos 1 semana de gestación al valor real):</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-8-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>La apariencia de este gráfico de dispersión es muy diferente en comparación al que obtuvimos originalmente. Si bien el patrón general se mantiene, ahora se aprecia un volumen mucho mayor de datos en la sección central del gráfico (recordemos que estamos analizando más de 20.000 partos; en el gráfico original, se pueden apreciar a simple vista aproximadamente entre 350 y 600 puntos diferentes, dependiendo de la agudeza visual para distinguir diferencias en el sentido vertical).</p></li>
+<li><p>El nivel de perturbación aleatoria que se aplica debe ser lo suficientemente alto como para permitir la separación de puntos, pero al mismo tiempo no ser tan elevado como para “desacomodar” la verdadera relación entre variables.</p></li>
+<li><p><strong>Aclaración:</strong> al ser aleatoria, la perturbación aplicada genera diferentes versiones del mismo gráfico cada vez que se la vuelve a utilizar. Para replicar los resultados, debemos usar una semilla aleatoria específica mediante <code>set.seed()</code>.</p></li>
+</ul>
+</section>
+<section id="hexágonos" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="hexágonos"><span class="header-section-number">2.2.2</span> Hexágonos</h3>
+<ul>
+<li><p>Estos gráficos, también conocidos como “histogramas 2D”, tratan de solucionar el problema de la superposición agrupando observaciones con valores similares en ambas dimensiones.</p></li>
+<li><p>Se divide al plano en múltiples hexágonos regulares de 6 lados, y luego se cuenta la cantidad de observaciones que existen dentro de cada hexágono. A cada uno se le asigna un color de acuerdo al volumen de datos que encierra:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-9-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>La ventaja de este método es que no necesitamos modificar aleatoriamente los datos originales, como ocurre con el caso del <em>jittering</em>; de todas maneras, al agrupar (categorizar) observaciones continuas estamos perdiendo información.</p></li>
+<li><p>En general se lo aplica cuando la solución del <em>jittering</em> no es suficiente, es decir, cuando seguimos viendo “manchas” de puntos que no se distinguen unos de otros. En estos gráficos no existe superposición, ya que cada hexágono posee su lugar correspondiente.</p></li>
+</ul>
+</section>
+<section id="gráficos-de-contorno" class="level3" data-number="2.2.3">
+<h3 data-number="2.2.3" class="anchored" data-anchor-id="gráficos-de-contorno"><span class="header-section-number">2.2.3</span> Gráficos de contorno</h3>
+<ul>
+<li><p>Una última alternativa consiste en crear gráficos de contornos, en los cuales se realiza una estimación de la función de densidad bivariada definida por las variables X e Y. Áreas del plano con igual nivel de densidad estimada se diferencian mediante líneas de contorno, las cuales pueden estar coloreadas usando una paleta secuencial.</p></li>
+<li><p>No todos los conjuntos de datos son adecuados para este tipo de gráficos: para poder apreciarlos mejor, la densidad estimada debe crecer o decrecer lentamente en ambas direcciones.</p></li>
+<li><p>Veamos cómo resulta el gráfico de contornos para el ejemplo de semanas de gestación vs peso del bebé:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-10-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>Con la escala utilizada, áreas de colores “fuertes” (amarillo, verde) se asocian a densidades más elevadas, mientras que las tonalidades azules y violeta corresponden a sectores del plano con menor densidad de puntos.</p></li>
+<li><p>Un conjunto de datos con características que se aprovechan bien para un gráfico de contornos es <code>volcano</code> de R Base. Este dataset posee información topográfica sobre el volcán <strong>Maungawhau</strong> ubicado en Nueva Zelanda.</p></li>
+<li><p>Las líneas de contorno dan una idea del relieve del volcán; en vez de marcar densidad, ahora utilizamos esta herramienta para delimitar zonas con diferentes alturas sobre el nivel del mar:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-11-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="colores" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="colores"><span class="header-section-number">2.3</span> Colores</h2>
+<ul>
+<li><p>Si están bien utilizados, los colores pueden ser herramientas muy efectivas a la hora de mejorar visualizaciones de datos. Al mismo tiempo, una mala elección de colores puede arruinar completamente un gráfico.</p></li>
+<li><p>Sea cual sea la paleta de colores que se use, el esquema elegido debe transmitir un mensaje claro, poseer un objetivo específico y no distraer.</p></li>
+<li><p>A continuación vamos a ver algunos casos de gráficos donde el color está mal empleado.</p></li>
+</ul>
+<section id="muchos-colores" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="muchos-colores"><span class="header-section-number">2.3.1</span> Muchos colores</h3>
+<ul>
+<li><p>Un error común consiste en usar demasiados colores, como en el gráfico que se muestra a continuación. Dado que cada observación (en este caso, provincias argentinas) posee su propia tonalidad, la cantidad total de colores es muy elevada.</p></li>
+<li><p>El trabajo de asociar a cada color con su respectiva provincia es un proceso que requiere de mucha atención, lleva tiempo y es fácil caer en equivocaciones (provincias con colores similares son prácticamente indistinguibles).</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-12-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>Los colores deben ser usados para mejorar gráficos y hacerlos de lectura más fácil, no para crear “acertijos visuales” donde el mensaje que se transmite termina siendo confuso.</p></li>
+<li><p>Como alternativas al gráfico anterior, mostramos dos posibilidades: una donde el color se asocia a otra variable cualitativa, y uno donde se reemplaza el color por etiquetas que brindan la información deseada:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-13-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-14-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>En general, el uso de colores para distinguir entre categorías se recomienda cuando existen pocos grupos a graficar. Por ejemplo, las funciones de R que implementan las paletas creadas por Cynthia Brewer (paquete <code>RColorBrewer</code>) devuelven un mensaje de advertencia si usamos más de 9 colores.</li>
+</ul>
+</section>
+<section id="colores-innecesarios" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="colores-innecesarios"><span class="header-section-number">2.3.2</span> Colores innecesarios</h3>
+<ul>
+<li>A veces, quienes generan gráficos sufren del síndrome de “Art Attack” y agregan detalles y colores que no suman al mensaje, sino más bien que distraen. El gráfico de abajo es un claro ejemplo de ello:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-15-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>En esta visualización, la paleta de colores no aporta información ni ayuda a entender mejor el mensaje transmitido; sólo se usa para darle un toque colorido al gráfico. Si bien esto no es un problema grave en sí mismo, podemos aprovechar el color de maneras más eficientes, por ejemplo para distinguir entre regiones geográficas (como vimos anteriormente) o bien usando una escala secuencial que refuerce la idea de diferencias numéricas entre provincias.</li>
+</ul>
+</section>
+<section id="escalas-confusas" class="level3" data-number="2.3.3">
+<h3 data-number="2.3.3" class="anchored" data-anchor-id="escalas-confusas"><span class="header-section-number">2.3.3</span> Escalas confusas</h3>
+<ul>
+<li><p>Cuando queremos emplear una gama de colores para recrear valores numéricos, es necesario definir paletas que tengan incrementos monótonos entre tonalidades. En general se eligen paletas de un solo color (por ej. verde claro a verde oscuro) o bien grupos de colores de una familia cercana (amarillos, naranjas, rojos).</p></li>
+<li><p>Cuando esto no se cumple, las visualizaciones resultantes son confusas. Veamos un ejemplo usando la paleta arcoíris (<em>rainbow</em>), muy popular en R, pero poco útil en la práctica:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-16-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>Esta escala es circular: los colores ubicados en los extremos (rojo y rosa fuerte) son similares, lo cual resulta confuso ya que están asociados a valores numéricos muy diferentes entre sí. Además, hay regiones de cambios rápidos (ej.: de amarillo a verde) y otras de cambios lentos (ej.: azules), lo cual hace que cantidades equidistantes entre sí pueden estar representadas por colores muy parecidos o muy distintos, dependiendo de la zona del eje en que se ubiquen.</p></li>
+<li><p>Por todos estos motivos, las escalas de colores empleadas para representar valores numéricos deben ser <strong>monótonas y secuenciales</strong>. Por ejemplo:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-17-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Un problema similar al anterior ocurre si usamos colores muy parecidos para representar categorías:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-18-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>En este caso, no sólo hay dificultades porque las tonalidades son similares entre sí, sino que también tenemos una superposición de puntos entre las especies <em>versicolor</em> y <em>virginica</em>. Asignar tonalidades que se distingan unas de otras ayuda a separar visualmente ambas categorías:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-19-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-19"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="paletas-para-personas-daltónicas" class="level3" data-number="2.3.4">
+<h3 data-number="2.3.4" class="anchored" data-anchor-id="paletas-para-personas-daltónicas"><span class="header-section-number">2.3.4</span> Paletas para personas daltónicas</h3>
+<ul>
+<li><p>Si bien no existen estudios concluyentes al respecto, se estima que a nivel mundial, aproximadamente entre un 5% y 10% de los varones poseen algún grado de daltonismo, mientras que entre las mujeres la prevalencia se reduce a menos del 1%. El tipo de daltonismo más común consiste en la incapacidad de distinguir correctamente las tonalidades rojas de las verdes, aunque hay personas con daltonismo asociado a otros colores (azul y verde, etc.).</p></li>
+<li><p>Teniendo en cuenta esto, hay paletas creadas específicamente para que personas con daltonismo puedan distinguir fácilmente los colores empleados. Un ejemplo es la paleta de Okabe-Ito:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-20-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-20"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Como alternativa, tenemos la paleta <strong>PiYG</strong> de Brewer (llamada <em>original</em> abajo). A su lado vemos cómo la visualizarían personas con diferentes tipos de daltonismo; todas las versiones siguen siendo fácilmente distinguibles:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad01/piyg.png" class="lightbox" data-gallery="quarto-lightbox-gallery-21" title="Fuente: Fundamentals of Data Visualization - Claus Wilke"><img src="../imagenes/unidad01/piyg.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%" alt="Fuente: Fundamentals of Data Visualization - Claus Wilke"></a></p>
+</figure>
+</div>
+<figcaption>Fuente: Fundamentals of Data Visualization - Claus Wilke</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>
+</p>
+<ul>
+<li>Si usamos otras paletas, lo anterior puede no ocurrir y la diferencia entre cada grupo queda oculta para la persona con daltonismo:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad01/blue-green-cvd-sim-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-22" title="Fuente: Fundamentals of Data Visualization - Claus Wilke"><img src="../imagenes/unidad01/blue-green-cvd-sim-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%" alt="Fuente: Fundamentals of Data Visualization - Claus Wilke"></a></p>
+</figure>
+</div>
+<figcaption>Fuente: Fundamentals of Data Visualization - Claus Wilke</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>
+</p>
+<ul>
+<li>Por lo tanto, si nuestros gráficos van a ser consumidos por un público extenso, es buena idea emplear paletas que tengan en cuenta estos detalles.</li>
+</ul>
+</section>
+<section id="blanco-y-negro" class="level3" data-number="2.3.5">
+<h3 data-number="2.3.5" class="anchored" data-anchor-id="blanco-y-negro"><span class="header-section-number">2.3.5</span> Blanco y negro</h3>
+<ul>
+<li><p>Siempre que el contexto lo permita, debemos tratar de <strong>evitar crear gráficos en blanco y negro</strong>. Rellenar figuras (boxplots, barras, etc.) con algún color sólido hace que estas se destaquen mejor contra el fondo del gráfico, permitiendo una interpretación más inmediata de las cantidades representadas y, de paso, convirtiendo la visualización en un objeto visualmente más agradable.</p></li>
+<li><p>Claus Wilke argumenta que la costumbre de no usar colores proviene de los primeros software de visualización de datos, los cuales intentaban emular de manera precisa el aspecto de los gráficos hechos <em>a mano</em> por los científicos. En estos gráficos los colores muchas veces brillaban por su ausencia, o bien eran usados para crear un patrón de relleno no sólido (a rayas, con puntos, etc.).</p></li>
+<li><p>Por otro lado, debemos tener en cuenta que durante mucho tiempo la comunicación de la ciencia se hizo casi exclusivamente en formato papel, y todos sabemos que imprimir a color es siempre más costoso que hacerlo en blanco y negro. Hoy en día, donde la gran mayoría de los gráficos existen de manera digital, no hay justificación para evitar el uso de colores, más allá de un criterio minimalista que puede ser empleado por razones puramente estéticas.</p></li>
+<li><p>A continuación vamos a ver algunos ejemplos de gráficos sin color y sus potenciales problemas.</p></li>
+<li><p><strong>Gráfico de barras:</strong> las barras blancas sobre fondo blanco pueden llegar a crear una ilusión óptica que perjudica la cómoda visualización del gráfico:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-23-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-23"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>Densidades:</strong> la superposición de las curvas y la necesidad de diferenciar grupos hacen necesaria la presencia de colores. Si tenemos que limitarnos al blanco y negro, debemos recurrir a estéticas no muy efectivas (como tipo de línea) para identificar a cada grupo. Algo similar ocurre con los gráficos de dispersión: si no podemos asociar categorías con colores, deberemos conformarnos con usar diferentes formas para cada una.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-24-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-24"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="leyendas" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="leyendas"><span class="header-section-number">2.4</span> Leyendas</h2>
+<ul>
+<li><p>Siempre que en nuestros gráficos tengamos estéticas asociadas a colores, formas, tamaños o tipos de línea, necesitamos incluir leyendas (o escalas) que aclaren cómo esa estética se relaciona con la variable que representa.</p></li>
+<li><p>A continuación vemos un gráfico que muestra la evolución del PBI en 4 países diferentes. Los datos fueron extraídos del paquete <code>gapminder</code>:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-25-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-25"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>¿Están de acuerdo con el orden alfabético presente en la leyenda de arriba? ¿Podría mejorarse de alguna manera este gráfico, haciendo que sea más fácil de entender?</p></li>
+<li><p>En casos donde hay un orden distinguible entre los valores representados, y la variable categórica asociada es nominal (sin orden intrínseco), se recomienda reordenar los niveles de la leyenda de manera que coincidan con el orden numérico. De esta manera, la relación que nuestro cerebro aplica para asociar colores con categorías es mucho más inmediata y natural:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-26-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-26"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Por otro lado, las leyendas deben respetar el orden de las variables categóricas ordinales:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-27-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-27"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>Muchas veces las leyendas pueden ser reemplazadas por textos o anotaciones que se ubican dentro del gráfico. Esto puede deberse a cuestiones de espacio (en general las leyendas ocupan mucho lugar y es necesario achicar el tamaño destinado al gráfico en sí mismo), de estética o bien para remarcar ciertas diferencias entre grupos de observaciones.</p></li>
+<li><p>Ejemplo para la evolución del PBI:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-28-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-28"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<!-- - Ejemplo de leyenda (con descripción incluida) que se ubica dentro del gráfico para reforzar la separación entre grupos de observaciones: -->
+<!-- - Cuando la leyenda se asocia a valores numéricos, es buena idea ubicarla a lo largo del eje correspondiente, creando una correspondencia entre eje y paleta: -->
+</section>
+<section id="paneles" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="paneles"><span class="header-section-number">2.5</span> Paneles</h2>
+<ul>
+<li><p>Cuando los conjuntos de datos que estamos analizando contienen un gran volumen de información, tratar de visualizar muchos aspectos en unos pocos gráficos puede ser contraproducente. En general, las visualizaciones resultantes están muy cargadas de información y son complejas de interpretar.</p></li>
+<li><p>Para evitar este inconveniente podemos usar <strong>paneles</strong> que repliquen los gráficos construidos en distintos subgrupos de la población, o bien que estructuren de forma ordenada los análisis exploratorios llevados a cabo sobre cada variable.</p></li>
+</ul>
+<section id="subgrupos" class="level3" data-number="2.5.1">
+<h3 data-number="2.5.1" class="anchored" data-anchor-id="subgrupos"><span class="header-section-number">2.5.1</span> Subgrupos</h3>
+<ul>
+<li><p>Sea cual sea el gráfico elegido para representar las variables de nuestro conjunto de datos, muchas veces resulta interesante ver cómo las relaciones entre estas variables dependen (o no) de diferentes subgrupos de la población que estamos estudiando.</p></li>
+<li><p>Si la cantidad de subgrupos es moderadamente elevada, incluir todas las comparaciones en un solo lugar puede ser una mala idea. Los paneles nos ayudan a emprolijar y hacer más entendibles nuestros gráficos, replicando los análisis y ubicándolos en una grilla.</p></li>
+<li><p>Veamos un ejemplo donde creamos diagramas de dispersión para las variables PBI per cápita y esperanza de vida de varios países, con un ajuste LOESS para cada año por separado. Este tipo de gráfico sería prácticamente imposible de armar en una figura que no use paneles (también llamados <em>trellis plots</em> o <em>faceting</em> en la literatura):</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-31-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-29"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Ejemplos comunes de <em>faceting</em> también se dan con histogramas, curvas de densidad, boxplots, gráficos de barra, etc. A continuación vemos boxplots de peso del recién nacido para subgrupos de la población conformados por el cruce entre 2 variables: tipo de parto (columnas) y semanas de gestación (filas):</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-32-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-30"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>Si bien podríamos haber armado un único gráfico con 9 cajas, una por cada subgrupo, la ubicación espacial en una grilla como la de arriba facilita la interpretación de los resultados.</p></li>
+<li><p>Lo importante en este tipo de visualizaciones es <strong>mantener constante las escalas de los ejes</strong> a lo largo de todos los paneles. Adaptar los límites a cada subgrupo en particular es totalmente engañoso, y debe ser evitado a toda costa.</p></li>
+<li><p>También es importante que la ubicación de los gráficos en la grilla conserve un orden lógico. En el primer caso analizado, los años se suceden en orden ascendente de izquierda a derecha y de arriba hacia abajo. Si bien existen otras maneras de ordenarlos, estamos acostumbrados a que el panel de arriba a la izquierda sea el primero y el de abajo a la derecha, el último en nuestra recorrida visual. Lo mismo aplica para variables categóricas ordinales, como en el caso de la variable <em>edad_gestacional</em> del dataset de partos.</p></li>
+</ul>
+</section>
+<section id="paneles-para-múltiples-visualizaciones" class="level3" data-number="2.5.2">
+<h3 data-number="2.5.2" class="anchored" data-anchor-id="paneles-para-múltiples-visualizaciones"><span class="header-section-number">2.5.2</span> Paneles para múltiples visualizaciones</h3>
+<ul>
+<li><p>El otro uso de los paneles consiste en ver muchos gráficos distintos, independientes entre sí, en un solo lugar. En estos casos es vital que los colores, tamaños y apariencia general sean homogéneas, para que ningún panel en particular se robe la atención. Si asignamos ciertos colores a determinados subgrupos de la población, debemos mantener ese <em>mapeo</em> a lo largo de todos los gráficos presentados.</p></li>
+<li><p>Ejemplo: boxplots para peso del recién nacido y evolución temporal de la cantidad de partos, según sexo del bebé:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-33-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-31"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>El gráfico de arriba tiene varios problemas: las estéticas no son compatibles (uno usa un fondo gris con marcas de eje azules, mientras que el otro posee un fondo blanco con letras negras); además, los colores asignados a cada nivel no se mantienen constantes y pueden llegar a confundir al público, los tamaños no son uniformes, etc.</p></li>
+<li><p>Debajo vemos una versión mejorada:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-34-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-32"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Cuando la cantidad de información visualizada es abundante, resulta importante aclarar bien qué variable(s) estamos viendo en cada panel. En este sentido, el paquete <code>GGally</code> es de gran utilidad, a través de su función <code>ggpairs()</code>:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-35-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-33"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="grillas" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="grillas"><span class="header-section-number">2.6</span> Grillas</h2>
+<ul>
+<li><p>Llamamos <strong>grillas</strong> a las rectas perpendiculares a los ejes que se dibujan en el fondo del gráfico para facilitar la interpretación del mismo, específicamente, a la hora de comparar valores entre diferentes observaciones o grupos representados.</p></li>
+<li><p>Si bien constituyen un elemento muy importante de varios tipos de gráficos, muchas veces no son empleadas debidamente, o ni siquiera se las incluye. A continuación veremos algunos ejemplos de buenos y malos usos de grillas.</p></li>
+<li><p>Retomando el ejemplo de evolución del PBI per cápita para ciertos países, veamos 4 maneras diferentes de aplicar grillas:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-36-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-34"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>Analicemos este gráfico:</p>
+<ul>
+<li><p><strong>Panel (a):</strong> no se incluye grilla. Comparar valores se hace visualmente dificultoso. El gráfico en sí mismo no es “incorrecto”, pero se puede mejorar.</p></li>
+<li><p><strong>Panel (b):</strong> se incluye grilla, pero es demasiado llamativa y opaca los datos de interés. El grosor y la tonalidad de la grilla no deben competir con los usados para los elementos principales del gráfico.</p></li>
+<li><p><strong>Panel (c):</strong> esta es la opción preferida. Se incluye una grilla en tono gris claro que facilita la interpretación de los valores mostrados en el gráfico, sin crear una distracción como en el panel (b).</p></li>
+<li><p><strong>Panel (d):</strong> si bien los colores de la grilla son válidos, el problema en este caso es la cantidad innecesaria de líneas utilizadas. Usar una grilla demasiado densa también distrae y puede llegar a ocultar el mensaje principal del gráfico.</p></li>
+</ul></li>
+</ul>
+<p>
+</p>
+<ul>
+<li><p>Un caso especial del uso de grillas se da cuando existe un valor “base” o “neutro” que sirve de punto de comparación para los valores representados en el gráfico.</p></li>
+<li><p>Por ejemplo, veamos el cambio porcentual en el PBI de Argentina para el período 1957-2007. Es natural tratar de ver si entre una medición y la siguiente, el PBI subió (variación mayor a 0) o bajó (menor a 0). Además de trazar la grilla original, se dibuja una línea recta horizontal que corta el eje Y a la altura del 0, reforzando su ubicación y permitiendo una interpretación más directa del gráfico.</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-37-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-35"><img src="01_buenas_practicas_visualizacion_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Algo similar hacemos cuando, en un diagrama de dispersión, se espera que ambas variables sean iguales: en vez de trazar una recta perpendicular a alguno de los ejes, dibujando la recta identidad que demarca la relación <span class="math inline">\(x=y\)</span>. Uno de los ejemplos más comunes de esto son los gráficos de cuantiles (<em>q-q plots</em>).</li>
+</ul>
+</section>
+<section id="d" class="level2" data-number="2.7">
+<h2 data-number="2.7" class="anchored" data-anchor-id="d"><span class="header-section-number">2.7</span> 3D</h2>
+<ul>
+<li><p>Uno de los peores males que aquejan el mundo de la visualización de datos, junto con los gráficos de torta, son los gráficos 3D de datos originalmente 2D.</p></li>
+<li><p>Excel es una herramienta que permite hacer este tipo de monstruosidad de manera relativamente sencilla, y su uso se ha extendido de tal manera que hoy en día es muy común ver gráficos 3D en contextos supuestamente serios (finanzas, academia, etc.).</p></li>
+<li><p>Las críticas hacia el uso de efectos 3D son muchas y están bien fundamentadas. Veamos las principales:</p>
+<ul>
+<li><strong>No aportan nada nuevo</strong>. Un gráfico de torta o barras 3D muestra exactamente la misma información que su versión original en 2D. Su uso es puramente “estético”.</li>
+<li>La mayoría de las veces <strong>engañan y confunden</strong>. El uso de estos efectos distorsiona las cantidades reales representadas en el gráfico, y el mensaje final depende del ángulo elegido para la visualización.</li>
+</ul></li>
+</ul>
+<p>
+</p>
+<ul>
+<li>Veamos cómo afecta el 3D a un gráfico de torta: a medida que rotamos el ángulo desde el cual vemos el gráfico, la porción más pequeña (25%) puede volverse artificialmente grande, enviando un mensaje contradictorio al espectador del gráfico.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad01/torta3d.png" class="lightbox" data-gallery="quarto-lightbox-gallery-36" title="Fuente: Fundamentals of Data Visualization - Claus Wilke"><img src="../imagenes/unidad01/torta3d.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%" alt="Fuente: Fundamentals of Data Visualization - Claus Wilke"></a></p>
+</figure>
+</div>
+<figcaption>Fuente: Fundamentals of Data Visualization - Claus Wilke</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><br></p>
+<ul>
+<li><p>Sin embargo, lo peor está por venir: veamos ahora cómo impacta el efecto 3D sobre un gráfico de barras.</p></li>
+<li><p>La siguiente figura fue construida usando Excel. Los datos originales representan tres grupos con los siguientes valores: 10, 5 y 12 (panel de la izquierda). La versión por defecto que ofrece Excel cuando se elige un gráfico 3D para esos mismos datos se muestra en el panel derecho.</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad01/barras3d.png" class="lightbox" data-gallery="quarto-lightbox-gallery-37"><img src="../imagenes/unidad01/barras3d.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>¿Por qué la altura de cada barra no coincide con su valor correspondiente? ¿Por qué el software más popular para almacenamiento de datos construye por defecto gráficos literalmente erróneos? <strong>¿Por qué? No hay por qué.</strong></p></li>
+<li><p>No vamos a perder más tiempo de clase mirando figuras con efetos 3D innecesarios. Consideramos que estos dos ejemplos deberían ser suficientes para desmotivar a cualquier persona que esté considerando el uso de este tipo de gráficos.</p></li>
+</ul>
+</section>
+<section id="comentarios-finales" class="level2" data-number="2.8">
+<h2 data-number="2.8" class="anchored" data-anchor-id="comentarios-finales"><span class="header-section-number">2.8</span> Comentarios finales</h2>
+<ul>
+<li>Existen muchísimos otros detalles de un gráfico que pueden salir mal, pero dedicarle a cada uno su propia sección nos llevaría demasiado tiempo. A continuación vamos a mencionar 2 de los más importantes:</li>
+</ul>
+<section id="contexto" class="level3" data-number="2.8.1">
+<h3 data-number="2.8.1" class="anchored" data-anchor-id="contexto"><span class="header-section-number">2.8.1</span> Contexto</h3>
+<ul>
+<li><p>Todo gráfico debe estar <strong>bien contextualizado</strong>. Esto implica que debemos asegurarnos de incluir un título general, títulos de los ejes y leyendas, escalas utilizadas, unidades de medida de las variables representadas, etc. De ser necesario, también debemos indicar el período temporal analizado, las fuentes de información, y cualquier otro detalle importante que ayude a contextualizar mejor el mensaje que queremos transmitir.</p></li>
+<li><p>Este último consejo se vuelve mucho más importante cuando la figura se publica de manera independiente o solitaria: no es lo mismo contextualizar un gráfico incluido en el anexo de una tesis, donde las características de los datos ya han sido descritas detalladamente, que hacerlo cuando el medio de comunicación empleado es alguna red social.</p></li>
+</ul>
+</section>
+<section id="tamaño" class="level3" data-number="2.8.2">
+<h3 data-number="2.8.2" class="anchored" data-anchor-id="tamaño"><span class="header-section-number">2.8.2</span> Tamaño</h3>
+<ul>
+<li><p>Cuando creamos una visualización debemos cuidar que el tamaño de los textos, puntos, barras o formas utilizadas <strong>sean legibles</strong> y también <strong>uniformes</strong>. Puede ser confuso (y hasta molesto) analizar un gráfico donde la etiqueta del eje X está escrita en un tamaño de fuente mayor que el título principal, o bien cuando diferentes ejes poseen diferentes tamaños de texto.</p></li>
+<li><p>Con respecto al tamaño elegido, debemos pensar en qué lugar o por qué medio se publicarán los gráficos que estamos construyendo: ¿el público accederá a estos gráficos a través de un medio digital (PC, celular, etc.) en el cual es posible hacer zoom, o el resultado final se verá impreso en papel?</p></li>
+<li><p>Si el gráfico es estático, es muy importante chequear que el tamaño de letra empleado se traslade bien al papel o documento de salida; caso contrario el gráfico será ininteligible y el mensaje se pierde. Con respecto a esto, debemos tener en cuenta que el tamaño de las letras de un gráfico como se ven en RStudio no necesariamente va a coincidir con el tamaño de las letras luego de la exportación de la imagen.</p></li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+
+/* update total correct if #webex-total_correct exists */
+update_total_correct = function() {
+  console.log("webex: update total_correct");
+
+  var t = document.getElementsByClassName("webex-total_correct");
+  for (var i = 0; i < t.length; i++) {
+    p = t[i].parentElement;
+    var correct = p.getElementsByClassName("webex-correct").length;
+    var solvemes = p.getElementsByClassName("webex-solveme").length;
+    var radiogroups = p.getElementsByClassName("webex-radiogroup").length;
+    var selects = p.getElementsByClassName("webex-select").length;
+
+    t[i].innerHTML = correct + " of " + (solvemes + radiogroups + selects) + " correct";
+  }
+}
+
+/* webex-solution button toggling function */
+b_func = function() {
+  console.log("webex: toggle hide");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('open')) {
+    cl.remove("open");
+  } else {
+    cl.add("open");
+  }
+}
+
+/* check answers */
+check_func = function() {
+  console.log("webex: check answers");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('unchecked')) {
+    cl.remove("unchecked");
+    this.innerHTML = "Hide Answers";
+  } else {
+    cl.add("unchecked");
+    this.innerHTML = "Show Answers";
+  }
+}
+
+/* function for checking solveme answers */
+solveme_func = function(e) {
+  console.log("webex: check solveme");
+
+  var real_answers = JSON.parse(this.dataset.answer);
+  var my_answer = this.value;
+  var cl = this.classList;
+  if (cl.contains("ignorecase")) {
+    my_answer = my_answer.toLowerCase();
+  }
+  if (cl.contains("nospaces")) {
+    my_answer = my_answer.replace(/ /g, "")
+  }
+
+  if (my_answer == "") {
+    cl.remove("webex-correct");
+    cl.remove("webex-incorrect");
+  } else if (real_answers.includes(my_answer)) {
+    cl.add("webex-correct");
+    cl.remove("webex-incorrect");
+  } else {
+    cl.add("webex-incorrect");
+    cl.remove("webex-correct");
+  }
+
+  // match numeric answers within a specified tolerance
+  if(this.dataset.tol > 0){
+    var tol = JSON.parse(this.dataset.tol);
+    var matches = real_answers.map(x => Math.abs(x - my_answer) < tol)
+    if (matches.reduce((a, b) => a + b, 0) > 0) {
+      cl.add("webex-correct");
+    } else {
+      cl.remove("webex-correct");
+    }
+  }
+
+  // added regex bit
+  if (cl.contains("regex")){
+    answer_regex = RegExp(real_answers.join("|"))
+    if (answer_regex.test(my_answer)) {
+      cl.add("webex-correct");
+    }
+  }
+
+  update_total_correct();
+}
+
+/* function for checking select answers */
+select_func = function(e) {
+  console.log("webex: check select");
+
+  var cl = this.classList
+
+  /* add style */
+  cl.remove("webex-incorrect");
+  cl.remove("webex-correct");
+  if (this.value == "answer") {
+    cl.add("webex-correct");
+  } else if (this.value != "blank") {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+/* function for checking radiogroups answers */
+radiogroups_func = function(e) {
+  console.log("webex: check radiogroups");
+
+  var checked_button = document.querySelector('input[name=' + this.id + ']:checked');
+  var cl = checked_button.parentElement.classList;
+  var labels = checked_button.parentElement.parentElement.children;
+
+  /* get rid of styles */
+  for (i = 0; i < labels.length; i++) {
+    labels[i].classList.remove("webex-incorrect");
+    labels[i].classList.remove("webex-correct");
+  }
+
+  /* add style */
+  if (checked_button.value == "answer") {
+    cl.add("webex-correct");
+  } else {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+window.onload = function() {
+  console.log("webex onload");
+  /* set up solution buttons */
+  var buttons = document.getElementsByTagName("button");
+
+  for (var i = 0; i < buttons.length; i++) {
+    if (buttons[i].parentElement.classList.contains('webex-solution')) {
+      buttons[i].onclick = b_func;
+    }
+  }
+
+  var check_sections = document.getElementsByClassName("webex-check");
+  console.log("check:", check_sections.length);
+  for (var i = 0; i < check_sections.length; i++) {
+    check_sections[i].classList.add("unchecked");
+
+    let btn = document.createElement("button");
+    btn.innerHTML = "Show Answers";
+    btn.classList.add("webex-check-button");
+    btn.onclick = check_func;
+    check_sections[i].appendChild(btn);
+
+    let spn = document.createElement("span");
+    spn.classList.add("webex-total_correct");
+    check_sections[i].appendChild(spn);
+  }
+
+  /* set up webex-solveme inputs */
+  var solveme = document.getElementsByClassName("webex-solveme");
+
+  for (var i = 0; i < solveme.length; i++) {
+    /* make sure input boxes don't auto-anything */
+    solveme[i].setAttribute("autocomplete","off");
+    solveme[i].setAttribute("autocorrect", "off");
+    solveme[i].setAttribute("autocapitalize", "off");
+    solveme[i].setAttribute("spellcheck", "false");
+    solveme[i].value = "";
+
+    /* adjust answer for ignorecase or nospaces */
+    var cl = solveme[i].classList;
+    var real_answer = solveme[i].dataset.answer;
+    if (cl.contains("ignorecase")) {
+      real_answer = real_answer.toLowerCase();
+    }
+    if (cl.contains("nospaces")) {
+      real_answer = real_answer.replace(/ /g, "");
+    }
+    solveme[i].dataset.answer = real_answer;
+
+    /* attach checking function */
+    solveme[i].onkeyup = solveme_func;
+    solveme[i].onchange = solveme_func;
+
+    solveme[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  /* set up radiogroups */
+  var radiogroups = document.getElementsByClassName("webex-radiogroup");
+  for (var i = 0; i < radiogroups.length; i++) {
+    radiogroups[i].onchange = radiogroups_func;
+  }
+
+  /* set up selects */
+  var selects = document.getElementsByClassName("webex-select");
+  for (var i = 0; i < selects.length; i++) {
+    selects[i].onchange = select_func;
+    selects[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  update_total_correct();
+}
+
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copiado");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copiado");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../capitulos/01_teoria_de_la_visualizacion.html" class="pagination-link" aria-label="Teoría de la Visualización">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Teoría de la Visualización</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../capitulos/01_introduccion_a_ggplot2.html" class="pagination-link" aria-label="Introducción a `ggplot2`">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introducción a <code>ggplot2</code></span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Developed by Diego Marfetán Molina and Ivan Millanes</p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/ee-unr/aed/edit/main/capitulos/01_buenas_practicas_visualizacion.qmd" class="toc-action"><i class="bi bi-github"></i>Editar esta página</a></li><li><a href="https://github.com/ee-unr/aed/issues/new" class="toc-action"><i class="bi empty"></i>Informar de un problema</a></li><li><a href="https://github.com/ee-unr/aed/blob/main/capitulos/01_buenas_practicas_visualizacion.qmd" class="toc-action"><i class="bi empty"></i>Ver el código</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>
