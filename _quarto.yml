@@ -12,7 +12,6 @@ book:
   search: true
   repo-url: https://github.com/ee-unr/aed
   repo-actions: [edit, issue, source]
-  downloads: [pdf]
   page-footer: "Developed by Diego Marfetán Molina and Ivan Millanes"
   back-to-top-navigation: true
   chapters:
@@ -20,7 +19,7 @@ book:
     - capitulos/00_info.qmd
     - part: capitulos/01.qmd
       chapters:
-        - capitulos/01_a_intro.qmd
+        - capitulos/01_teoria_de_la_visualizacion.qmd
     # - part: capitulos/02.qmd
     #   chapters:
     #     - capitulos/02_a_algo.qmd
@@ -49,14 +48,3 @@ format:
     fig-dpi: 300
     fig-show: hold
     fig-align: center
-  pdf:
-    documentclass: scrbook
-    latex-output-dir: _book
-    output-file: "aed"
-    keep-tex: false
-    colorlinks: true
-    include-in-header: estilo/preambulo.tex
-    include-before-body: estilo/cuerpo.tex
-    template-partials:
-      - estilo/title.tex
-    
