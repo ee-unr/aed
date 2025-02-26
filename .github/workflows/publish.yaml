@@ -23,7 +23,7 @@ jobs:
           r-version: '4.4.1'
 
       - name: Install units Package Dependency
-        run: sudo apt install -y libudunits2-dev libproj-dev libgdal-dev
+        run: sudo apt install -y libudunits2-dev libproj-dev libgdal-dev libglpk-dev
 
       - name: Install R Dependencies
         uses: r-lib/actions/setup-renv@v2
