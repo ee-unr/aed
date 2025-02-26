@@ -1,0 +1,482 @@
+---
+title: "Georreferencia"
+subtitle: "Análisis Exploratorio de Datos | Licenciatura en Estadística | FCEyE | UNR"
+lang: es
+knitr:
+  opts_chunk: 
+    echo: true
+    message: false
+    warning: false
+    fig.align: center
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = "center", warning = F, message = F)
+```
+
+## Introducción
+
+* La **Georreferencia** es una disciplina ligada al análisis de datos recolectados a nivel geográfico. Esta característica implica que la información que poseemos puede visualizarse de manera más eficiente desde una perspectiva espacial, es decir, representando los datos en **mapas** y no mediante gráficos, tablas u otros instrumentos.
+
+* Ejemplo: deseamos representar los casos confirmados de Covid-19 en Argentina. Existen dos enfoques desde los cuales se pueden analizar estos datos geográficamente:
+
+    * **Mapas Coropléticos** (*choropleth maps*): utilizan paletas de colores para representar una variable a nivel geográfico, asignando un color a cada unidad representada (país, provincia, departamento, etc.) en base a los valores que le corresponden. Las variables de interés en estos casos pueden ser de tipo cualitativo (por ej. nivel de riesgo epidemiológico) o bien cuantitativo (cantidad de casos, tasa de positividad en tests de Covid-19, etc.). Bajo este enfoque, lo geográfico se impone únicamente como medio de visualización y no como variable de interés primario.
+
+  * **Marcadores**: consiste en señalar coordenadas específicas mediante un punto o marcador, para mostrar dónde ocurren los eventos que estamos estudiando. En estos casos el interés está puesto en visualizar qué tan comunes son ciertos eventos y cómo se ubican espacialmente. En el ejemplo de Covid-19, podemos marcar los domicilios de las personas contagiadas para encontrar focos de infección a partir de la distribución geográfica de los puntos.
+
+
+* En esta clase repasaremos casos de aplicación de ambos enfoques.
+
+### Proyecciones
+
+* Un concepto fundamental a la hora de trabajar con este tipo de datos es el de **proyección geográfica**. Todo punto que se encuentre sobre un plano puede representarse mediante coordenadas, consistentes en un par de números $(x,y)$ que miden la distancia de ese punto con respecto al origen.
+
+* La forma en que se calculan las distancias, y la ubicación del origen, dependen del Sistema de Referencia de Coordenadas (**CRS**) utilizado. El CRS más común es **WGS84**, el cual representa a la Tierra como un elipsoide y utiliza las siguientes definiciones:
+
+    * **Latitud:** coordenada que especifica la ubicación norte-sur de cualquier punto sobre la tierra. Varía desde 90° en el polo norte hasta -90° en el polo sur. A las líneas de latitud constante se las llama "paralelos". La latitud 0° corresponde a línea del Ecuador, la cual divide al planeta en los hemisferios norte y sur.
+    * **Longitud:** coordenada que especifica la ubicación este-oeste de cualquier punto sobre la tierra. A las líneas de longitud constante se las llama "meridianos". La longitud 0° corresponde al meridiano de Greenwich, en Inglaterra; los restantes meridianos se miden hasta el 180° (dirección este) y -180° (dirección oeste), uniéndose sobre la Línea Internacional del Cambio de Fecha (anti-meridiano), ubicada sobre el océano Pacífico.
+
+
+- Dado que la tierra es esférica, representar latitudes y longitudes usando ejes cartesianos no es recomendable, ya que distorsiona mucho las áreas, formas y distancias. Para sobrellevar este problema se aplican proyecciones no lineales que tratan de minimizar estas distorsiones (no es posible conservar todas las propiedades al mismo tiempo; por ejemplo, si respetamos las distancias reales, las formas y las superficies de las regiones se distorsionan).
+
+- Debajo se muestran algunos ejemplos de proyecciones:
+
+<p></p>
+
+```{r, echo=FALSE, out.width="75%"}
+knitr::include_graphics("../imagenes/unidad03/worldmap-four-projections-1.png")
+```
+
+- Una de las proyecciones más populares es la de Mercator. Si bien fue utilizada por Google Maps hasta 2018, posee grandes distorsiones en cuanto al área de las regiones representadas. Por ejemplo, vemos a Groenlandia aproximadamente del mismo tamaño que América del Sur, cuando en realidad sus superficies son de aproximadamente 2 y 18 millones de $km^2$ respectivamente:
+
+```{r, echo=FALSE, out.width="50%"}
+knitr::include_graphics("../imagenes/unidad03/mercator.jpeg")
+```
+
+### Georreferencia con R
+
+* En los últimos años se produjo un *boom* en el uso de Sistemas de Información Geográfica (SIGs) para el análisis de información espacial. Si bien programas como ArcGIS o QGIS son muy populares en este contexto, autores como [Brunsdon & Comber (2019)](https://link.springer.com/article/10.1007/s10109-020-00334-2) y [Lovelace et al. (2019)](https://geocompr.robinlovelace.net/intro.html) remarcan que la **reproducibilidad** de los análisis se ve comprometida debido a las interfaces gráficas utilizadas por esos productos.
+
+* Puntualmente, las interfaces *amigables para el usuario* (*user-friendly*), con sus menús y opciones clickeables, atentan contra el trabajo colaborativo y la replicación del proceso de investigación. Por este motivo creemos que es importante trabajar estos datos desde la perspectiva del lenguaje R.
+
+* El ecosistema de R ha sido un terreno extremadamente fértil para el desarrollo y crecimiento de paquetes ligados al análisis geocomputacional. En este [link](https://cran.r-project.org/web/views/Spatial.html) se listan unos 200 paquetes referidos a esta temática, entre los que se destacan `sp`, `gstat`, `rgdal`, `stars`, `maptools`, `spatial`, `raster`, `mapview` y `RgoogleMaps`, entre tantos otros.
+
+* En particular, nosotros emplearemos los siguientes paquetes a lo largo de la clase:
+
+```{r}
+#Mapas
+library(sf)
+library(tmap)
+library(leaflet)
+library(spData)
+
+#Lectura y manipulación de datos
+library(readxl)
+library(readr)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+library(htmltools)
+```
+
+* Este apunte está organizado de la siguiente manera:
+
+    * Comenzaremos nuestro recorrido repasado los recursos disponibles online para descarga de mapas.
+    * Luego nos centraremos en el paquete `sf`, el cual nos brinda la posibilidad de manipular datos geoespaciales, integrándolo con `ggplot2` para producir mapas estáticos.
+    * Por último, estudiaremos las funciones más importantes de `tmap` y `leaflet`, capaces de generar mapas dinámicos que le otorgan un salto de calidad a nuestro trabajo.
+
+## Buscando Mapas en la Web
+
+* Existen muchas páginas desde donde podemos descargar archivos con información geoespacial para utilizar en nuestros mapas. A continuación repasaremos algunas de ellas.
+
+### INDEC
+
+* En la [web del Instituto Nacional de Estadística y Censos](https://www.indec.gob.ar/indec/web/Institucional-Indec-Codgeo) (**INDEC**) de la República Argentina hay una sección dedicada a la Cartografía. Desde allí podemos descargar información con distintos niveles de jerarquía o subdivisiones:
+
+    * Mapas provinciales
+    * Mapas departamentales
+    * Localidades censales
+    * Radios censales
+    * Etc.
+
+<p></p>
+
+* En general, las divisiones geográficas empleadas por INDEC resultan de interés a la hora de analizar datos recolectados durante los Censos de población, o bien datos pertenecientes a la Encuesta Permanente de Hogares (EPH).
+
+### IGN
+
+* El **Instituto Geográfico Nacional** que depende del Ministerio de Defensa de la República Argentina es la fuente de datos oficial en todo lo que respecta a la cartografía de nuestro país.
+
+* [Su página web](https://www.ign.gob.ar/) ofrece una gran variedad de recursos, entre los que se incluyen mapas de todo tipo, imágenes satelitales, capas de información geoespacial, etc.
+
+* El archivo de formato *shapefile* que usaremos en los ejemplos presentados a continuación puede descargarse desde la web del IGN. Posee un peso de aproximadamente 34 MB y contiene los límites de todas las subdivisiones administrativas (departamentos o partidos) de las provincias argentinas.
+
+### GADM
+
+* Una web que ofrece mapas políticos de casi todos los países y territorios a nivel mundial es [GADM](https://gadm.org/index.html). Si bien es un recurso gratuito, sus mapas poseen una resolución mayor a la de software pagos como ArcGIS.
+
+* Existen tres niveles de mapas en **GADM**:
+
+    0. Países
+    1. Países con provincias
+    2. Países con sus provincias y subdivisiones menores (departamentos, partidos, etc.)
+
+<p></p>
+
+```{r, echo = FALSE}
+knitr::include_graphics("../imagenes/unidad03/gadm.png")
+```
+
+## Mapas Estáticos con `sf`
+
+* Como siempre, el primer paso en cualquier proceso de análisis de datos consiste en importar la base. Para el caso de información geográfica, podemos emplear la función `read_sf()` del paquete `sf`.
+
+* Recordemos que el archivo a leer posee formato **.shp** (*shapefile*) y contiene los límites de cada departamento (subdivisiones provinciales) de nuestro país. Suponiendo que este archivo se llama *departamento* y se encuentra almacenado en una carpeta llamada *argentina* dentro de nuestro directorio de trabajo, la sintaxis a emplear para importarlo es la siguiente:
+
+```{r}
+mi_mapa <- read_sf(
+  dsn = "../data/unidad03/argentina", #dsn: carpeta donde está el archivo shp
+  layer = "departamento" #layer: nombre del archivo shp
+  )
+```
+
+* Para los ejemplos que vienen a continuación, trabajaremos únicamente con los departamentos de la Provincia de Santa Fe:
+
+```{r}
+#fdc: nombre del ente gubernamental que recolectó la información geográfica
+#cada provincia posee uno propio
+santafe <- mi_mapa %>% 
+  filter(fdc == "Servicio de Catastro e Información Territorial") %>% 
+  mutate(Nombre = str_wrap(nam, 8)) #separamos nombres largos en 2 lineas
+```
+
+* Analicemos la estructura de este objeto:
+
+```{r}
+str(santafe)
+```
+
+* La última columna del conjunto de datos, llamada *geometry*, es un objeto de clase `sfc_MULTIPOLYGON` donde se guardan las coordenadas que representan los límites de cada región.
+
+* La primera fila del dataset, correspondiente al departamento de Vera, está conformada por una lista de 75.079 pares de puntos $(x,y)$ que, al ser conectados, construyen el contorno del departamento.
+
+* Ejemplo para el departamento **Rosario**:
+
+```{r}
+rosario <- santafe$geometry[[11]] %>% as.matrix() %>% as.data.frame()
+head(rosario)
+
+ggplot(data = rosario) +
+  aes(x = V1, y = V2) +
+  geom_point()
+```
+
+
+* Para poder graficar estos datos de manera directa, sin necesidad de extraer las coordenadas, podemos usar en conjunto los paquetes `ggplot2` y `sf`. 
+
+* Una de las tantas **capas** que podemos agregar a un `ggplot` es `geom_sf()`, la cual toma un objeto con información espacial (en este caso la columna con clase `sfc_MULTIPOLYGON`) y une los puntos mediante líneas, para graficar los límites geográficos de cada región.
+
+* Veamos a cada uno de los departamentos de Santa Fe representados por un color diferente, asociado a su propio nombre (`fill = Nombre`):
+
+```{r}
+#No hace falta mencionar a la columna 'geometry' ya que es el
+#nombre estándar donde se guarda la información geográfica en este tipo de bases
+ggplot(data = santafe) +
+  aes(fill = nam) +
+  geom_sf() +
+  geom_sf_text(aes(label = Nombre), size = 2) +
+  theme_bw() +
+  theme(legend.position = "none")
+```
+
+### Datos de cultivos
+
+* En la visualización generada arriba la variable representada es categórica (nombre del departamento). Otra posible manera de crear mapas coropléticos es asignar colores a variables numéricas, por ejemplo algunas de las que se encuentran en la base de **cultivos** que analizamos en clases anteriores.
+
+* ¿Cómo podemos implementar esta idea? En primer lugar, importamos y manipulamos el conjunto de datos para elegir sólo algunas variables de interés:
+
+```{r}
+cultivos <- read_excel("../data/unidad03/cultivos.xlsx", na = "-")
+
+soja_sf <- cultivos %>% 
+	filter(
+	  campaña == "2019/20",
+	  prov == "SANTA FE",
+	  cultivo == "Soja total"
+	  ) %>% 
+  mutate(Soja = prod/1000) %>% 
+  select(Departamento = dpto, Soja)
+```
+
+* La base resultante posee 19 filas, una para cada departamento santafesino, y datos sobre la producción de soja (en miles de toneladas) durante la campaña 2019/20:
+
+```{r, echo=FALSE}
+library(kableExtra)
+
+soja_sf %>% 
+	kable() %>% 
+	kable_styling(font_size = 11) %>% 
+	scroll_box(height = "400px")
+```
+
+<p></p>
+
+* El segundo paso consiste en unir esta información con aquella presente en el *shapefile*, lo cual puede hacerse usando la función `left_join()` de `dplyr`. Dado que la **llave** (*key*) para unificar bases es el nombre del departamento, previamente llevamos a cabo un proceso de unificación de escrituras:
+
+```{r}
+#Comparacion de nombres entre ambas bases:
+#cbind(sort(santafe$nam), sort(soja_sf$Departamento))
+
+sf_unido <- santafe %>% 
+  mutate(
+    Departamento = str_to_upper(nam), #pasamos todos los nombres a mayúscula
+    Departamento = chartr("ÁÉÍÓÚ", "AEIOU", Departamento) #borramos tildes
+    ) %>% 
+  left_join(soja_sf)
+```
+
+* Ya estamos en condiciones de comparar producciones de cultivos para los departamentos santafesinos. Veamos el caso de la **Soja**:
+
+```{r}
+ggplot(data = sf_unido) +
+  aes(fill = Soja) +
+  geom_sf() +
+  geom_sf_text(aes(label = str_wrap(nam, 8)), size = 2) +
+  scale_fill_gradient(low = "#E0ECF8", high = "#0174DF") +
+  theme_bw()
+```
+
+* Cualquier modificación que deseemos aplicar sobre un mapa como este puede llevarse a cabo siguiendo las reglas correspondientes a gráficos comunes y corrientes producidos por `ggplot2`.
+
+<!-- * Si bien vimos que es fácil de implementar y genera visualizaciones prolijas en pocos pasos, `sf` no es la única opción disponible. A continuación vamos a explorar otros paquetes de R útiles para trabajar con este tipo de datos. -->
+
+### Trabajo en Equipo
+
+* Para practicar la creación de mapas vamos a usar el conjunto de datos **world** del paquete `spData`. Cada una de las 177 filas de esta base corresponde a un país diferente, para los cuales se registran diversas variables: *nombre*, *continente*, *superficie*, *población*, etc.
+
+```{r}
+data(world) #Cargamos la base
+head(world) #Vemos sus primeras 6 filas
+```
+
+<p></p>
+
+* Usando funciones del paquete `sf`, graficar los países de América del Sur asignando colores de acuerdo a su esperanza de vida. La paleta debe asignar el color rojo a valores bajos y el verde a valores altos de esta variable.
+
+* Resultado esperado:
+
+```{r, echo=FALSE}
+world %>% 
+  filter(continent == "South America") %>% 
+  ggplot() +
+  aes(fill = lifeExp) +
+  geom_sf() +
+  scale_fill_gradient(low = "red", high = "green") +
+  ggtitle("Esperanza de Vida (en Años) por País - Datos 2014") +
+  theme_bw()
+```
+
+## Mapas Dinámicos
+
+* Los mapas estáticos, como los que estuvimos viendo hasta ahora, son útiles pero en cierto sentido limitados: sólo nos muestran una imagen fija, para un período de tiempo dado, y no nos permiten cambiar la información graficada.
+
+* Por suerte para nosotros, R ofrece un variado menú de opciones a la hora de dar vida a nuestros mapas, permitiéndonos hacerlos **dinámicos** o **interactivos**. Esto implica que podemos modificar las variables o el área a visualizar, tal como lo hacemos habitualmente con Google Maps o servicios similares.
+
+### Paquete `tmap`
+
+* Una de las opciones para crear este tipo de mapas en R es a través del paquete `tmap`. Esta librería emplea una sintaxis similar a la de `ggplot2`. Existe una analogía entre las funciones de ambos paquetes; por ejemplo, `ggplot()` se convierte en `tm_shape()` para dar inicio al gráfico, las capas de tipo `geom_` se llaman ahora `tm_`, etc.
+
+* Veamos un ejemplo simple donde aplicamos `tm_shape()` para obtener un mapa coroplético equivalente al anterior, donde comparamos la producción de soja para diferentes departamentos de Santa Fe.
+
+* Algunos detalles sobre el código:
+
+    * Usamos `tmap_mode("view")` para activar la funcionalidad interactiva de esta librería; si deseamos mapas estáticos ejecutamos `tmap_mode("plot")`.
+    * La variable agregada con nombre *ID* almacena el texto que se mostrará en el mapa cada vez que pasamos el mouse sobre una región determinada (se le puede dar formato usando lenguaje HTML).
+    * La función `tm_basemap()` se usa para elegir el tipo de mapa de fondo utilizado. La lista completa de opciones puede consultarse en [esta web](https://leaflet-extras.github.io/leaflet-providers/preview/).
+
+```{r}
+tmap_mode("view")
+
+sf_unido %>% 
+	mutate(ID = paste0("Depto. ", nam, " - ", Soja, " millones de tn.")) %>% 
+	tm_shape() + 
+	tm_fill(id = "ID", col = "Soja", palette = "Oranges", alpha = 0.75) +
+	tm_borders("red", lwd = 2) + 
+	tm_minimap() +
+	tm_basemap("OpenStreetMap")
+```
+
+### Paquete `leaflet`
+
+* **leaflet** es una librería JavaScript que permite crear mapas interactivos. Hoy en día es una de las herramientas más populares en el campo de la visualización y georreferencia de datos. El paquete de R homónimo ofrece una forma simple de integrar RStudio con los mapas de este tipo.
+
+```{r, echo=FALSE, out.width="60%"}
+knitr::include_graphics("../imagenes/unidad03/leaflet.png")
+```
+
+* Los resultados que podemos obtener son similares a los anteriores. Algunos detalles a tener en cuenta:
+
+	* Para dar formato al argumento `label` (texto a mostrar cuando pasamos el mouse sobre cada región) aplicamos lenguaje HTML.
+	* Para asociar valores numéricos con colores debemos generar una paleta de antemano, por ejemplo mediante la función `colorNumeric()`.
+	* El mapa de fondo indicado en la función `addProviderTiles()` puede elegirse, nuevamente, a partir de las alternativas disponibles en <http://leaflet-extras.github.io/leaflet-providers/preview/>.
+
+```{r}
+textos <- paste0(
+	"<b>Departamento:</b> ", 
+	sf_unido$nam, 
+	"<br><b>Producción de Soja (miles de tn.):</b> ", 
+	sf_unido$Soja
+	)
+
+paleta <- colorNumeric(
+  palette = c("#04B404", "#DF0101"), 
+  domain = sf_unido$Soja
+  )
+
+sf_unido %>% 
+  leaflet() %>%
+  addPolygons(
+  	color = ~paleta(Soja), 
+  	label = ~lapply(as.list(textos), HTML), 
+  	weight = 2, 
+  	fillOpacity = 0.5
+  	) %>% 
+  addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
+```
+
+<p></p>
+
+**Aclaraciones**
+
+* La función `HTML()` de `htmltools` indica al software que el texto evaluado debe entenderse, justamente, como lenguaje *html*:
+
+```{r}
+HTML("<b>Hola</b>") #con formato
+print("<b>Hola</b>") #sin formato
+```
+
+* Por otro lado, la función `colorNumeric()` de `leaflet` genera escalas divergentes de colores, asociando valores numéricos con diferentes tonalidades. Veamos un ejemplo donde los posibles valores van del 1 al 9, y deseamos que la secuencia se extienda progresivamente desde el amarillo (valores bajos) hasta el marrón (valores altos), pasando por el verde (punto medio):
+
+```{r, out.width="50%"}
+paleta_nueva <- colorNumeric(
+  palette = c("yellow", "green", "brown"),
+  domain = c(1, 9)
+)
+
+scales::show_col(paleta_nueva(1:9))
+```
+
+### Trabajo en Equipo
+
+* Generar un mapa como el siguiente, donde el objetivo es comparar la superficie (en $km^2$) de los países africanos, usando funciones del paquete `leaflet`.
+
+* Ayuda: la paleta de colores va de amarillo a rojo, y el nombre del mapa base es *Esri.WorldImagery*.
+
+```{r, echo=FALSE}
+africa <- world %>% 
+  filter(continent == "Africa") %>% 
+  mutate(
+    textos = paste0(
+      "<b>País:</b> ", 
+	    name_long,
+	    "<br><b>Sup. en km<sup>2</sup>:</b> ", 
+	    round(area_km2)
+      )
+  )
+
+paleta <- colorNumeric(
+  palette = c("yellow", "red"), 
+  domain = africa$area_km2
+  )
+
+africa %>% 
+  leaflet() %>%
+  addPolygons(
+  	color = ~paleta(area_km2), 
+  	label = ~lapply(as.list(textos), HTML), 
+  	weight = 2, 
+  	fillOpacity = 0.5
+  	) %>% 
+  addProviderTiles("Esri.WorldImagery")
+```
+
+## Marcadores
+
+* Para ejemplificar este enfoque vamos a trabajar con un conjunto de datos que posee la ubicación, medida en latitud y longitud, de todas las paradas de colectivo correspondientes al Sistema de Transporte Urbano de Pasajeros (TUP) de la ciudad de Rosario.
+
+* La base se obtuvo desde el [portal de Datos Abiertos](https://datosabiertos.rosario.gob.ar/conjunto-de-datos/) de la Municipalidad de Rosario.
+
+* Importamos la base y seleccionamos algunas variables de interés:
+
+```{r}
+tup <- read_csv(file = "../data/unidad03/paradas_tup_json.csv") %>% 
+  select(lon = PUNTO_X, lat = PUNTO_Y, DISTRITO, PARADA) %>% 
+  mutate(
+    texto = paste0(
+      "<b>N° Parada:</b> ", PARADA,
+      "<br><b>Distrito:</b> ", DISTRITO
+      )
+    ) %>% 
+  distinct()
+
+#Primeras filas
+head(tup)
+```
+
+<p></p>
+
+* Usando la función `addMarkers()` de `leaflet` obtenemos una visualización que permite estudiar dónde se ubican las paradas del TUP. Tal como hicimos antes, podemos agregar información que se hará visible al mover el mouse sobre cada ícono:
+
+```{r}
+leaflet() %>%
+  addProviderTiles("OpenStreetMap.Mapnik") %>%
+  addMarkers(
+    lat = tup$lat, 
+    lng = tup$lon, 
+    label = lapply(as.list(tup$texto), HTML)
+    )
+```
+
+<p></p>
+
+* Una alternativa interesante consiste en agregar un algoritmo automático de creación de **clusters** de marcadores, con lo cual la visualización es más prolija:
+
+```{r}
+leaflet() %>%
+  addProviderTiles("OpenStreetMap.Mapnik") %>%
+  addMarkers(
+    lat = tup$lat, 
+    lng = tup$lon, 
+    label = lapply(as.list(tup$texto), HTML),
+    clusterOptions = markerClusterOptions()
+    )
+```
+
+<p></p>
+
+* Dato extra: para cambiar los colores de los marcadores, asociándolos a una variable categórica, podemos usar la función `addAwesomeMarkers()`. Los colores disponibles para ser utilizados pueden consultarse en la ayuda de la función `awesomeIcons()`.
+
+* En el código debajo, asociamos cada posible distrito a un color en particular (objeto `colores`). Luego adjuntamos esta nueva información al dataset original mediante una operación de tipo `join`. Por último, generamos el mapa aclarando que deseamos usar la variable recién generada para colorear cada marcador (argumento `icon`):
+
+```{r}
+
+#Generamos paleta de colores
+colores <- tibble(
+  DISTRITO = sort(unique(tup$DISTRITO)),
+  color = c("red", "pink", "blue", "purple", "green", "orange", "lightblue")
+)
+
+#Agregamos la información al dataset original
+tup <- tup %>% left_join(colores)
+
+#Generamos el mapa
+leaflet() %>%
+  addProviderTiles("OpenStreetMap.Mapnik") %>%
+  addAwesomeMarkers(
+    lat = tup$lat, 
+    lng = tup$lon, 
+    label = lapply(as.list(tup$texto), HTML),
+    icon = awesomeIcons(markerColor = tup$color)
+    )
+```

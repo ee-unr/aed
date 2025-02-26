@@ -26,6 +26,10 @@ book:
       chapters:
         - capitulos/02_Rmarkdown.qmd
         - capitulos/02_reportes_parametrizados.qmd
+    - part: capitulos/03.qmd
+      chapters:
+        - capitulos/03_georreferencia.qmd
+        - capitulos/03_visualizacion_variables_cualitativas.qmd
     # - part: capitulos/90.qmd
     #   chapters:
     #     - capitulos/90_soluciones_01.qmd
