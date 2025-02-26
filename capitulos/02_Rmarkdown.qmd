@@ -16,7 +16,7 @@ knitr:
 knitr::opts_chunk$set(message = FALSE, warning = FALSE, fig.align = "center", out.width = "75%")
 ```
 
-# Introducción
+## Introducción
 
 * Los contenidos de esta unidad están motivados por el concepto de **comunicación eficiente**.
 
@@ -42,7 +42,7 @@ library(rmarkdown)
 
 **Disclaimer:** la autoría de este material corresponde en parte al profesor Marcos Prunello.
 
-# Qué es R Markdown
+## Qué es R Markdown
 
 * En R, la posibilidad de entrelazar el análisis estadístico con la generación de reportes se logra a través de **R Markdown** y todos sus productos derivados. Estas herramientas pueden ser utilizadas, entre otras cosas, para construir:
 
@@ -81,18 +81,18 @@ library(rmarkdown)
 
 ::: {.callout-note}
 
-## Aclaración
+### Aclaración
 
 En 2022 **Posit** (la compañía antes llamada RStudio) relanzó R Markdown bajo el nombre de **Quarto**. Si bien este nuevo producto posee algunas diferencias con respecto al original, estas son mínimas, y todo lo que figura a continuación puede aplicarse en cualquiera de las dos versiones.
 
 :::
 
-# Primeros Pasos
+## Primeros Pasos
 
 * Un documento R Markdown básico puede crearse de forma sencilla con RStudio accediendo a *File > New File > R Markdown*, o bien haciendo click en la cruz blanca sobre fondo verde y eligiendo R Markdown en el menú desplegable:
 
 ```{r, echo=FALSE}
-knitr::include_graphics('iniciarRmd.png')
+knitr::include_graphics("../imagenes/unidad02/iniciarRmd.png")
 ```
 
 * En la siguiente ventana se nos pregunta qué tipo de documento queremos crear, con varias opciones disponibles:
@@ -104,7 +104,7 @@ knitr::include_graphics('iniciarRmd.png')
     * Desde un *template* (documentos con formato pre-seteado provistos por algunos paquetes)
 
 ```{r, echo=FALSE, out.width="50%"}
-knitr::include_graphics('elformato.png')
+knitr::include_graphics("../imagenes/unidad02/elformato.png")
 ```
 
 * Podemos tomar de ejemplo un documento de texto en formato **HTML**. 
@@ -113,10 +113,10 @@ knitr::include_graphics('elformato.png')
 * Su estructura general se representa en la siguiente imagen:
 
 ```{r, fig.show='hold', echo=FALSE}
-knitr::include_graphics('partesRmd.png')
+knitr::include_graphics("../imagenes/unidad02/partesRmd.png")
 ```
 
-## Encabezado
+### Encabezado
 
 * El encabezado, también conocido como *YAML Metadata*, se coloca al comienzo del documento entre dos tiras de guiones. Aquí se incluyen el título del documento y subtítulo si lo tuviera, autor, fecha y varias opciones más.
 
@@ -134,20 +134,20 @@ output: html_document
 
 * Más adelante mencionaremos más opciones que dependen del output elegido.
 
-## Texto
+### Texto
 
 * Para la escritura de texto se usa el lenguaje **Pandoc's Markdown**, una extensión del Markdown original. Un amplio manual sobre esta herramienta puede consultarse en la [web oficial de Pandoc](https://pandoc.org/MANUAL.html), un software libre que se utiliza para convertir documentos de un formato a otro.
 
 * En la siguiente tabla mostramos algunos *trucos* para darle un aspecto más interesante al texto que escribimos en R Markdown:
 
 ```{r, echo=FALSE, out.width="50%"}
-knitr::include_graphics('formatotxt.png')
+knitr::include_graphics("../imagenes/unidad02/formatotxt.png")
 ```
 
 * Los encabezados de cada sección se definen mediante numerales: un numeral equivale a un título principal, dos numerales a un subtítulo, tres numerales a un sub-subtítulo, etc.:
 
 ```{r, echo=FALSE, out.width="50%"}
-knitr::include_graphics('titulos.png')
+knitr::include_graphics("../imagenes/unidad02/titulos.png")
 ```
 
 * Por defecto, el índice de un documento R Markdown incluye los encabezados de nivel 1, 2 y 3. Si queremos cambiar este comportamiento, podemos utilizar la opción `toc_depth: x` dentro del encabezado, para mostrar los niveles 1 a *x*.
@@ -156,7 +156,7 @@ knitr::include_graphics('titulos.png')
 
 * Para iniciar un nuevo párrafo en *Pandoc* debemos dejar dos espacios al final de una línea de texto o bien un renglón vacío entre una cadena de texto y la otra. Con un solo **Enter** no lograremos nada.
 
-## Código
+### Código
 
 * Para añadir código dentro de un documento **Rmd** es necesario insertar un `chunk`, término que podemos traducir como *pedazo* o *bloque*. Las dos maneras más directas de hacerlo son:
 
@@ -217,12 +217,12 @@ knitr::include_graphics('titulos.png')
 
 Si quiero cambiar el comportamiento definido en `opts_chunk()` sólo en algunos bloques determinados, alcanza con volver a definir las opciones en sus respectivos encabezados.
 
-## Compilar
+### Compilar
 
 Para generar el documento definitivo basta con cliquear el botón **Knit** (literalmente, *tejer*) que se encuentra en la barra de herramientas de RStudio:
 
 ```{r, echo=FALSE, out.width="60%"}
-knitr::include_graphics('botonknitr.png')
+knitr::include_graphics("../imagenes/unidad02/botonknitr.png")
 ```
 
 * Otra opción para generar documentos es utilizar la función `render()` del paquete `rmarkdown`:
@@ -237,37 +237,37 @@ render("MiArchivo.Rmd")
 
 - Al lado del botón **Knit** hay una lista desplegable que nos permite elegir otro formato de salida, diferente al que tenemos indicado por default.
 
-# Herramientas útiles
+## Herramientas útiles
 
-## Listas
+### Listas
 
 * Para crear listas de elementos no numerados, podemos usar un asterisco (*) o bien un guion (-). Si deseamos agregar sublistas dentro de algunas listas, el asterisco o guion debe estar precedido una tabulación o cuatro espacios.
 
 * Por otro lado, para listas numeradas debemos agregar al principio de cada elemento el número correspondiente a cada ítem, seguido de un punto (1., 2., etc.). Si no tenemos ganas de contar la cantidad de ítems, podemos usar la numeración 1. para cada elemento y R hará los incrementos automáticamente:
 
 ```{r, echo=FALSE, out.width="50%"}
-knitr::include_graphics('listas.png')
+knitr::include_graphics("../imagenes/unidad02/listas.png")
 ```
 
-## Enlaces
+### Enlaces
 
 * Para añadir links a páginas web se puede escribir lo siguiente: `[Link a la página web de la FCEyE-UNR](https://www.fcecon.unr.edu.ar/)`, lo cual se mostrará así: [Link a la página web de la FCEyE-UNR](https://www.fcecon.unr.edu.ar/).
 
 * Si queremos que el link quede visible, podemos escribir `<https://www.fcecon.unr.edu.ar>` y se verá así: <https://www.fcecon.unr.edu.ar>.
 
 
-## Imágenes
+### Imágenes
 
 * Si queremos insertar imágenes dentro de nuestro documento, recomendamos utilizar la función `include_graphics()` de `knitr`:
 
 ````markdown
 `r ''````{r, out.width="50%"}
-`r ''`knitr::include_graphics("C:/Mis Documentos/messi.jpg")
+`r ''`knitr::include_graphics("../imagenes/unidad02/C:/Mis Documentos/messi.jpg")
 `r ''````
 ````
 
 ```{r, echo=FALSE, out.width="50%"}
-knitr::include_graphics("messi.jpg")
+knitr::include_graphics("../imagenes/unidad02/messi.jpg")
 ```
 
 
@@ -302,7 +302,7 @@ ggplot(mpg) +
   theme(legend.position = "bottom")
 ```
 
-## Tablas
+### Tablas
 
 * Frecuentemente necesitamos presentar tablas con resultados de nuestros análisis.
 * Por ejemplo, el promedio de algunas variables calculado según la cantidad de cilindros que tienen los autos listados en el dataset `mtcars`, como vemos a continuación:
@@ -339,14 +339,14 @@ resultado
     
   
 ```{r, echo = FALSE, out.width="60%"}
-knitr::include_graphics("tabla1_pdf.png")
+knitr::include_graphics("../imagenes/unidad02/tabla1_pdf.png")
 ```
   
 * Hay páginas que nos ayudan a generar esas tablas con guiones y barras (recomendamos explorar la web [Tables Generator](https://www.tablesgenerator.com/markdown_tables)), pero la idea es no hacerlo a mano.
 
 * Existen muchos paquetes muy potentes para este configurar cualquier aspecto de las tablas (como `xtable`, `huxtable`, `formattable`, `kableExtra` y varios otros) con opciones que en algunos casos son específicas para cada formato de salida. Cada uno provee herramientas particulares para generar tablas con formato a partir código de R.
 
-## Código dinámico
+### Código dinámico
 
 * Una manera de insertar resultados dentro del texto escrito es utilizando el formato `` `r "\u0060r MiObjeto\u0060"` ``, donde `MiObjeto` es cualquier valor definido en los chunks del documento. Por ejemplo, puedo definir un objeto llamado *pvalue* en un reporte que genero mensualmente; cada vez que vuelvo a correr las sentencias, *pvalue* cambiará de valor.
 
@@ -390,7 +390,7 @@ El promedio `r '\x60r ifelse(pvalue <= 0.05, "", "no")\x60'` difiere significati
 El promedio `r ifelse(pvalue < 0.05, "", "no")` difiere significativamente de cero (pvalue = `r round(pvalue, 4)`).
 ````
 
-## Escritura matemática 
+### Escritura matemática 
 
 - R Markdown también admite el uso de notación matemática para la escritura de fórmulas, siempre que encerremos la expresión en cuestión con un símbolo "\$" si deseamos ecuaciones ubicadas en la misma línea que el texto escrito, o bien mediante un doble símbolo "\$$", para ecuaciones ubicadas en un nuevo renglón.
 
@@ -456,7 +456,7 @@ $\hat{\mu} = \bar{x} \iff \bar{x} = \hat{\mu}$
 $\hat{\mu} = \bar{x} \iff \bar{x} = \hat{\mu}$
 
 
-# Detalles específicos para html
+## Detalles específicos para html
 
 - Todo lo que vimos hasta acá funciona para cualquier formato de salida deseado. Esta es una de las mayores virtudes de R Markdown, ya que podemos independizar nuestro trabajo de los detalles propios de cada sistema, generando cualquiera de ellos a partir del mismo script.
 
@@ -544,14 +544,14 @@ mtcars %>%
 <p></p>
 
 
-# Detalles específicos para pdf
+## Detalles específicos para pdf
 
 * Si queremos producir documentos en formato PDF desde RStudio, necesitamos tener instalado `LaTeX` en nuestra computadora... pero ¿qué es `LaTeX`? Según [su propia web](https://www.latex-project.org/), `LaTeX` (pronunciado *latech*) es un sistema para preparación de documentos "de alta calidad".
 
 * Incluye herramientas diseñadas para producir muchos tipos de documentación técnica, gracias a lo cual se ha convertido en el programa *estándar* dentro del ámbito académico y, sobre todo, de la divulgación científica (especialmente entre las ciencias duras).
 
 ```{r, echo=FALSE, out.width="30%"}
-knitr::include_graphics('latex.png')
+knitr::include_graphics("../imagenes/unidad02/latex.png")
 ```
 
 * La principal diferencia entre `LaTeX` y otros sistemas de generación de documentos de texto, como por ejemplo **Word**, puede resumirse en dos puntos:
@@ -563,7 +563,7 @@ knitr::include_graphics('latex.png')
 
 * Al igual que R y RStudio, `LaTeX` es un software gratuito y de distribución libre. Una muestra de la gran cantidad de documentos que podemos crear mediante `LaTeX` puede consultarse en [Overleaf](https://www.overleaf.com/latex/templates), donde se listan ejemplos de libros, currículums, posters, tesis y muchos otros formatos.
 
-## Instalación de LaTeX
+### Instalación de LaTeX
 
 * La descarga y posterior instalación de `LaTeX` ha sido siempre proceso generalmente tedioso que puede variar mucho de una PC a otra, sobre todo debido a configuraciones de red, versiones de sistemas operativos, permisos para agregar paquetes, etc. 
 
@@ -582,7 +582,7 @@ tinytex::install_tinytex()
 
 * Cabe mencionar nuevamente a [Overleaf](https://es.overleaf.com/), que nos ofrece un editor online de `LaTeX` totalmente gratuito (requiere que nos registremos definiendo usuario y contraseña) por si queremos hacer cosas en LaTeX sin instalar nada o en forma colaborativa.
     
-## Opciones para LaTeX
+### Opciones para LaTeX
 
 * La principal diferencia con lo visto hasta aquí es que en el encabezado YAML vamos a tener que especificar el tipo de salida que estamos buscando:
 
@@ -628,12 +628,12 @@ header-includes:
 
 * Un comentario al paso: si lo que necesitamos es crear tablas, las funciones ya mencionadas del paquete `kableExtra` también ofrecen opciones específicas para trabajar con LaTeX y poder generar lo que se necesita. También podemos generar la tabla en otro entorno, como el ya mencionado [Tables Generator](https://www.tablesgenerator.com/markdown_tables), y pegar el código de LaTeX directamente en el Rmd.
 
-## Diapositivas
+### Diapositivas
 
 * Un formato útil de salida PDF es la presentación de diapositivas, la cual estamos acostumbrados a crear mediante programas como PowerPoint. En este caso la opción que debemos elegir en el menú es **Presentation** y luego **PDF (Beamer)**:
 
 ```{r, echo=FALSE, out.width="75%"}
-knitr::include_graphics('beamer1.png')
+knitr::include_graphics("../imagenes/unidad02/beamer1.png")
 ```
 
 * El encabezado de nuestro **Rmd** luce así:
@@ -691,16 +691,16 @@ fonttheme: "serif"
 * En la siguiente imagen podemos apreciar el aspecto de las diapositivas generadas con el tema *Madrid*, color *orchid* y fuente *serif*:
 
 ```{r, echo=FALSE, out.width="80%"}
-knitr::include_graphics('beamer2.png')
+knitr::include_graphics("../imagenes/unidad02/beamer2.png")
 ```
 
-# Comentarios finales
+## Comentarios finales
 
 * Con tantos términos dando vueltas (Markdown, RMarkdown, Knit, Pandoc, html, LaTeX... 😖), lo natural es perderse y no saber quién es quién ni qué hace qué.
 
 * Lo bueno es que en general podemos usar todo esto sin tenerlo muy en claro, pero acá van algunas aclaraciones solo para los que estén interesados en saber más.
 
-## Lenguajes de Marcado Ligero, Markdown y R Markdown
+### Lenguajes de Marcado Ligero, Markdown y R Markdown
 
 * Un lenguaje de marcado ligero (*markup language*) es un sistema estandarizado con reglas para insertar símbolos en un documento de texto plano para controlar su estructura, formato y relación entre sus partes.
 
@@ -720,7 +720,7 @@ knitr::include_graphics('beamer2.png')
   
 * Además de RStudio/Posit, algunas compañías que también utilizan Markdown son OpenAI (desarrolladora de ChatGPT), Discord, GitHub, Microsoft, Mozilla, entre otras.
 
-## El proceso detrás de R Markdown
+### El proceso detrás de R Markdown
 
 * Una vez que hemos creado un archivo Rmd siguiendo las reglas de R Markdown y estamos listos para producir el resultado final, hacemos clic en el botón Knit o, equivalentemente, corremos la función `render()` del paquete `rmarkdown`.
 
@@ -735,10 +735,10 @@ knitr::include_graphics('beamer2.png')
 * ¡Voilà! Con esos pasos mágicos tenemos nuestro ansiado archivo. Debajo vemos un esquema que representa el proceso de compilación:
 
 ```{r, echo=FALSE, out.width="60%"}
-knitr::include_graphics('proceso.png')
+knitr::include_graphics("../imagenes/unidad02/proceso.png")
 ```
 
-## Otros recursos relacionados al mundo de R Markdown
+### Otros recursos relacionados al mundo de R Markdown
 
 Si tenés ganas de seguir aprendiendo sobre `R Markdown`, podés consultar esta pequeña lista de guías y tutoriales:
 

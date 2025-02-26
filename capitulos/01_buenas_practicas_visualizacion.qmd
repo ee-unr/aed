@@ -14,7 +14,7 @@ knitr:
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, out.width = "75%")
 ```
 
-# Principio de la tinta proporcional
+## Principio de la tinta proporcional
 
 - En ciertos gráficos, los valores representados se asocian a dos elementos distintos de la visualización empleada. Pensemos por ejemplo en un gráfico de barras: el valor que le corresponde a cada una se puede transmitir a través de la escala del eje Y (o del eje X, si usamos barras horizontales), pero también se transmite visualmente mediante la longitud de la barra.
 
@@ -26,7 +26,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, out.width 
 library(tidyverse)
 library(patchwork)
 
-censos_prov <- read_csv("../data/censos_prov.csv") %>% 
+censos_prov <- read_csv("../data/unidad01/censos_prov.csv") %>% 
   mutate(Porcentaje = 100 * (pob2022 - pob2010) / pob2010)
 
 g1 <- censos_prov %>% 
@@ -80,7 +80,7 @@ g1 + g2 + plot_annotation(title = "% Crecimiento poblacional para provincias de 
 
 library(lubridate)
 
-partos <- read_csv("../data/partos_rosario.csv")
+partos <- read_csv("../data/unidad01/partos_rosario.csv")
 
 serie_mm <- partos %>% 
   filter(efector == "MM") %>% 
@@ -110,7 +110,7 @@ s1 + s2 + plot_annotation(title = "Evolución de la cantidad de nacimientos")
 
 - Una vez más, vemos que los cambios entre períodos adyacentes se exageran cuando recortamos la escala del eje Y. Si bien hubo una baja pronunciada de nacimientos entre julio y agosto de 2017 (bajaron de 365 a 262, más del 28%), esta diferencia se percibe mucho mayor en el gráfico B que en el gráfico A.
 
-## Tinta proporcional usando áreas
+### Tinta proporcional usando áreas
 
 - En los ejemplos anteriores, vimos cómo respetar este principio mediante alturas de barras o líneas, es decir, cuando la dimensión a considerar es una sola.
 
@@ -179,7 +179,7 @@ censos_prov %>%
   theme(legend.position = "none")
 ```
 
-# Puntos superpuestos
+## Puntos superpuestos
 
 - Cuando queremos armar un diagrama de dispersión a partir de un conjunto de datos muy extenso, usualmente nos encontramos con el problema de la **superposición** de puntos: muchas observaciones con valores similares que se "pisan" unas a otras en el gráfico resultante, ocultando información valiosa.
 
@@ -198,7 +198,7 @@ ggplot(data = partos) +
 
 - A continuación veremos algunas maneras de remediar, al menos parcialmente, este problema.
 
-## Transparencia + Perturbación
+### Transparencia + Perturbación
 
 - La más común de las propuestas consiste en utilizar puntos con cierto nivel de transparencia para representar a cada observación. En el código de `ggplot2` se la define mediante el parámetro `alpha`, el cual puede tomar valores desde 0 (totalmente transparente, es decir, no se ve el punto) hasta 1 (color sólido, el valor por defecto).
 
@@ -238,7 +238,7 @@ ggplot(data = partos) +
 
 - **Aclaración:** al ser aleatoria, la perturbación aplicada genera diferentes versiones del mismo gráfico cada vez que se la vuelve a utilizar. Para replicar los resultados, debemos usar una semilla aleatoria específica mediante `set.seed()`.
 
-## Hexágonos
+### Hexágonos
 
 - Estos gráficos, también conocidos como "histogramas 2D", tratan de solucionar el problema de la superposición agrupando observaciones con valores similares en ambas dimensiones.
 
@@ -267,7 +267,7 @@ ggplot(data = partos2) +
 
 - En general se lo aplica cuando la solución del *jittering* no es suficiente, es decir, cuando seguimos viendo "manchas" de puntos que no se distinguen unos de otros. En estos gráficos no existe superposición, ya que cada hexágono posee su lugar correspondiente.
 
-## Gráficos de contorno
+### Gráficos de contorno
 
 - Una última alternativa consiste en crear gráficos de contornos, en los cuales se realiza una estimación de la función de densidad bivariada definida por las variables X e Y. Áreas del plano con igual nivel de densidad estimada se diferencian mediante líneas de contorno, las cuales pueden estar coloreadas usando una paleta secuencial.
 
@@ -307,7 +307,7 @@ volcano %>%
   theme(axis.title = element_blank())
 ```
 
-# Colores
+## Colores
 
 - Si están bien utilizados, los colores pueden ser herramientas muy efectivas a la hora de mejorar visualizaciones de datos. Al mismo tiempo, una mala elección de colores puede arruinar completamente un gráfico.
 
@@ -315,7 +315,7 @@ volcano %>%
 
 - A continuación vamos a ver algunos casos de gráficos donde el color está mal empleado.
 
-## Muchos colores
+### Muchos colores
 
 - Un error común consiste en usar demasiados colores, como en el gráfico que se muestra a continuación. Dado que cada observación (en este caso, provincias argentinas) posee su propia tonalidad, la cantidad total de colores es muy elevada.
 
@@ -361,7 +361,7 @@ ggplot(data = censos_prov) +
 
 - En general, el uso de colores para distinguir entre categorías se recomienda cuando existen pocos grupos a graficar. Por ejemplo, las funciones de R que implementan las paletas creadas por Cynthia Brewer (paquete `RColorBrewer`) devuelven un mensaje de advertencia si usamos más de 9 colores.
 
-## Colores innecesarios
+### Colores innecesarios
 
 - A veces, quienes generan gráficos sufren del síndrome de "Art Attack" y agregan detalles y colores que no suman al mensaje, sino más bien que distraen. El gráfico de abajo es un claro ejemplo de ello:
 
@@ -381,7 +381,7 @@ censos_prov %>%
 
 - En esta visualización, la paleta de colores no aporta información ni ayuda a entender mejor el mensaje transmitido; sólo se usa para darle un toque colorido al gráfico. Si bien esto no es un problema grave en sí mismo, podemos aprovechar el color de maneras más eficientes, por ejemplo para distinguir entre regiones geográficas (como vimos anteriormente) o bien usando una escala secuencial que refuerce la idea de diferencias numéricas entre provincias.
 
-## Escalas confusas
+### Escalas confusas
 
 - Cuando queremos emplear una gama de colores para recrear valores numéricos, es necesario definir paletas que tengan incrementos monótonos entre tonalidades. En general se eligen paletas de un solo color (por ej. verde claro a verde oscuro) o bien grupos de colores de una familia cercana (amarillos, naranjas, rojos).
 
@@ -443,7 +443,7 @@ ggplot(data = iris) +
   theme_bw()
 ```
 
-## Paletas para personas daltónicas
+### Paletas para personas daltónicas
 
 - Si bien no existen estudios concluyentes al respecto, se estima que a nivel mundial, aproximadamente entre un 5% y 10% de los varones poseen algún grado de daltonismo, mientras que entre las mujeres la prevalencia se reduce a menos del 1%. El tipo de daltonismo más común consiste en la incapacidad de distinguir correctamente las tonalidades rojas de las verdes, aunque hay personas con daltonismo asociado a otros colores (azul y verde, etc.).
 
@@ -456,7 +456,7 @@ scales::show_col(c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E
 - Como alternativa, tenemos la paleta **PiYG** de Brewer (llamada *original* abajo). A su lado vemos cómo la visualizarían personas con diferentes tipos de daltonismo; todas las versiones siguen siendo fácilmente distinguibles:
 
 ```{r, fig.cap="Fuente: Fundamentals of Data Visualization - Claus Wilke"}
-knitr::include_graphics("piyg.png")
+knitr::include_graphics("../imagenes/unidad01/piyg.png")
 ```
 
 <p></p>
@@ -464,14 +464,14 @@ knitr::include_graphics("piyg.png")
 - Si usamos otras paletas, lo anterior puede no ocurrir y la diferencia entre cada grupo queda oculta para la persona con daltonismo:
 
 ```{r, fig.cap="Fuente: Fundamentals of Data Visualization - Claus Wilke"}
-knitr::include_graphics("blue-green-cvd-sim-1.png")
+knitr::include_graphics("../imagenes/unidad01/blue-green-cvd-sim-1.png")
 ```
 
 <p></p>
 
 - Por lo tanto, si nuestros gráficos van a ser consumidos por un público extenso, es buena idea emplear paletas que tengan en cuenta estos detalles.
 
-## Blanco y negro
+### Blanco y negro
 
 - Siempre que el contexto lo permita, debemos tratar de **evitar crear gráficos en blanco y negro**. Rellenar figuras (boxplots, barras, etc.) con algún color sólido hace que estas se destaquen mejor contra el fondo del gráfico, permitiendo una interpretación más inmediata de las cantidades representadas y, de paso, convirtiendo la visualización en un objeto visualmente más agradable.
 
@@ -533,7 +533,7 @@ d2 <- ggplot(data = partos) +
 d1 + d2 + plot_annotation(title = "Peso de bebés nacidos en efectores municipales de Rosario según semanas de gestación. Período 2015-2018")
 ```
 
-# Leyendas
+## Leyendas
 
 - Siempre que en nuestros gráficos tengamos estéticas asociadas a colores, formas, tamaños o tipos de línea, necesitamos incluir leyendas (o escalas) que aclaren cómo esa estética se relaciona con la variable que representa.
 
@@ -685,13 +685,13 @@ gapminder %>%
     )
 ```
 
-# Paneles
+## Paneles
 
 - Cuando los conjuntos de datos que estamos analizando contienen un gran volumen de información, tratar de visualizar muchos aspectos en unos pocos gráficos puede ser contraproducente. En general, las visualizaciones resultantes están muy cargadas de información y son complejas de interpretar.
 
 - Para evitar este inconveniente podemos usar **paneles** que repliquen los gráficos construidos en distintos subgrupos de la población, o bien que estructuren de forma ordenada los análisis exploratorios llevados a cabo sobre cada variable.
 
-## Subgrupos
+### Subgrupos
 
 - Sea cual sea el gráfico elegido para representar las variables de nuestro conjunto de datos, muchas veces resulta interesante ver cómo las relaciones entre estas variables dependen (o no) de diferentes subgrupos de la población que estamos estudiando.
 
@@ -725,7 +725,7 @@ ggplot(data = partos) +
 
 - También es importante que la ubicación de los gráficos en la grilla conserve un orden lógico. En el primer caso analizado, los años se suceden en orden ascendente de izquierda a derecha y de arriba hacia abajo. Si bien existen otras maneras de ordenarlos, estamos acostumbrados a que el panel de arriba a la izquierda sea el primero y el de abajo a la derecha, el último en nuestra recorrida visual. Lo mismo aplica para variables categóricas ordinales, como en el caso de la variable *edad_gestacional* del dataset de partos.
 
-## Paneles para múltiples visualizaciones
+### Paneles para múltiples visualizaciones
 
 - El otro uso de los paneles consiste en ver muchos gráficos distintos, independientes entre sí, en un solo lugar. En estos casos es vital que los colores, tamaños y apariencia general sean homogéneas, para que ningún panel en particular se robe la atención. Si asignamos ciertos colores a determinados subgrupos de la población, debemos mantener ese *mapeo* a lo largo de todos los gráficos presentados.
 
@@ -795,7 +795,7 @@ ggpairs(
 
 ```
 
-# Grillas
+## Grillas
 
 - Llamamos **grillas** a las rectas perpendiculares a los ejes que se dibujan en el fondo del gráfico para facilitar la interpretación del mismo, específicamente, a la hora de comparar valores entre diferentes observaciones o grupos representados.
 
@@ -871,7 +871,7 @@ gapminder %>%
 
 - Algo similar hacemos cuando, en un diagrama de dispersión, se espera que ambas variables sean iguales: en vez de trazar una recta perpendicular a alguno de los ejes, dibujando la recta identidad que demarca la relación $x=y$. Uno de los ejemplos más comunes de esto son los gráficos de cuantiles (*q-q plots*).
 
-# 3D
+## 3D
 
 - Uno de los peores males que aquejan el mundo de la visualización de datos, junto con los gráficos de torta, son los gráficos 3D de datos originalmente 2D.
 
@@ -887,7 +887,7 @@ gapminder %>%
 - Veamos cómo afecta el 3D a un gráfico de torta: a medida que rotamos el ángulo desde el cual vemos el gráfico, la porción más pequeña (25%) puede volverse artificialmente grande, enviando un mensaje contradictorio al espectador del gráfico.
 
 ```{r, echo=FALSE, fig.cap="Fuente: Fundamentals of Data Visualization - Claus Wilke"}
-knitr::include_graphics("torta3d.png")
+knitr::include_graphics("../imagenes/unidad01/torta3d.png")
 ```
 
 <br>
@@ -897,24 +897,24 @@ knitr::include_graphics("torta3d.png")
 - La siguiente figura fue construida usando Excel. Los datos originales representan tres grupos con los siguientes valores: 10, 5 y 12 (panel de la izquierda). La versión por defecto que ofrece Excel cuando se elige un gráfico 3D para esos mismos datos se muestra en el panel derecho.
 
 ```{r, echo=FALSE}
-knitr::include_graphics("barras3d.png")
+knitr::include_graphics("../imagenes/unidad01/barras3d.png")
 ```
 
 - ¿Por qué la altura de cada barra no coincide con su valor correspondiente? ¿Por qué el software más popular para almacenamiento de datos construye por defecto gráficos literalmente erróneos? **¿Por qué? No hay por qué.**
 
 - No vamos a perder más tiempo de clase mirando figuras con efetos 3D innecesarios. Consideramos que estos dos ejemplos deberían ser suficientes para desmotivar a cualquier persona que esté considerando el uso de este tipo de gráficos.
 
-# Comentarios finales
+## Comentarios finales
 
 - Existen muchísimos otros detalles de un gráfico que pueden salir mal, pero dedicarle a cada uno su propia sección nos llevaría demasiado tiempo. A continuación vamos a mencionar 2 de los más importantes:
 
-## Contexto
+### Contexto
 
 - Todo gráfico debe estar **bien contextualizado**. Esto implica que debemos asegurarnos de incluir un título general, títulos de los ejes y leyendas, escalas utilizadas, unidades de medida de las variables representadas, etc. De ser necesario, también debemos indicar el período temporal analizado, las fuentes de información, y cualquier otro detalle importante que ayude a contextualizar mejor el mensaje que queremos transmitir.
 
 - Este último consejo se vuelve mucho más importante cuando la figura se publica de manera independiente o solitaria: no es lo mismo contextualizar un gráfico incluido en el anexo de una tesis, donde las características de los datos ya han sido descritas detalladamente, que hacerlo cuando el medio de comunicación empleado es alguna red social.
 
-## Tamaño
+### Tamaño
 
 - Cuando creamos una visualización debemos cuidar que el tamaño de los textos, puntos, barras o formas utilizadas **sean legibles** y también **uniformes**. Puede ser confuso (y hasta molesto) analizar un gráfico donde la etiqueta del eje X está escrita en un tamaño de fuente mayor que el título principal, o bien cuando diferentes ejes poseen diferentes tamaños de texto.
 

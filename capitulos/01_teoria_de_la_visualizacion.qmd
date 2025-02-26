@@ -30,7 +30,7 @@ Esta unidad está basada en el libro **Fundamentals of Data Visualization** (201
 
 :::
 
-# Introducción
+## Introducción
 
 - En general, los/as estadísticos/as sabemos cómo visualizar datos sin ser demasiado engañosos. Sin embargo, es posible que no tengamos un sentido bien desarrollado de la estética visual y que tomemos decisiones que restan valor al mensaje.
 
@@ -77,7 +77,7 @@ Esta unidad está basada en el libro **Fundamentals of Data Visualization** (201
 
 - Más allá de esto, consideramos importante que el análisis exploratorio de datos sea **riguroso desde el punto de vista estadístico**, pero que al mismo tiempo incorpore conceptos que realcen su **impacto visual** y su **potencial comunicativo**.
 
-# Fundamentos de la Visualización
+## Fundamentos de la Visualización
 
 - Cada vez que visualizamos datos, estamos tomando sus valores y convirtiéndolos de manera sistemática y lógica en los elementos visuales que conforman el gráfico final. El proceso de asignar ciertos **datos** a ciertas **características** del gráfico es la esencia de la visualización de datos.
 
@@ -87,7 +87,7 @@ Esta unidad está basada en el libro **Fundamentals of Data Visualization** (201
 
 - Por lo tanto, cuando hablemos de elementos estéticos en esta materia, estamos haciendo referencia a las características que percibimos visualmente en un gráfico.
 
-## Estéticas
+### Estéticas
 
 - Las estéticas describen cada aspecto de un determinado gráfico. Las más comunes son:
 
@@ -106,7 +106,7 @@ knitr::include_graphics("../imagenes/unidad01/common-aesthetics-1.png")
 
 - Veamos a continuación algunos ejemplos sencillos con el tradicional [conjunto de datos de las flores de Iris](https://es.wikipedia.org/wiki/Conjunto_de_datos_flor_iris).
 
-### Ejemplo 1{-}
+#### Ejemplo 1{-}
 
 Representamos dos variables cuantitativas continuas en un sistema de ejes cartesianos (estética de la posición). Tamaño, forma (círculo) y color (negro) permanecen constantes para todos los datos; son estéticas presentes pero que no agregan información.
 
@@ -118,7 +118,7 @@ ggplot(data = iris) +
   theme_bw()
 ```
 
-### Ejemplo 2{-}
+#### Ejemplo 2{-}
 
 Utilizamos la estética 'forma' para representar una variable categórica (especie) que agrega información. Recordemos que la forma sólo puede asociarse a una cantidad finita (discreta) de valores; no tendría sentido asociar el ancho del pétalo con la forma. Notemos además la necesidad de incorporar una leyenda al gráfico que permita relacionar formas con valores puntuales de los datos.
 
@@ -130,7 +130,7 @@ ggplot(data = iris) +
   theme_bw()
 ```
 
-### Ejemplo 3{-}
+#### Ejemplo 3{-}
 
 Usamos la estética 'tamaño' para representar una tercera variable, en este caso ancho del sépalo. El diámetro de cada punto ahora depende de esta variable: flores con sépalo más anchos se grafican con puntos de mayor diámetro. Una vez más, necesitamos una leyenda adecuada para interpretar el gráfico.
 
@@ -141,7 +141,7 @@ ggplot(data = iris) +
   theme_bw()
 ```
 
-### Ejemplo 4{-}
+#### Ejemplo 4{-}
 
 Estéticas que se pueden usar para datos continuos, como el tamaño, también sirven para representar datos discretos. Advertimos que este uso no es recomendable, ya que la diferencia de tamaño entre especies dificulta la correcta interpretación de los datos graficados.
 
@@ -152,7 +152,7 @@ ggplot(data = iris) +
   theme_bw()
 ```
 
-### Ejemplo 5{-}
+#### Ejemplo 5{-}
 
 Una manera correcta de diferenciar las especies es asignando una paleta de colores que las distinga (es importante que la elección de colores no opaque el mensaje; hablaremos de esto más adelante). Si bien la estética del 'color' fue planteada arriba como continua, también resulta muy útil para representar datos discretos. Este gráfico es una alternativa al ejemplo 2: ambos muestran exactamente la misma información, pero haciendo uso de diferentes estéticas.
 
@@ -163,7 +163,7 @@ ggplot(data = iris) +
   theme_bw()
 ```
 
-### Ejemplo 6{-}
+#### Ejemplo 6{-}
 
 Ahora usamos la estética 'color' para representar datos continuos, en este caso nuevamente el ancho del sépalo. Acá también debemos prestar especial atención a la paleta elegida para que el mensaje sea lo más claro posible. Este gráfico es una versión alternativa al del ejemplo 3: muestra la misma información pero con estéticas distintas.
 
@@ -175,7 +175,7 @@ ggplot(data = iris) +
   theme_bw()
 ```
 
-### Ejemplo 7{-}
+#### Ejemplo 7{-}
 
 Un mamarracho donde el color se asigna al ancho de sépalo, el tamaño al largo del sépalo y la forma a la especie. No debemos olvidar la máxima que postula que 'menos es más'. Al querer mostrar todas las variables al mismo tiempo, terminamos creando una visualización demasiado cargada de información, compleja y difícil de interpretar.
 
@@ -187,7 +187,7 @@ ggplot(data = iris) +
   theme_bw()
 ```
 
-## Escalas
+### Escalas
 
 - Para unir el mundo de las **estéticas** con el mundo de los **datos** necesitamos especificar qué valores de los datos se corresponden con qué valores específicos de las estéticas.
 
@@ -199,7 +199,7 @@ ggplot(data = iris) +
 
 - Siempre que se defina una escala, cada valor necesita estar asociado a una única posición, forma o color, y viceversa. En otras palabras, la relación debe ser **biunívoca** (uno a uno). Escalas que no cumplan esta propiedad básica deben evitarse a toda costa, ya que el gráfico no será coherente.
 
-### Ejemplo: temperaturas mensuales{-}
+#### Ejemplo: temperaturas mensuales{-}
 
 - A continuación se presentan las primeras filas de un conjunto de datos que proporciona las temperaturas mensuales normales (temperatura promedio en cada mes durante una ventana de 30 años) para cuatro ciudades de Argentina. Esta tabla contiene 5 variables: mes, ciudad, provincia, código de la estación meteorológica que mide los datos, y temperatura (en grados centígrados). 
 
@@ -241,7 +241,7 @@ knitr::include_graphics("../imagenes/unidad01/tempnorm2.png")
 
 :::
 
-# Sistemas de coordenadas y ejes
+## Sistemas de coordenadas y ejes
 
 - Para realizar cualquier tipo de visualización de datos necesitamos definir **escalas de posición**, las cuales determinan en qué parte del gráfico se ubican los diferentes datos. Además, tenemos que especificar la disposición geométrica relativa de estas escalas.
 
@@ -257,7 +257,7 @@ La combinación de un conjunto de escalas de posición y su disposición geomét
 
 - Convencionalmente, ambos ejes son perpendiculares entre sí y representan escalas **lineales**, pero también podríamos elegir disposiciones **no lineales**. Más adelante veremos ejemplos de ambos casos.
 
-## Coordenadas cartesianas
+### Coordenadas cartesianas
 
 - El sistema de coordenadas 2D más utilizado para la visualización de datos es el **cartesiano**, llamado así en honor al filósofo y matemático francés René Descartes, quien desarrolló este concepto en el siglo XVII.
 
@@ -284,7 +284,7 @@ knitr::include_graphics("../imagenes/unidad01/cartesian-coord-1.png")
 - **Ejemplo:** temperaturas medias (suavizadas) de Rosario entre el 01/08/2022 y el 31/07/2023. ¿Qué ocurre cuando la relación de aspecto (alto/ancho) está muy distante del 1?
 
 ```{r, eval=FALSE}
-load("../data/diarias.RData")
+load("../data/unidad01/diarias.RData")
 
 rosario <- diarias %>% 
   filter(estacion == "Rosario") %>% 
@@ -313,13 +313,13 @@ knitr::include_graphics("../imagenes/unidad01/rosario_temp.png")
 
 - Por último, cabe destacar que el sistema de coordenadas cartesiano es **invariante ante transformaciones lineales** de las unidades de medida. Esto implica que la forma, aspecto y distancias presentes en el gráfico no se modifican si pasamos de centímetros a kilómetros, gramos a toneladas, Celsius a Fahrenheit, etc.
 
-## Ejes lineales
+### Ejes lineales
 
 - En los ejemplos presentados hasta ahora, las líneas de la cuadrícula a lo largo de cada eje están espaciadas uniformemente. Esto implica que dos pares de puntos que están a la misma distancia tienen la misma magnitud de diferencia entre sus valores.
 
 - En estos sistemas de coordenadas decimos que las escalas de posición son **lineales**.
 
-## Ejes no lineales
+### Ejes no lineales
 
 - Existen escenarios en los que se prefieren escalas **no lineales**, en las cuales dos pares de puntos que visualmente se encuentran a la misma distancia, no poseen la misma magnitud de diferencia entre sus valores.
 
@@ -339,7 +339,7 @@ knitr::include_graphics("../imagenes/unidad01/linear-log-scales-1.png")
 
 - Debido a que la multiplicación en una escala logarítmica se comporta de manera similar que la suma en una escala lineal, las escalas logarítmicas son la elección natural para cualquier dato que se haya obtenido mediante multiplicación o división (por ejemplo, tasas o razones).
 
-### Ejemplo: Censo 2022{-}
+#### Ejemplo: Censo 2022{-}
 
 <!-- - En Argentina, cada división administrativa de primer orden (23 provincias + CABA) se encuentra dividida en departamentos, partidos o comunas. A estas divisiones se las denomina "de segundo orden" y actualmente existen 529 en todo el país. -->
 
@@ -349,7 +349,7 @@ knitr::include_graphics("../imagenes/unidad01/linear-log-scales-1.png")
 
 library(plotly)
 
-censos_prov <- read_csv("../data/censos_prov.csv") %>% 
+censos_prov <- read_csv("../data/unidad01/censos_prov.csv") %>% 
   arrange(desc(pob2022)) %>% 
   mutate(
     razon = pob2022/median(pob2022),
@@ -429,7 +429,7 @@ ggplotly(lineal, tooltip = "text")
 
 - Las escalas logarítmicas también se usan cuando **el conjunto de datos tiene números de magnitudes muy diferentes**, aunque no representen multiplicaciones o divisiones. Si trabajamos con datos que toman el valor 0, se suele recomendar usar una escala de raíz cuadrada.
 
-## Sistemas de coordenadas con ejes curvos
+### Sistemas de coordenadas con ejes curvos
 
 - Hasta ahora vimos el uso de dos ejes colocados de forma perpendicular (en ángulo recto) entre sí.
 
@@ -461,7 +461,7 @@ knitr::include_graphics("../imagenes/unidad01/temppolar.png")
 
 - En el contexto de datos geo-espaciales suelen aparecer casos en los que se utilizan ejes curvos, pero que no son necesariamente sistemas de coordenadas polares. Más adelante, en la sección dedicada a visualizaciones mediante mapas, retomaremos este tema.
 
-# Escalas de color
+## Escalas de color
 
 - Hay tres casos fundamentales del uso de colores en una visualización de datos: 
 
@@ -469,7 +469,7 @@ knitr::include_graphics("../imagenes/unidad01/temppolar.png")
   - Representar valores
   - Resaltar un mensaje
 
-## Diferenciar grupos
+### Diferenciar grupos
 
 - Cuando se usa el color como un medio para distinguir elementos discretos, o grupos que no tienen un orden intrínseco, debemos emplear una **escala de color cualitativa**.
 
@@ -498,7 +498,7 @@ knitr::include_graphics("../imagenes/unidad01/qualitative-scales-1.png")
 - **Ejemplo**. Crecimiento de la población de Argentina de 2010 a 2022. Las provincias patagónicas (color naranja) han experimentado los mayores aumentos, mientras que las de la región pampeana (color rosa) han experimentado aumentos mucho menores.
 
 ```{r, out.width="75%"}
-censos_prov <- read_csv("../data/censos_prov.csv") %>% 
+censos_prov <- read_csv("../data/unidad01/censos_prov.csv") %>% 
   mutate(popgrowth = 100 * (pob2022 - pob2010) / pob2010) %>% 
   arrange(popgrowth) %>% 
   mutate(
@@ -524,7 +524,7 @@ ggplot(data = censos_prov) +
   labs(fill = "Región")
 ```
 
-## Representar valores
+### Representar valores
 
 - En este caso utilizamos una **escala de color secuencial**. Este tipo de escala contiene una secuencia de colores que indican claramente:
 
@@ -592,7 +592,7 @@ ggplot(data = censos_prov) +
 
 - Las escalas divergentes suelen funcionar mejor cuando los datos son aproximadamente simétricos; en este caso, el punto medio corresponde a 18%, la mediana de los crecimientos observados entre ambos censos para cada jurisdicción. Tierra del Fuego, que podría llegar a considerarse como un *outlier* (crecimiento de casi 50%), hace que la escala de colores no se visualice en todo su rango.
 
-## Resaltar un mensaje
+### Resaltar un mensaje
 
 - En ciertas oportunidades se usan colores para enfatizar elementos relevantes de la figura, en especial cuando hay categorías o valores específicos en el conjunto de datos que contienen información clave sobre la historia que queremos contar.
 

@@ -1,0 +1,165 @@
+---
+title: "Comunicación de Resultados: Reportes Parametrizados"
+subtitle: "Análisis Exploratorio de Datos | Licenciatura en Estadística | FCEyE | UNR"
+lang: es
+knitr:
+  opts_chunk: 
+    echo: true
+    message: false
+    warning: false
+    fig.align: center
+---
+
+<!-- themes: https://bootswatch.com/ -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, fig.align = "center", out.width = "75%")
+```
+
+## Datos de Cultivos
+
+* En esta clase trabajaremos con el conjunto de datos disponible en la planilla de Excel `cultivos.xlsx`.
+
+* Los datos fueron extraídos del sitio web <https://datosestimaciones.magyp.gob.ar/>, dependiente del Ministerio de Agricultura, Ganadería y Pesca de Argentina.
+
+* Se trata de una serie histórica de indicadores agrícolas desagregada a nivel departamental y provincial, para diferentes tipos de cultivos existentes en Argentina (soja, trigo, cebada, maíz, sorgo, etc.) desde 1969 hasta 2021.
+
+* Los indicadores presentes en la base son 4:
+
+    * **sup_sembrada**: superficie sembrada (en hectáreas) del cultivo, para un departamento y campaña agrícola en particular.
+    * **sup_cosechada**: superficie cosechada (en hectáreas), debe ser menor o igual a la superficie sembrada.
+    * **prod**: producción (en toneladas) del cultivo alcanzada en ese departamento y campaña en particular.
+    * **rend**: rendimiento (en kg. por hectárea), se calcula como la razón entre producción y superficie cosechada, multiplicada por mil.
+
+
+* Importamos la base, indicando que los valores perdidos están representados por un guión, y vemos sus primeras 10 filas:
+
+```{r}
+library(readxl)
+cultivos <- read_excel("../data/unidad02/cultivos.xlsx", na = "-")
+head(cultivos, 10)
+```
+
+<br>
+
+* Supongamos que nos encargan la tarea de generar un informe para cada cultivo presente en la base, analizando cómo evolucionó su producción a nivel nacional mediante un gráfico de línea, y comparando las campañas 2018/19 y 2019/20 entre provincias.
+
+* Por ejemplo, para el **centeno** obtenemos los siguientes resultados:
+
+```{r, echo=FALSE}
+library(tidyverse)
+
+centeno <- cultivos %>% 
+  filter(cultivo == "Centeno") %>% 
+  mutate(campaña = as.numeric(str_sub(campaña, 1, 4))) %>% 
+  group_by(campaña) %>% 
+  summarise(prod = sum(prod, na.rm = TRUE)) %>% 
+  ungroup()
+
+ggplot(data = centeno) +
+  aes(x = campaña, y = prod/1000, group = 1) +
+  geom_line(linewidth = 1, color = "red") +
+  labs(x = "Campaña", y = "Producción (miles de tn.)", 
+       title = "Producción de Centeno según Año") +
+  theme_bw()
+```
+
+```{r, echo=FALSE}
+library(kableExtra)
+
+variacion <- cultivos %>% 
+  filter(
+    cultivo == "Centeno",
+    prod > 0,
+    campaña %in% c("2018/19", "2019/20")
+  ) %>% 
+  group_by(prov, campaña) %>% 
+  summarise(prod = sum(prod, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  pivot_wider(names_from = campaña, values_from = prod) %>% 
+  replace(is.na(.), 0)
+
+variacion %>% 
+  add_row(
+    prov = "TOTAL ARGENTINA", 
+    `2018/19` = sum(variacion$`2018/19`),
+    `2019/20` = sum(variacion$`2019/20`)
+    ) %>% 
+  mutate(var = round(100*(`2019/20`/`2018/19` - 1), 2)) %>% 
+  kbl(col.names = c("Provincia", "2018/19", "2019/20", "% Var."), 
+      format.args = list(big.mark = ".", decimal.mark = ","), 
+      caption = "Producción de Centeno según provincia") %>% 
+  kable_styling(bootstrap_options = "striped") %>% 
+  column_spec(1, bold = TRUE) %>% 
+  row_spec(0, color = "white", background = "darkblue", bold = TRUE) %>% 
+  row_spec(nrow(variacion) + 1, color = "white", background = "#75AADB", bold = TRUE)
+```
+
+* El **template** para generar un reporte en HTML que incluye el gráfico y la tabla mostrados arriba se proporciona en el archivo `04_template.Rmd`.
+
+## Reportes Parametrizados
+
+* Los **reportes parametrizados** resultan útiles cuando tenemos que generar muchos documentos similares entre sí, con un formato en común, donde únicamente cambian algunas variables puntuales.
+
+* La base de cultivos que estamos analizando es buen ejemplo de esta situación, ya que necesitamos generar un reporte individual para cada uno de los 38 cultivos disponibles.
+
+* Existen muchas maneras de resolver esta tarea, entre ellas:
+
+    - Generar un archivo Rmd para cada cultivo, copiando y pegando 38 veces el mismo código en 38 archivos diferentes.
+    - Generar un único archivo Rmd e ir cambiando los datos cada vez que genero un nuevo reporte.
+    - Generar un único archivo Rmd, **parametrizarlo** y dejar que R haga el trabajo pesado.
+
+* Evidentemente vamos a preferir la última opción, pero... ¿cómo se logra esto?
+
+* Una buena estrategia es empezar generando un archivo `.Rmd` para un único cultivo (el *template*). Una vez que estamos conformes con el resultado, es fácil ver que, para generar el reporte de los restantes cultivos, lo único que hay que hacer es proveer otro nombre a la hora de filtrar la base.
+
+* Por lo tanto, podemos pensar al nombre del cultivo como un **parámetro** que tomará diferentes valores de acuerdo al archivo que deseemos generar. Podemos llamar a este parámetro `nombre_cultivo` y utilizarlo como valor de entrada del archivo Rmd a generar.
+
+* Dentro del template, la presencia del parámetro `nombre_cultivo` se indica en el encabezado del documento, de la siguiente manera:
+
+````md
+---
+title: Título
+author: Nombre
+date: Fecha
+output: html_document
+params: 
+ nombre_cultivo: Centeno
+---
+````
+
+* Luego, en el cuerpo del `.Rmd` hacemos referencia a este valor con `params$nombre_cultivo`. Por ejemplo:
+
+```{r, eval=FALSE}
+centeno <- cultivos %>% filter(cultivo == params$nombre_cultivo)
+```
+
+* Para evitar tener que cambiar a mano el valor asignado a `nombre_cultivo`, creamos otro script de R desde el cual mandamos a generar todos los reportes mediante un loop. 
+
+* La función que debemos emplear dentro del loop es `render()`, perteneciente al paquete `rmarkdown`, la cual tiene el mismo efecto que apretar el botón *Knit* en archivos Rmd o el botón *Render* para archivos qmd.
+
+* Al momento de emplear esta función, algunos de los argumentos que debemos definir son:
+
+    * ruta y nombre del archivo donde se encuentra alojado el template
+    * ruta y nombre del archivo donde deseamos guardar el resultado
+    * formato de salida (HTML, pdf, etc.)
+    * lista de parámetros a emplear
+
+* Ejemplo:
+
+```{r, eval=FALSE}
+library(rmarkdown)
+
+render(
+ input = "MiTemplate.Rmd",
+ output_file = "MiReporte.html",
+ output_format = "html_document",
+ params = list(Parametro1 = valor1, Parametro2 = valor2)
+ )
+```
+
+::: {.callout-tip title="Trabajo en Equipo"}
+
+Crear un loop en R que genere un reporte para cada posible cultivo, empleando el template provisto. El nombre del archivo generado debe coincidir con el del cultivo correspondiente (ejemplo: `girasol.html`, `mandarina.html`, etc.). El formato de salida puede ser HTML, PDF o Word.
+
+:::

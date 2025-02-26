@@ -16,7 +16,7 @@ knitr:
 knitr::opts_chunk$set(out.width = "60%")
 ```
 
-# Introducción
+## Introducción
 
 - En R existen tres sistemas para realizar gráficos: `base`, `lattice` y `ggplot2`.
 
@@ -35,7 +35,7 @@ ggplot(data = iris) + aes(x = Sepal.Length, y = Sepal.Width) + geom_point()
 ```
 
 ```{r, echo=FALSE, out.width = "90%"}
-knitr::include_graphics('sistemas.png')
+knitr::include_graphics("../imagenes/unidad01/sistemas.png")
 ```
 
 - A lo largo de este material vamos a usar un conjunto de datos que ofrece `ggplot2` llamado `msleep`, el cual presenta datos sobre características del sueño de 83 especies de mamíferos. 
@@ -47,16 +47,16 @@ library(ggplot2)
 msleep
 ```
 
-# El sistema `ggplot2`
+## El sistema `ggplot2`
 
 ```{r, echo=FALSE, out.width="25%"}
-knitr::include_graphics('ggplotlogo.jpg')
+knitr::include_graphics("../imagenes/unidad01/ggplotlogo.jpg")
 ```
 
 - `gg` viene de *Grammar of Graphics* (gramática de gráficos), un libro escrito por Leland Wilkinson en 1999, donde hace un desarrollo teórico para la construcción de gráficos.
 
 ```{r, echo=FALSE, out.width="25%"}
-knitr::include_graphics('ggbook.jpg')
+knitr::include_graphics("../imagenes/unidad01/ggbook.jpg")
 ```
 
 - Así como la gramática de un lenguaje estudia la estructura de las palabras, la manera en que estas se combinan y las reglas que hay que seguir para formar oraciones, la gramática de gráficos de Wilkinson provee un sistema para combinar elementos gráficos que dan como resultado figuras visualmente significativas.
@@ -65,7 +65,7 @@ knitr::include_graphics('ggbook.jpg')
 - La idea fundamental es pensar a un gráfico como una superposición de elementos que lo componen, llamadas capas o *layers*:
 
 ```{r, echo=FALSE, out.width="70%"}
-knitr::include_graphics('gg0.png')
+knitr::include_graphics("../imagenes/unidad01/gg0.png")
 ```
   
   - **Datos** (*data*): es el dataset que queremos representar. Debe estar almacenado en formato ordenado (*tidy*), es decir, con un individuo por fila y una variable por columna.
@@ -78,18 +78,18 @@ knitr::include_graphics('gg0.png')
   - **Estilos** (*themes*): controlan el aspecto general del gráfico en cuestiones que no tienen que ver con los datos, por ejemplo, si queremos el título en negrita o el fondo blanco. Es decir, controla la parte estética (en el sentido usual de la palabra) o lo que se conoce como "tinta libre de datos" (*non-data ink*).
 
 ::: {.callout-tip}
-## Aplicación
+### Aplicación
 
 A continuación, construiremos paso a paso un **diagrama de dispersión** entre las variables cantidad total de horas de sueño (`sleep_total`) y la cantidad de horas de sueño en la [fase REM](https://es.wikipedia.org/wiki/Sue%C3%B1o_de_movimientos_oculares_r%C3%A1pidos) (`sleep_rem`), presentes en el dataset sobre patrones de sueño de animales mamíferos.
 
 :::
 
-## data, mapping & geom
+### data, mapping & geom
 
 - Un gráfico se inicia con la función `ggplot()`, en la que se indica cuál es el conjunto de datos a emplear.
 
 ```{r, echo=F, out.width="60%"}
-knitr::include_graphics("gg1.png")
+knitr::include_graphics("../imagenes/unidad01/gg1.png")
 ```
 
 ```{r}
@@ -99,7 +99,7 @@ ggplot(data = msleep)
 - Al correr esto podemos apreciar en el panel de Gráficos cómo nuestro *lienzo se prepara para que pintemos algo sobre él*, pero todavía no muestra nada. Es porque aún nos falta señalar otras capas esenciales, por ejemplo, la del mapeo.
 
 ```{r, echo=F, out.width="60%"}
-knitr::include_graphics("gg2.png")
+knitr::include_graphics("../imagenes/unidad01/gg2.png")
 ```
 
 - Dado que queremos hacer un diagrama de dispersión de `sleep_total` vs `sleep_rem`, vamos a mapear la variable `sleep_rem` al elemento de mapeo $x$ y la variable `sleep_total` al elemento de mapeo $y$.
@@ -117,7 +117,7 @@ ggplot(data = msleep) +
 - Por ejemplo, para un gráfico de dispersión, lo que necesitamos son puntos:
 
 ```{r, echo=F, out.width="60%"}
-knitr::include_graphics("gg3.png")
+knitr::include_graphics("../imagenes/unidad01/gg3.png")
 ```
 
 ```{r}
@@ -138,12 +138,12 @@ ggplot(data = msleep) +
   geom_point()
 ```
 
-## scales
+### scales
 
 - Si ahora queremos modificar las configuraciones elegidas por default para cada uno de los mapeos, necesitamos invocar a las capas de *scales*:
 
 ```{r, echo=F, out.width="60%"}
-knitr::include_graphics("gg4.png")
+knitr::include_graphics("../imagenes/unidad01/gg4.png")
 ```
 
 - Por ejemplo, modificamos límites, nombres de los ejes y la paleta de colores:
@@ -161,12 +161,12 @@ ggplot(data = msleep) +
   scale_color_brewer(name = "Alimentación", palette = "Dark2", na.value = "black")
 ```
 
-## stats
+### stats
 
 - Podemos agregar una nueva capa con un elemento de tipo *stats*, por ejemplo para agregar una recta de regresión lineal simple (*esto sólo es un ejemplo, deberíamos evaluar si es adecuado ajustar este tipo de modelo o no*).
 
 ```{r, echo=F, out.width="60%"}
-knitr::include_graphics("g5.png")
+knitr::include_graphics("../imagenes/unidad01/g5.png")
 ```
 
 ```{r, echo=T, tidy=F}
@@ -200,12 +200,12 @@ ggplot(data = msleep) +
   stat_smooth(method = "lm", se = FALSE)
 ```
 
-## facets
+### facets
 
 - Un elemento de tipo **facet** creará un panel distinto para cada categoría de la variable indicada:
 
 ```{r, echo=F, out.width="60%"}
-knitr::include_graphics("g6.png")
+knitr::include_graphics("../imagenes/unidad01/g6.png")
 ```
 
 ```{r}
@@ -223,12 +223,12 @@ ggplot(data = msleep) +
   facet_wrap(~ vore)
 ```
 
-## coordinates
+### coordinates
 
 - Para ejemplificar las modificaciones al sistema de coordenadas aplicaremos una transformación logarítmica, que en este caso puede servir para visualizar mejor la relación entre las horas de sueño y el peso corporal, ya que esta última posee una distribución muy asimétrica:
 
 ```{r, echo=F, out.width="60%"}
-knitr::include_graphics("g7.png")
+knitr::include_graphics("../imagenes/unidad01/g7.png")
 ```
 
 ```{r}
@@ -251,12 +251,12 @@ ggplot(data = msleep) +
     )
 ```
 
-## themes
+### themes
 
 - Finalmente podemos modificar el aspecto general con una o varias capas de **estilo** (hay estilos predefinidos o personalizados, por ejemplo los de [ggthemes](https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/) o [ggthemr](https://github.com/Mikata-Project/ggthemr)):
 
 ```{r, echo=FALSE, out.width="60%"}
-knitr::include_graphics("g8.png")
+knitr::include_graphics("../imagenes/unidad01/g8.png")
 ```
 
 ```{r}
@@ -277,7 +277,7 @@ ggplot(data = msleep) +
 
 ::: {.callout-note}
 
-### Ejercicio
+#### Ejercicio
 
 Reproducir el siguiente gráfico que analiza las horas diarias de sueño según el tipo de alimentación de cada mamífero, a través de histogramas:
 
@@ -298,9 +298,9 @@ ggplot(data = msleep) +
 
 :::
 
-# Nociones útiles sobre `ggplot2`
+## Nociones útiles sobre `ggplot2`
 
-## Modificar las opciones por default de un geometry
+### Modificar las opciones por default de un geometry
   
 - Veamos un ejemplo donde cambiamos el color, el tamaño, la forma y la transparencia de los puntos:
 
@@ -324,7 +324,7 @@ ggplot(data = msleep) +
 
 ::: {.callout-note}
 
-### Ejercicio
+#### Ejercicio
 
 - Tratar de reproducir el siguiente gráfico:
 
@@ -337,12 +337,12 @@ ggplot(data = msleep) +
 - **Ayuda:** guía de símbolos:
 
 ```{r, echo=F, out.width="50%"}
-knitr::include_graphics("points-symbols.jpg")
+knitr::include_graphics("../imagenes/unidad01/points-symbols.jpg")
 ```
 
 :::
 
-## Otras opciones para las *scales*
+### Otras opciones para las *scales*
 
 - Como dijimos antes, las capas que permiten hacer modificaciones sobre los mapeos establecidos comienzan con `scale_`.
 - Luego, el nombre sigue con el mapeo que queremos editar (`x_`, `y_`, `color_`, `shape_`, etc.) y termina con una palabra que describe cómo es ese mapeo: `continuous` (para variables continuas), `discrete` (para variables categóricas), `manual` (para asignar manualmente los colores que deseamos), etc.
@@ -401,7 +401,7 @@ ggplot(data = msleep) +
   scale_colour_distiller(palette = "Greens")
 ```
 
-## Crear un objeto de clase `ggplot`
+### Crear un objeto de clase `ggplot`
 
 - Es posible guardar nuestros gráficos en un objeto de R, dentro del ambiente de trabajo. Esto tiene varias ventajas y generalmente lo hacemos cuando:
 
@@ -433,7 +433,7 @@ graf2 <- graf1 +
 graf2
 ```
 
-## Exportar gráficos 
+### Exportar gráficos 
 
 - Mencionamos dos alternativas:
 
@@ -455,7 +455,7 @@ ggsave("miGrafico.jpg", graf2, width = 8, height = 5, units = "cm")
 
 ::: {.callout-note}
 
-### Ejercicio
+#### Ejercicio
 
 - Crear un gráfico de boxplots para la variable *awake* según las categorías de *vore*, tal cual figura a continuación, y guardarlo en un archivo llamado **boxplot.png** que tenga 20 cm. de ancho y 15 cm. de alto.
 
@@ -473,7 +473,7 @@ ej_boxplot
 
 ::::
 
-## Otras opciones para los *themes*
+### Otras opciones para los *themes*
 
 - Los argumentos de la capa `theme()` tienen nombres compuestos por palabras claves separadas por puntos.
 - La primera palabra clave indica el elemento a editar (por ejemplo, `legend`).
@@ -586,7 +586,7 @@ library(ggthemes)
 graf2 + theme_solarized()
 ```
 
-## Colores
+### Colores
 
 - R usa el sistema **hexadecimal** para representar colores. Este sistema mezcla las intensidades de los colores rojo, verde y azul (**RGB** por sus siglas en inglés) usando una escala de 16 valores: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E y F.
 
@@ -669,7 +669,7 @@ ggplot(data = msleep) +
 ```{r, echo=F}
 #library(RColorBrewer)
 #display.brewer.all()
-knitr::include_graphics("colores.jpg")
+knitr::include_graphics("../imagenes/unidad01/colores.jpg")
 ```
 
 - Ya vimos ejemplos de cómo usarlas mediante las funciones `scale_color_brewer()` (valores discretos) o bien `scale_color_distiller()` (valores continuos).
@@ -677,7 +677,7 @@ knitr::include_graphics("colores.jpg")
 - Otras paletas que vale la pena mencionar son las del paquete `viridis`:
 
 ```{r, echo=FALSE}
-knitr::include_graphics("viridis.png")
+knitr::include_graphics("../imagenes/unidad01/viridis.png")
 ```
 
 - Estas paletas poseen dos ventajas importantes: son **aptas para personas con diferentes grados de daltonismo** ([más info acá](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html)) y mantienen su uniformidad cuando se las imprime en blanco y negro.
@@ -695,7 +695,7 @@ ggplot(data = msleep) +
 
 - Para más información sobre el uso de colores en R y otros tipos de paletas, recomendamos leer [este post de DataNovia](https://www.datanovia.com/en/blog/top-r-color-palettes-to-know-for-great-data-visualization/).
 
-# Extensiones de `ggplot2`
+## Extensiones de `ggplot2`
 
 - Existen muchos libros gratuitos que enseñan sobre visualización con `ggplot2`. Si bien una búsqueda rápida en Google revela decenas de posibilidades, mencionamos sólo 2 de los más populares:
 
@@ -722,15 +722,15 @@ ggplot(data = msleep) +
 - Este paquete ofrece muchas herramientas interesantes, entre ellas, la función `ggpairs()` que permite hacer **matrices de gráficos** para ver la relación de a pares entre conjuntos de variables:
 
 ```{r, echo=F}
-knitr::include_graphics("ggpairs1.jpg")
+knitr::include_graphics("../imagenes/unidad01/ggpairs1.jpg")
 ```
 
 ```{r, echo=F}
-knitr::include_graphics("ggpairs2.jpg")
+knitr::include_graphics("../imagenes/unidad01/ggpairs2.jpg")
 ```
 
 ```{r, echo=F}
-knitr::include_graphics("ggpairs3.jpg")
+knitr::include_graphics("../imagenes/unidad01/ggpairs3.jpg")
 ```
 
 ### ggforce{-}
@@ -758,7 +758,7 @@ ggplot(data = msleep) +
 - Implementa gráficos en `ggplot2` para salidas de métodos estadísticos como modelos lineales, curvas de supervivencia, regresiones penalizadas, georreferenciamiento, series de tiempo, componentes principales, clustering, etc.
 
 ```{r, echo=F}
-knitr::include_graphics("ggfortify.jpg")
+knitr::include_graphics("../imagenes/unidad01/ggfortify.jpg")
 ```
 
 ### ggrepel{-}
