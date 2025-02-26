@@ -30,6 +30,9 @@ book:
       chapters:
         - capitulos/03_georreferencia.qmd
         - capitulos/03_visualizacion_variables_cualitativas.qmd
+    - part: capitulos/04.qmd
+      chapters:
+        - capitulos/04_visualizacion_variables_cuantitativas.qmd  
     # - part: capitulos/90.qmd
     #   chapters:
     #     - capitulos/90_soluciones_01.qmd
