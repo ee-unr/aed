@@ -21,12 +21,12 @@ book:
     - part: capitulos/01.qmd
       chapters:
         - capitulos/01_a_intro.qmd
-    - part: capitulos/02.qmd
-      chapters:
-        - capitulos/02_a_algo.qmd
-    - part: capitulos/90.qmd
-      chapters:
-        - capitulos/90_soluciones_01.qmd
+    # - part: capitulos/02.qmd
+    #   chapters:
+    #     - capitulos/02_a_algo.qmd
+    # - part: capitulos/90.qmd
+    #   chapters:
+    #     - capitulos/90_soluciones_01.qmd
   # appendices:
   #   - capitulos/98_tp.qmd
   #   - capitulos/99_bibliografia.qmd
