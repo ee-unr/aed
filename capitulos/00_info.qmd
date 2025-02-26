@@ -1,0 +1,21 @@
+\thispagestyle{primerapagina}
+
+# Información general sobre la asignatura  {.unnumbered}
+
+::: {.en-construccion data-latex=""}
+Página en construcción.
+:::
+
+## Cursado
+
+Modalidad, comisiones, horarios
+
+## Aula virtual?
+
+## Programa
+
+enlace al programa aprobado
+
+## Evaluación
+
+## Código de conducta

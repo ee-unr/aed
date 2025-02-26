@@ -1,0 +1,11 @@
+```{=latex}
+\thispagestyle{primerapagina}
+```
+
+::: welcome
+# Bienvenida {.unnumbered .unlisted}
+:::
+
+::: en-construccion
+Página en construcción.
+:::

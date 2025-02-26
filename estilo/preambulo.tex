@@ -1,0 +1,297 @@
+% Créditos -------------------------------------------------------------------
+
+% Algunas opciones de configuración fueron tomadas y adaptadas del estilo
+% del libro IMS en pdf
+% https://github.com/OpenIntroStat/ims/blob/main/latex/ims-style.tex
+
+% PAQUETES -------------------------------------------------------------------
+
+\usepackage{fontspec}
+\usepackage{colortbl, xcolor}
+\usepackage[explicit]{titlesec}     % para formato de titulos
+\usepackage{fancyhdr}
+\usepackage{lipsum}
+\usepackage{tikz}
+\usepackage[framemethod=tikz]{mdframed}  % para ambientes
+
+% VARIAS CONFIGURACIONESS  ----------------------------------------------------
+
+% Márgenes 
+\usepackage[top=3cm,bottom=3cm,left=3cm,right=1.5cm]{geometry}
+ 
+% Colores
+\definecolor{oiB}{HTML}{569BBD}            % COL["blue","full"]
+\definecolor{oiLB}{HTML}{e3eef4}           % lighter version of oiB
+
+\definecolor{oiY}{HTML}{f4dc00}            % COL["yellow","full"]
+\definecolor{oiLY}{HTML}{fffacd}           % lighter version of oiY
+
+\definecolor{oiR}{HTML}{E97583}            % COL["red","full"]
+\definecolor{oiLR}{HTML}{F3CED4}           % lighter version of oiR
+
+\definecolor{oiGray}{HTML}{808080}         % COL["gray","full"]
+\definecolor{oiLGray}{HTML}{f8f8f8}        % lighter version of oiGray
+
+\definecolor{oiGB}{rgb}{0.5,0.5,.5}        % from OS4 - for footnotes
+
+% TOC
+% que no tenga el nro de parte, porque eso se lo pongo yo en el título
+% Deshabilitar la numeración en la tabla de contenidos
+% \renewcommand{\thepart}{\relax}
+% ESO NO, LO SACA DE TODOS LADOS
+
+% % Redefinir el comando \part para evitar la carátula 
+% esto hace que el texto de la parte este a continuacion del titulo
+\titleclass{\part}{top}
+% esto modifica el formato del titulo
+\titleformat{\part}[display]
+{\color{oiR}\titlerule[5pt]\vspace{3pt}\color{oiLR}\titlerule[2pt]\color{oiB}\normalfont\Huge\bfseries\scshape}
+{}{0em}{#1 \\ \noindent \vspace{3pt}\color{oiR}\titlerule[5pt]}
+\titlespacing*{\part}{0pt}{*0}{15em}
+
+% Encabezado y pie de página --------------------------------------------------
+
+% Paquete para personalizar encabezados y pies de página
+% Configuración de fancyhdr
+\pagestyle{fancy}
+
+% Limpiar estilos predeterminados
+\fancyhf{}
+
+% Configuración del contenido
+\fancyhead[LO, RE]{Unidad \thepart}
+\fancyhead[RO, LE]{\nouppercase{\leftmark}}
+\fancyfoot[LO, RE]{Programación 1}
+\fancyfoot[RO, LE]{\thepage}
+
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\sectionmark}[1]{\markright{#1}}
+
+% para que la primera pagina no tenga el header pero si el footer como el resto
+\fancypagestyle{primerapagina}{
+  \fancyfoot[LO, RE]{Programación 1}
+  \fancyfoot[RO, LE]{\thepage}
+	\fancyhead{}
+	\renewcommand{\headrulewidth}{0pt}
+}
+
+% Formato de títulos ----------------------------------------------------------
+
+\titleformat{\chapter}[display]
+{\color{oiB}\normalfont\Huge\bfseries}
+{\color{oiB}Capítulo \thechapter}{1em}{#1}
+
+\titleformat{\section}
+{\color{oiB}\normalfont\Large\bfseries}
+{\color{oiB}\thesection}{1em}{#1}
+
+\titleformat{\subsection}
+{\color{oiB}\normalfont\large\bfseries}
+{\color{oiB}\thesubsection}{1em}{#1}
+
+\titleformat{\subsubsection}
+{\color{oiB}\normalfont\normalsize\bfseries}
+{\color{oiB}\thesubsubsection}{1em}{#1}
+
+
+% Environments -----------------------------------------------------------
+
+% Helper environments
+% currently none of them increment footnote counter,
+% this seems to be the right approach?
+
+% mdframedwithfootChapterintro: for presentacion-capitulo
+\newenvironment{mdframedwithfootChapterintro}
+{   
+    \savenotes
+    \begin{mdframed}[%
+    topline=true, bottomline=true, linecolor=oiB, linewidth=1.4pt,
+    rightline=false, leftline=false,
+    backgroundcolor=oiLB]
+    %\stepcounter{footnote} % don't increment footnote counter
+    \renewcommand{\thempfootnote}{\arabic{footnote}}
+    }
+{
+    \end{mdframed}
+    \spewnotes
+}
+
+% mdframedwithfootGPWE: for ejercicio
+\newenvironment{mdframedwithfootGPWE}
+{   
+    \savenotes
+    \begin{mdframed}[%
+    topline=true, bottomline=true, linecolor=oiB, linewidth=0.5pt,
+    rightline=false, leftline=false,
+    backgroundcolor=oiLGray]
+    %\stepcounter{footnote}
+    \renewcommand{\thempfootnote}{\arabic{footnote}}
+    }
+{
+    \end{mdframed}
+    \spewnotes
+}
+
+% mdframedwithfootImportant: for ejemplo
+\newenvironment{mdframedwithfootImportant}
+{   
+    \savenotes
+    \begin{mdframed}[%
+    topline=true, bottomline=true, linecolor=oiR, linewidth=0.5pt,
+    rightline=false, leftline=false,
+    backgroundcolor=oiLGray]
+    %\stepcounter{footnote}
+    \renewcommand{\thempfootnote}{\arabic{footnote}}
+    }
+{
+    \end{mdframed}
+    \spewnotes
+}
+
+% mdframedwithfootTip: for concepto, info, comentario, en-contruccion
+\newenvironment{mdframedwithfootTipDataPro}
+{   
+    \savenotes
+    \begin{mdframed}[%
+    topline=true, bottomline=true, linecolor=oiGray, linewidth=0.5pt,
+    rightline=false, leftline=false,
+    backgroundcolor=oiLGray]
+    %\stepcounter{footnote}
+    \renewcommand{\thempfootnote}{\arabic{footnote}}
+    }
+{
+    \end{mdframed}
+    \spewnotes
+}
+
+% los ambientes uses regular mdframedwithfoot variants, might have footnotes
+
+% Intro capitulo
+\newenvironment{presentacion-capitulo}{
+\vspace{4mm}
+\begin{mdframedwithfootChapterintro}
+\begin{minipage}[t]{0.10\textwidth}
+{$\:$ \\ \setkeys{Gin}{width=2.5em,keepaspectratio}\includegraphics{imagenes/iconos/006-clean-code.png}}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.90\textwidth}
+\setlength{\parskip}{1em}
+\large
+}{\end{minipage}
+\end{mdframedwithfootChapterintro}
+\vspace{4mm}
+}
+
+% Ejercicio
+\newenvironment{ejercicio}{
+\vspace{4mm}
+\begin{mdframedwithfootGPWE}
+\begin{minipage}[t]{0.10\textwidth}
+{$\:$ \\ \setkeys{Gin}{width=2.5em,keepaspectratio}\includegraphics{imagenes/iconos/008-edit-code.png}}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.90\textwidth}
+%\vspace{-2mm}
+\setlength{\parskip}{1em}
+\noindent\textbf{\color{oiB}\small{\MakeUppercase{Para resolver}}} $\:$ \\ 
+}{\end{minipage}
+\end{mdframedwithfootGPWE}
+\vspace{4mm}
+}
+
+% ejemplo
+\newenvironment{ejemplo}{
+    \let\oldrule\rule
+    \renewcommand{\rule}[2]{\vspace{-2mm}\oldrule{##1}{##2}\vspace{-2mm}}
+\vspace{4mm}
+\begin{mdframedwithfootImportant}
+\begin{minipage}[t]{0.10\textwidth}
+{$\:$ \\ \setkeys{Gin}{width=2.5em,keepaspectratio}\includegraphics{imagenes/iconos/code-review.png}}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.90\textwidth}
+%\vspace{-2mm}
+\setlength{\parskip}{1em}
+\noindent\textbf{\color{oiB}\small{\MakeUppercase{Ejemplo}}} $\:$ \\
+\small}{\end{minipage}
+\end{mdframedwithfootImportant}
+\vspace{4mm}
+}
+
+% concepto
+\newenvironment{concepto}{
+    \let\oldtextbf\textbf
+    \renewcommand{\textbf}[1]{{\textcolor{oiR}{\oldtextbf{##1}}}}
+\vspace{4mm}
+\begin{mdframedwithfootTipDataPro}
+\begin{minipage}[t]{0.10\textwidth}
+{$\:$ \\ \setkeys{Gin}{width=2.5em,keepaspectratio}\includegraphics{imagenes/iconos/001-anchor.png}}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.90\textwidth}
+%\vspace{-2mm}
+\setlength{\parskip}{1em}
+\noindent\textbf{\color{oiB}\small{\MakeUppercase{Concepto clave}}} $\:$ \\
+\small}{\end{minipage}
+\end{mdframedwithfootTipDataPro}
+\vspace{4mm}
+}
+
+
+% info
+\newenvironment{info}{
+    \let\oldtextbf\textbf
+    \renewcommand{\textbf}[1]{{\textcolor{oiR}{\oldtextbf{##1}}}}
+\vspace{4mm}
+\begin{mdframedwithfootTipDataPro}
+\begin{minipage}[t]{0.10\textwidth}
+{$\:$ \\ \setkeys{Gin}{width=2.5em,keepaspectratio}\includegraphics{imagenes/iconos/010-review.png}}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.90\textwidth}
+%\vspace{-2mm}
+\setlength{\parskip}{1em}
+\noindent\textbf{\color{oiB}\small{\MakeUppercase{Info imporante}}} $\:$ \\
+\small}{\end{minipage}
+\end{mdframedwithfootTipDataPro}
+\vspace{4mm}
+}
+
+
+% comentario
+\newenvironment{comentario}{
+    \let\oldtextbf\textbf
+    \renewcommand{\textbf}[1]{{\textcolor{oiR}{\oldtextbf{##1}}}}
+\vspace{4mm}
+\begin{mdframedwithfootTipDataPro}
+\begin{minipage}[t]{0.10\textwidth}
+{$\:$ \\ \setkeys{Gin}{width=2.5em,keepaspectratio}\includegraphics{imagenes/iconos/007-browser.png}}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.90\textwidth}
+%\vspace{-2mm}
+\setlength{\parskip}{1em}
+\noindent\textbf{\color{oiB}\small{\MakeUppercase{Comentario adicional}}} $\:$ \\
+\small}{\end{minipage}
+\end{mdframedwithfootTipDataPro}
+\vspace{4mm}
+}
+
+% en-construccion
+\newenvironment{en-construccion}{
+    \let\oldtextbf\textbf
+    \renewcommand{\textbf}[1]{{\textcolor{oiR}{\oldtextbf{##1}}}}
+\vspace{4mm}
+\begin{mdframedwithfootTipDataPro}
+\begin{minipage}[t]{0.10\textwidth}
+{$\:$ \\ \setkeys{Gin}{width=2.5em,keepaspectratio}\includegraphics{imagenes/iconos/003-website.png}}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.90\textwidth}
+%\vspace{-2mm}
+\setlength{\parskip}{1em}
+\noindent\textbf{\color{oiB}\small{\MakeUppercase{En desarrollo}}} $\:$ \\
+\small}{\end{minipage}
+\end{mdframedwithfootTipDataPro}
+\vspace{4mm}
+}

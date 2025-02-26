@@ -1,0 +1,336 @@
+/*
+Tomado y adaptado de Introduction to Modern Statistics
+https://github.com/OpenIntroStat/ims/tree/main/scss
+12/1/25
+*/
+
+/*-- scss:defaults --*/
+
+$primary: #214e34ff !default;
+
+/*-- scss:rules --*/
+
+.sidebar-title {
+  color: #214e34ff;
+}
+
+div.sidebar-item-container .active {
+  font-weight: bold;
+}
+
+.sidebar nav[role=doc-toc] ul>li>a.active, .sidebar nav[role=doc-toc] ul>li>ul>li>a.active{
+  font-weight: bold;
+}
+
+/* Headings ------------------------------------------------------ */
+
+.quarto-section-identifier {
+  color: #165a32;
+  font-weight: normal;
+}
+
+.header-section-number {
+  padding-right: .2em;
+  font-weight: 500;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.3;
+  font-weight: bold;
+  color: #165a32; 
+}
+
+h1.title {
+  font-weight: 700;
+}
+
+h1 {
+  border-bottom: 3px solid;
+  border-top: 3px solid;
+  margin-bottom: 3rem;
+}
+
+h2 {
+  border-bottom: 3px solid #dd6e42ff;
+  border-top: 3px solid #dd6e42ff;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  color: #5A764D;
+  padding-top: 0.5rem;
+}
+
+h3 { 
+  margin-top: 1.5em; 
+  font-size: 1.2rem; 
+  border-top: 1px solid #f28f3bff;
+}
+
+h4 { margin-top: 1.5em; font-size: 1.1rem; }
+h5 { margin-top: 1.5em; font-size: 1rem; }
+
+
+.welcome h1 {
+  border-bottom: 0px solid;
+  border-top: 0px solid;
+}
+
+.welcome h2 {
+  border-bottom: 0px solid;
+  border-top: 0px solid;
+}
+
+
+/* Ambientes ---------------------------------------------- */
+
+.ejemplo {
+  padding: 1em 1em 1em 4em;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  background: #cfee9eff 5px center/3em no-repeat;  
+  border-top: 1px solid #5A764D;    
+  border-bottom: 1px solid #5A764D;
+  background-image: url("imagenes/iconos/code-review.png");
+  background-position: 0.5em 1em;
+}
+
+.ejercicio strong {
+  color: #5A764D; 
+}
+
+
+.ejemplo:before {
+  content: "Ejemplo";
+  clear: right;
+  display: block;
+  font-weight: bold;
+  font-variant: small-caps;
+  color: #5A764D;
+}
+
+.ejercicio {
+  padding: 1em 1em 1em 4em;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  background: #f7ddc6 5px center/3em no-repeat;
+  border-top: 1px solid #dd6e42ff;   
+  border-bottom: 1px solid #dd6e42ff;  
+  background-image: url("imagenes/iconos/008-edit-code.png");
+  background-position: 0.5em 1em;
+}
+
+.ejercicio strong {
+  color: #dd6e42ff; 
+}
+
+.ejercicio:before {
+  content: "Para resolver";
+  clear: right;
+  display: block;
+  font-weight: bold;
+  font-variant: small-caps;
+  color: #dd6e42ff;
+}
+
+.nota-base {
+  padding: 1em 1em 1em 4em;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  background: #F3F785 5px center/3em no-repeat;
+  border-top: 1px solid #766714;
+  border-bottom: 1px solid #766714;
+  background-position: 0.5em 1em;
+}
+
+.nota-base:before {
+  clear: right;
+  display: block;
+  font-weight: bold;
+  font-variant: small-caps;
+  color: #766714;
+}
+
+.nota-base strong {
+  color: #766714; 
+}
+
+.concepto {
+  @extend .nota-base;
+  background-image: url("imagenes/iconos/001-anchor.png");
+}
+
+.concepto:before {
+  content: "Concepto clave";
+}
+
+.info {
+  @extend .nota-base;
+  background-image: url("imagenes/iconos/010-review.png");
+}
+
+.info:before {
+  content: "Info importante";
+}
+
+.comentario {
+  @extend .nota-base;
+  background-image: url("imagenes/iconos/007-browser.png");
+}
+
+.comentario:before {
+  content: "Comentario adicional";
+}
+
+.presentacion-capitulo {
+  padding: 1em 1em 1em 4em;
+  margin-bottom: 10px;
+  background: #cfee9eff 5px center/3em no-repeat;
+  border-top: 3px solid #5A764D;    
+  border-bottom: 3px solid #5A764D; 
+  background-image: url("imagenes/iconos/006-clean-code.png");
+  background-position: 0.5em 1.5em;
+}
+
+.en-construccion { 
+  padding: 1em 1em 1em 4em;
+  margin-bottom: 10px;
+  font-weight: bold;
+  background: #ffb9b9 5px center/3em no-repeat; 
+  border-top: 1px solid #870000;    /* COL["red", "full"] */
+  border-bottom: 1px solid #870000; /* COL["red", "full"] */
+  background-image: url("imagenes/iconos/003-website.png");
+}
+
+
+
+
+
+
+/* Printing ------------------------------------------------ */
+
+@media print {
+  :root {
+    font-size: 11pt;
+  }
+  #quarto-sidebar, #TOC, .nav-page {
+    display: none;
+  }
+  .page-columns .content {
+    grid-column-start: page-start;
+  }
+  .fixed-top {
+    position: relative;
+  }
+  .panel-caption, .figure-caption, figcaption {
+    color: #214e34ff;
+  }
+}
+
+/* Other formatting --------------------------------------------------------*/
+
+p.caption {
+  color: #777;
+  margin-top: 10px;
+  text-align: left;
+}
+p code {
+  white-space: inherit;
+}
+pre {
+  word-break: normal;
+  word-wrap: normal;
+}
+pre code {
+  white-space: inherit;
+}
+p.flushright {
+  text-align: right;
+}
+blockquote > p:last-child {
+  text-align: right;
+}
+blockquote > p:first-child {
+  text-align: inherit;
+}
+
+/* Fonts */
+
+.smallcaps {
+  font-variant: small-caps;
+}
+.book .book-body .page-wrapper .page-inner section.normal strong {
+  font-weight: 600;
+}
+
+/* lightbox captions */
+
+.gslide-description {
+  font-size: 1.5em
+}
+
+/* OTRAS CONFIGURACIONES QUE ESTABAN EN EL ORIGINAL PERO LAS SACO, NO SE SI SIRVEN  */
+
+/*
+@import 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap';
+
+$font-family: "Atkinson Hyperlegible", sans-serif;
+$font-family-monospace: "Source Code Pro";
+*/
+
+/* moved this out of Chp 1 but not sure if it's being used anywhere */
+
+/*
+.column-left{
+  float: left;
+  width: 49%;
+  text-align: left;
+}
+.column-right{
+  float: right;
+  width: 49%;
+  text-align: left;
+}
+*/
+
+/* authorinfo */
+
+/*
+.authorinfo {
+  padding: 0em 0em 0em 0em;
+}
+*/
+
+/* Counting exercises */
+
+/*
+.exercises ol ol { 
+  list-style-type: lower-alpha !important; 
+}
+
+.exercises ol ol ol { 
+  list-style-type: lower-roman !important; 
+}
+
+.exercises strong {
+  color: #8dab7fff; 
+}
+*/
+
+/* Counting exercise solutions - odd numbers only */
+
+/*
+.exercises-solution ol {
+  counter-reset: odd-numbers -1;
+  list-style-type: none !important;
+}
+.exercises-solution li {
+  counter-increment: odd-numbers 2;
+}
+.exercises-solution li:before {
+  content: counter(odd-numbers) ". ";
+}
+.exercises-solution p {
+  display: inline;
+}
+*/
