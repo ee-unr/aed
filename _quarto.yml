@@ -20,9 +20,11 @@ book:
     - part: capitulos/01.qmd
       chapters:
         - capitulos/01_teoria_de_la_visualizacion.qmd
-    # - part: capitulos/02.qmd
-    #   chapters:
-    #     - capitulos/02_a_algo.qmd
+        - capitulos/01_buenas_practicas_visualizacion.qmd
+        - capitulos/01_introduccion_a_ggplot2.qmd
+    - part: capitulos/02.qmd
+      chapters:
+        - capitulos/02_Rmarkdown.qmd
     # - part: capitulos/90.qmd
     #   chapters:
     #     - capitulos/90_soluciones_01.qmd

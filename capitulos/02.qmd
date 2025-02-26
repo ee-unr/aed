@@ -1,0 +1,11 @@
+```{=latex}
+\thispagestyle{primerapagina}
+```
+
+# Unidad 2. R Markdown
+
+Presentación de la Unidad 2.
+
+::: {.en-construccion data-latex=""}
+Página en construcción.
+:::

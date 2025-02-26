@@ -1,0 +1,788 @@
+---
+title: "Introducción a `ggplot2`"
+subtitle: "Análisis Exploratorio de Datos | Licenciatura en Estadística | FCEyE | UNR"
+lang: es
+knitr:
+  opts_chunk: 
+    echo: true
+    message: false
+    warning: false
+    fig.align: center
+---
+
+<!-- themes: https://bootswatch.com/ -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(out.width = "60%")
+```
+
+# Introducción
+
+- En R existen tres sistemas para realizar gráficos: `base`, `lattice` y `ggplot2`.
+
+  - **Sistema `base`**: viene con la instalación básica de R y es el más limitado en cuanto a su potencial. Permite crear gráficos simples, de manera rápida y sencilla, lo cual resulta muy útil para análisis exploratorios que no requieran de mucha complejidad.
+
+  - **Sistema `lattice`**: está implementado en el paquete homónimo, el cual también viene con la instalación básica de R. Este sistema añade mucha más flexibilidad, pero su sintaxis es poco intuitiva y no muy clara. Si bien tuvo su pico de popularidad hace algunos años, cuando era la única alternativa al sistema `base`, hoy en día `lattice` ha quedado algo obsoleto.
+  
+  - **Sistema `ggplot2`**: ofrece la posibilidad de generar figuras de alta calidad y sumamente flexibles, basándose en desarrollos teóricos del campo de la visualización. Forma parte del `tidyverse`, un conjunto de paquetes de R que han revolucionado la programación orientada a ciencia de datos.
+
+- Debajo vemos diagramas de dispersión básicos realizados con los tres sistemas nombrados (de izquierda a derecha: `base`, `lattice` y `ggplot2`). Todos los gráficos poseen el mismo tamaño; notemos cómo `ggplot2` hace un uso casi total del área disponible, mientras que el sistema `base` posee por defecto márgenes muy extensos:
+
+```{r, eval=FALSE, echo=FALSE}
+plot(iris$Sepal.Length, iris$Sepal.Width)
+lattice::xyplot(Sepal.Width ~ Sepal.Length, data = iris)
+ggplot(data = iris) + aes(x = Sepal.Length, y = Sepal.Width) + geom_point()
+```
+
+```{r, echo=FALSE, out.width = "90%"}
+knitr::include_graphics('sistemas.png')
+```
+
+- A lo largo de este material vamos a usar un conjunto de datos que ofrece `ggplot2` llamado `msleep`, el cual presenta datos sobre características del sueño de 83 especies de mamíferos. 
+
+- Ejecutando `data(msleep)` cargamos estos datos en nuestro ambiente de trabajo:
+
+```{r}
+library(ggplot2)
+msleep
+```
+
+# El sistema `ggplot2`
+
+```{r, echo=FALSE, out.width="25%"}
+knitr::include_graphics('ggplotlogo.jpg')
+```
+
+- `gg` viene de *Grammar of Graphics* (gramática de gráficos), un libro escrito por Leland Wilkinson en 1999, donde hace un desarrollo teórico para la construcción de gráficos.
+
+```{r, echo=FALSE, out.width="25%"}
+knitr::include_graphics('ggbook.jpg')
+```
+
+- Así como la gramática de un lenguaje estudia la estructura de las palabras, la manera en que estas se combinan y las reglas que hay que seguir para formar oraciones, la gramática de gráficos de Wilkinson provee un sistema para combinar elementos gráficos que dan como resultado figuras visualmente significativas.
+- Este sistema se convirtió en la inspiración de muchas aplicaciones gráficas populares, como *Polaris* de Tableau, Vega-Lite, *plotnine* de Python, etc.
+- Hadley Wickham (CEO de RStudio) fue uno de los primeros en implementar este sistema en un lenguaje de computación, con algunas variantes, cuando creó el paquete de R `ggplot2`.
+- La idea fundamental es pensar a un gráfico como una superposición de elementos que lo componen, llamadas capas o *layers*:
+
+```{r, echo=FALSE, out.width="70%"}
+knitr::include_graphics('gg0.png')
+```
+  
+  - **Datos** (*data*): es el dataset que queremos representar. Debe estar almacenado en formato ordenado (*tidy*), es decir, con un individuo por fila y una variable por columna.
+  - **Mapeo estético** (*aesthetic mapping*): describe cómo las variables en el dataset se vinculan con las estéticas (características visuales) de un gráfico. Por ejemplo, esta capa nos permite definir cuál es la variable que va en la estética de posición del eje horizontal, cuál en la posición del eje vertical, si se utilizará alguna estética de color, forma, tamaño, etc. El mapeo estético logra que todas las capas del gráfico queden interrelacionadas.
+  - **Geometrías** (*geometries, geoms*): definen la manera en que los datos se representan en el gráfico: a través de puntos, líneas, barras, etc. Determinan el aspecto principal del gráfico.
+  - **Escalas** (*scales*): controlan los detalles de la asociación biunívoca establecida entre los datos y la estética en cuestión. Usamos estas capas si queremos cambiar las configuraciones por default, por ejemplo, los límites de los ejes en las estéticas de posición, los colores asignados a cada grupo en una estética de color, etc.
+  - **Estadísticas** (*stats*): transforman las variables de entrada para mostrar estadísticas resumen o resultados de métodos estadísticos, por ejemplo, una recta ajustada.
+  - **Paneles** (*facet*): permite dividir el gráfico original en varios paneles distintos, uno para cada grupo posible definido por cierta variable categórica o discreta.
+  - **Coordenadas** (*coordinates*): determinan el sistema de coordenadas que emplea el gráfico para representar los datos. El default es el sistema de coordenadas cartesianas, requerido por la mayoría de los gráficos que utilizamos. Este conjunto de capas permite aplicar transformaciones (por ejemplo, usar escalas logarítmicas), trasponer el sistema (intercambiar ejes X e Y), fijar la relación de aspecto de las unidades en los ejes, etc., o directamente optar por otros sistemas de coordenadas como las polares.
+  - **Estilos** (*themes*): controlan el aspecto general del gráfico en cuestiones que no tienen que ver con los datos, por ejemplo, si queremos el título en negrita o el fondo blanco. Es decir, controla la parte estética (en el sentido usual de la palabra) o lo que se conoce como "tinta libre de datos" (*non-data ink*).
+
+::: {.callout-tip}
+## Aplicación
+
+A continuación, construiremos paso a paso un **diagrama de dispersión** entre las variables cantidad total de horas de sueño (`sleep_total`) y la cantidad de horas de sueño en la [fase REM](https://es.wikipedia.org/wiki/Sue%C3%B1o_de_movimientos_oculares_r%C3%A1pidos) (`sleep_rem`), presentes en el dataset sobre patrones de sueño de animales mamíferos.
+
+:::
+
+## data, mapping & geom
+
+- Un gráfico se inicia con la función `ggplot()`, en la que se indica cuál es el conjunto de datos a emplear.
+
+```{r, echo=F, out.width="60%"}
+knitr::include_graphics("gg1.png")
+```
+
+```{r}
+ggplot(data = msleep)
+```
+
+- Al correr esto podemos apreciar en el panel de Gráficos cómo nuestro *lienzo se prepara para que pintemos algo sobre él*, pero todavía no muestra nada. Es porque aún nos falta señalar otras capas esenciales, por ejemplo, la del mapeo.
+
+```{r, echo=F, out.width="60%"}
+knitr::include_graphics("gg2.png")
+```
+
+- Dado que queremos hacer un diagrama de dispersión de `sleep_total` vs `sleep_rem`, vamos a mapear la variable `sleep_rem` al elemento de mapeo $x$ y la variable `sleep_total` al elemento de mapeo $y$.
+
+- Esto se hace sumando una capa al código inicial, con el operador `+`. Esta capa consiste en invocar a la función `aes()`, dentro de la cual elegimos los elementos de mapeo que nos interesan.
+
+```{r, echo=T}
+ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total)
+```
+
+- La cosa va tomando forma: al menos ahora podemos ver que las variables fueron mapeadas tal como lo planeamos. 
+- Sin embargo, el gráfico está vacío porque a pesar de que elegimos qué poner en cada eje, no indicamos cómo queremos que aparezcan los datos. 
+- Nos falta un tercer elemento esencial, un **geometry**. Sin al menos una capa con un *geometry* no tendremos ninguna visualización.
+- Por ejemplo, para un gráfico de dispersión, lo que necesitamos son puntos:
+
+```{r, echo=F, out.width="60%"}
+knitr::include_graphics("gg3.png")
+```
+
+```{r}
+ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total) +
+  geom_point()
+```
+
+- ¡Ya tenemos listo nuestro primer gráfico con `ggplot2`! Lo mostrado hasta aquí es la base, lo que no puede faltar; a partir de ahora podemos considerar incluir o no los restantes elementos.
+
+- Probemos agregar un mapeo adicional. Por ejemplo, si queremos que el color de los puntos esté *mapeado* a la variable `vore` (tipo de alimentación: herbívoro, carnívoro, etc.), debemos agregar la opción `color = vore` en la capa de estéticas.
+
+- De esta manera asociamos el color de todos nuestros *geoms* con la variable `vore`, y además se crea automáticamente la leyenda correspondiente:
+
+```{r}
+ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total, color = vore) +
+  geom_point()
+```
+
+## scales
+
+- Si ahora queremos modificar las configuraciones elegidas por default para cada uno de los mapeos, necesitamos invocar a las capas de *scales*:
+
+```{r, echo=F, out.width="60%"}
+knitr::include_graphics("gg4.png")
+```
+
+- Por ejemplo, modificamos límites, nombres de los ejes y la paleta de colores:
+
+```{r}
+ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total, color = vore) +
+  geom_point() +
+  scale_x_continuous(name = "Sueño REM (horas)") +
+  scale_y_continuous(
+    name = "Sueño total (horas)", 
+    limits = c(0, 25), 
+    breaks = seq(0, 25, 5)
+    ) +
+  scale_color_brewer(name = "Alimentación", palette = "Dark2", na.value = "black")
+```
+
+## stats
+
+- Podemos agregar una nueva capa con un elemento de tipo *stats*, por ejemplo para agregar una recta de regresión lineal simple (*esto sólo es un ejemplo, deberíamos evaluar si es adecuado ajustar este tipo de modelo o no*).
+
+```{r, echo=F, out.width="60%"}
+knitr::include_graphics("g5.png")
+```
+
+```{r, echo=T, tidy=F}
+ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total, color = vore) +
+  geom_point() +
+  scale_x_continuous(name = "Sueño REM (horas)") +
+  scale_y_continuous(
+    name = "Sueño total (horas)", 
+    limits = c(0, 25), 
+    breaks = seq(0, 25, 5)
+    ) +
+  scale_color_brewer(name = "Alimentación", palette = "Dark2", na.value = "black") +
+  stat_smooth(method = "lm", se = FALSE)
+```
+
+- Como en el gráfico ya existe el mapeo entre el color y la categoría, vemos que automáticamente tenemos una recta de regresión para cada grupo.
+- Si quisiéramos una única recta para todos los datos, tendríamos que hacerlo de la siguiente forma (la diferencia es muy sutil pero importante):
+
+```{r}
+ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total) +
+  geom_point(mapping = aes(color = vore)) +
+  scale_x_continuous(name = "Sueño REM (horas)") +
+  scale_y_continuous(
+    name = "Sueño total (horas)", 
+    limits = c(0, 25), 
+    breaks = seq(0, 25, 5)
+    ) +
+  scale_color_brewer(name = "Alimentación", palette = "Dark2", na.value = "black") +
+  stat_smooth(method = "lm", se = FALSE)
+```
+
+## facets
+
+- Un elemento de tipo **facet** creará un panel distinto para cada categoría de la variable indicada:
+
+```{r, echo=F, out.width="60%"}
+knitr::include_graphics("g6.png")
+```
+
+```{r}
+ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total) +
+  geom_point() +
+  scale_x_continuous(name = "Sueño REM (horas)") +
+  scale_y_continuous(
+    name = "Sueño total (horas)", 
+    limits = c(0, 25), 
+    breaks = seq(0, 25, 5)
+    ) +
+  scale_color_brewer(name = "Alimentación", palette = "Dark2", na.value = "black") +
+  stat_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~ vore)
+```
+
+## coordinates
+
+- Para ejemplificar las modificaciones al sistema de coordenadas aplicaremos una transformación logarítmica, que en este caso puede servir para visualizar mejor la relación entre las horas de sueño y el peso corporal, ya que esta última posee una distribución muy asimétrica:
+
+```{r, echo=F, out.width="60%"}
+knitr::include_graphics("g7.png")
+```
+
+```{r}
+ggplot(data = msleep) +
+  aes(x = bodywt, y = sleep_total) +
+  geom_point()
+```
+
+- Indicando que deseamos calcular logaritmos en base 10, el nuevo gráfico resulta:
+
+```{r}
+ggplot(data = msleep) +
+  aes(x = bodywt, y = sleep_total) +
+  geom_point() +
+  coord_trans(x = "log10") +
+  scale_x_continuous(
+    name = "Peso corporal (kg.)", 
+    breaks = c(0.005, 1, 10, 100, 1000),
+    labels = c(0.005, 1, 10, 100, 1000)
+    )
+```
+
+## themes
+
+- Finalmente podemos modificar el aspecto general con una o varias capas de **estilo** (hay estilos predefinidos o personalizados, por ejemplo los de [ggthemes](https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/) o [ggthemr](https://github.com/Mikata-Project/ggthemr)):
+
+```{r, echo=FALSE, out.width="60%"}
+knitr::include_graphics("g8.png")
+```
+
+```{r}
+ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total) +
+  geom_point() +
+  scale_x_continuous(name = "Sueño REM (horas)") +
+  scale_y_continuous(
+    name = "Sueño total (horas)", 
+    limits = c(0, 25), 
+    breaks = seq(0, 25, 5)
+    ) +
+  scale_color_brewer(name = "Alimentación", palette = "Dark2", na.value = "black") +
+  stat_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~ vore) +
+  theme_bw()
+```
+
+::: {.callout-note}
+
+### Ejercicio
+
+Reproducir el siguiente gráfico que analiza las horas diarias de sueño según el tipo de alimentación de cada mamífero, a través de histogramas:
+
+```{r, echo=FALSE}
+ggplot(data = msleep) +
+  aes(x = sleep_total) +
+  geom_histogram(fill = "red", col = "blue", breaks = seq(0, 21, 3)) +
+  facet_wrap(~ vore) +
+  scale_x_continuous("Sueño total (horas)", breaks = seq(0, 21, 3)) +
+  scale_y_continuous("Frecuencia absoluta", breaks = seq(0, 12, 4)) +
+  theme_bw() +
+  ggtitle("Horas diarias de sueño de los mamíferos según tipo de alimentación")
+```
+
+- **Consejo**: avanzar de a poco, aprovechando el estilo de construcción gradual de `ggplot2`: comenzar por lo más importante (que aparezca un histograma), seguido de lo intermedio (que aparezcan paneles), dejando para el final los detalles (ejes, colores).
+
+- **Ayuda**: el *geom* a usar es `geom_histogram` (ver argumento `breaks` para determinar los límites de cada barra). El título se puede colocar con la capa `ggtitle()` o bien con la capa `labs()`
+
+:::
+
+# Nociones útiles sobre `ggplot2`
+
+## Modificar las opciones por default de un geometry
+  
+- Veamos un ejemplo donde cambiamos el color, el tamaño, la forma y la transparencia de los puntos:
+
+```{r}
+ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total) +
+  geom_point(color = "blue", fill = "green", size = 5, shape = 23, alpha = 0.5)
+```
+
+- En este ejemplo hemos modificado características para todos los puntos, las cuales se definen dentro del *geom* correspondiente (*geom_point*) y no forman parte de la función `aes()`.
+
+- Otra cosa distinta es, como hicimos antes, establecer para todo el gráfico que el color esté vinculado a la variable *vore*, lo cual es un mapeo estético definido dentro de `aes()` que **afecta a todas las capas** del gráfico.
+
+- Una especificación fija del color dentro de `geom_point()` sobreescribe el mapeo de color de `aes()`:
+
+```{r}
+ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total, color = vore) +
+  geom_point(size = 2, color = "red")
+```
+
+::: {.callout-note}
+
+### Ejercicio
+
+- Tratar de reproducir el siguiente gráfico:
+
+```{r, echo=F}
+ggplot(data = msleep) +
+  aes(x = log(bodywt), y = log(brainwt), color = conservation) +
+  geom_point(shape = 17, size = 3)
+```
+
+- **Ayuda:** guía de símbolos:
+
+```{r, echo=F, out.width="50%"}
+knitr::include_graphics("points-symbols.jpg")
+```
+
+:::
+
+## Otras opciones para las *scales*
+
+- Como dijimos antes, las capas que permiten hacer modificaciones sobre los mapeos establecidos comienzan con `scale_`.
+- Luego, el nombre sigue con el mapeo que queremos editar (`x_`, `y_`, `color_`, `shape_`, etc.) y termina con una palabra que describe cómo es ese mapeo: `continuous` (para variables continuas), `discrete` (para variables categóricas), `manual` (para asignar manualmente los colores que deseamos), etc.
+- Por ejemplo, ya vimos que podemos usar una paleta de colores predefinida, pero también podríamos elegir los colores manualmente con `scale_color_manual()`:
+
+```{r, results='hold'}
+# limits = identity para que NA esté en la leyenda, y no sólo los que elegimos a mano
+ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total, color = vore) +
+  geom_point(size = 2) +
+  scale_color_manual(name = "Alimentación", 
+                     values = c("carni" = "red", "herbi" = "orange", 
+                                "insecti" = "blue", "omni" = "green"), 
+                     na.value = "black", limits = identity)
+```
+
+<!-- https://github.com/tidyverse/ggplot2/issues/5214 -->
+
+- Cambiar el orden de las categorías en la leyenda:
+
+```{r}
+ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total, color = vore) +
+  geom_point(size = 2) +
+  scale_color_manual(name = "Alimentación", 
+                     values = c(
+                       "carni" = "red", "herbi" = "orange", 
+                       "insecti" = "blue", "omni" = "green"), 
+                     na.value = "black", 
+                     limits = c("omni", "herbi", "insecti", "carni", NA))
+```
+
+- Mapear una variable continua para el color:
+
+```{r}
+ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total, color = awake) +
+  geom_point(size = 2) 
+```
+
+- Cambiar la escala de colores:
+
+<!-- https://www.datanovia.com/en/blog/top-r-color-palettes-to-know-for-great-data-visualization/ -->
+
+```{r}
+# De forma manual
+ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total, color = awake) +
+  geom_point(size = 2) +
+  scale_color_continuous(low = "orange", high = "darkred")
+
+# Con paletas predefinidas
+ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total, color = awake) +
+  geom_point(size = 2) +
+  scale_colour_distiller(palette = "Greens")
+```
+
+## Crear un objeto de clase `ggplot`
+
+- Es posible guardar nuestros gráficos en un objeto de R, dentro del ambiente de trabajo. Esto tiene varias ventajas y generalmente lo hacemos cuando:
+
+    - el gráfico creado sirve como "base" y queremos seguir trabajándolo más adelante, agregándole otras capas.
+    - deseamos guardarlo como un archivo en nuestra compu (exportarlo).
+    - necesitamos programar la generación de decenas o cientos de figuras como parte de un proyecto, donde tal vez no nos dedicamos a ver una por una.
+
+
+- Ejemplo:
+
+```{r}
+graf1 <- ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total, color = vore) +
+  geom_point(size = 2)
+
+# Versión básica
+graf1
+
+# Versión con título
+graf1 + 
+  ggtitle("Relación entre el sueño total y el sueño REM, según alimentación")
+
+# Podemos crear una nueva versión, con título y alguna otra modificación
+graf2 <- graf1 + 
+  ggtitle("Relación entre el sueño total y el sueño REM, según alimentación") +
+  scale_x_continuous(breaks = 0:7, limits = c(0, 7)) +
+  scale_y_continuous(breaks = seq(0, 20, 4), limits = c(0, 20))
+  
+graf2
+```
+
+## Exportar gráficos 
+
+- Mencionamos dos alternativas:
+
+    1. En la pestaña `Plots` de RStudio, usando el botón `Export`. 
+
+        - Proporciona opciones para copiar el gráfico en el portapapeles o guardarlo como archivo (formatos .png, .jpg, .tiff, .pdf, entre otros).
+        - El cuadro de diálogo es muy útil para especificar el tamaño de la figura y su resolución.
+    
+    2. Con la función `ggsave()` del paquete `ggplot2`.
+
+        - Es muy fácil de usar, y sobre todo, muy útil para agregar en nuestro script si tenemos que hacer muchos gráficos.
+        - Por default guarda el último gráfico creado, o podemos indicarle el que nosotros queramos haciendo referencia a un objeto ya creado.
+        - Identifica el formato automáticamente a partir de la extensión que pongamos en el nombre del archivo.
+        
+```{r, eval=F}
+ggsave("miGrafico.pdf", graf2)
+ggsave("miGrafico.jpg", graf2, width = 8, height = 5, units = "cm")
+```
+
+::: {.callout-note}
+
+### Ejercicio
+
+- Crear un gráfico de boxplots para la variable *awake* según las categorías de *vore*, tal cual figura a continuación, y guardarlo en un archivo llamado **boxplot.png** que tenga 20 cm. de ancho y 15 cm. de alto.
+
+```{r, echo=FALSE}
+ej_boxplot <- ggplot(data = msleep) +
+  aes(x = awake, fill = vore) +
+  geom_boxplot() +
+  scale_x_continuous(limits = c(0, 25)) +
+  ggtitle("Diagramas de caja: awake según vore")
+
+ej_boxplot
+
+#ggsave(ej_boxplot, filename = "boxplot.png", width = 20, height = 15, units = "cm")
+```
+
+::::
+
+## Otras opciones para los *themes*
+
+- Los argumentos de la capa `theme()` tienen nombres compuestos por palabras claves separadas por puntos.
+- La primera palabra clave indica el elemento a editar (por ejemplo, `legend`).
+- La segunda palabra clave indica qué aspecto le cambiaremos (por ejemplo, `legend.position`).
+- Esta opción sirve, justamente, para cambiar la posición de la leyenda:
+
+```{r}
+graf2 + theme(legend.position = "bottom")
+```
+
+- Leyenda dentro de la figura:
+
+```{r}
+graf2 + 
+  theme(legend.position = c(0.9, 0.3))
+```
+
+- Los valores (0.9, 0.3) indican que el **punto medio de la leyenda** (el centro del rectángulo) se ubica a la altura del 90% de la extensión del eje X, y al 30% de la altura de extensión del eje Y. Para justificar la leyenda usando otros criterios (por ejemplo, definir las coordenadas del punto inferior izquierdo) usamos la opción `legend.justification`:
+
+```{r}
+graf2 + 
+  theme(
+    legend.position = c(0.9, 0.3),
+    legend.justification = c(0, 0)
+    )
+```
+
+- Hay 4 tipos de elementos que afectan distintos componentes del gráfico dentro de la función `theme()`:
+
+    - `element_rect()`: para modificar la apariencia de elementos rectangulares, como el fondo del gráfico o de la leyenda, etc.
+    - `element_line()`: modifica líneas de los ejes, de la cuadrícula del fondo, el borde del gráfico, los ticks de los ejes, etc.
+    - `element_text()`: modifica el título, los títulos de los ejes, el texto de la leyenda, etc.
+    - `element_blank()`: para eliminar un componente.
+
+- Por ejemplo, para cambiar el rectángulo de la leyenda:
+
+```{r}
+graf2 + 
+  theme(
+    legend.position = c(1, 0), 
+    legend.justification = c(1, 0),
+    legend.background = element_rect(fill = "transparent", 
+                                     color = "black", linetype = "solid")
+  )
+```
+
+- Los textos dependen de `element_text()`, por ejemplo:
+
+```{r}
+graf2 + 
+  theme(
+    legend.position = c(1, 0), 
+    legend.justification = c(1, 0),
+    legend.background = element_rect(fill = "transparent", 
+                                     color = "black", linetype = "solid"),
+    legend.text = element_text(colour = "blue", size = 16, face = "bold"),
+    legend.title = element_text(colour = "purple", size = 16, face = "bold")
+	)
+```
+
+- Las opciones para editar los ejes comienzan con `axis`:
+
+```{r}
+graf2 + 
+	theme(
+    legend.position = c(1, 0), 
+    legend.justification = c(1, 0),
+    legend.background = element_rect(fill = "transparent", 
+                                     color = "black", linetype = "solid"),
+    legend.text = element_text(colour = "blue", size = 16, face = "bold"),
+    legend.title = element_text(colour = "purple", size = 16, face = "bold"),
+    axis.title.x = element_text(color = "forestgreen", size = 18, face = "italic"),
+    axis.title.y = element_text(color = "orange", size = 18, face = "italic"),
+    axis.text = element_text(color = "red", face = "bold")
+	)
+```
+
+- Se pueden eliminar componentes con `element_blank()`:
+
+```{r}
+graf2 + 
+	theme(
+	    axis.title = element_blank(),
+	    axis.text = element_blank(),
+	    axis.ticks = element_blank(),
+	    panel.grid = element_blank(),
+	    plot.title = element_blank(),
+	    legend.position = "none"
+	)
+```
+
+- Como vimos, hay *themes* predeterminados, por ejemplo:
+
+```{r}
+graf2 + theme_linedraw()
+```
+
+- Y también se pueden instalar paquetes de R que traen muchos más *themes*:
+
+	- `ggthemes`
+	- `ggthemr`
+	- `tvthemes`
+	- `ggtech`
+	- `hrbrthemes`
+
+Ejemplo con `ggthemes`:
+
+```{r}
+library(ggthemes)
+graf2 + theme_solarized()
+```
+
+## Colores
+
+- R usa el sistema **hexadecimal** para representar colores. Este sistema mezcla las intensidades de los colores rojo, verde y azul (**RGB** por sus siglas en inglés) usando una escala de 16 valores: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E y F.
+
+- La representación de un color específico emplea el símbolo numeral ('#') seguido de 2 valores correspondientes al color rojo, 2 valores para el verde y 2 valores para el azul. Podemos pensar que la escala mencionada anteriormente va desde el 00 (ausencia del color) hasta el FF (máxima intensidad de ese color).
+
+- Veamos algunos ejemplos:
+
+```{r}
+library(scales)
+show_col(c(
+  "#FF0000", "#00FF00", "#0000FF",
+  "#880000", "#88FF00", "#8800FF",
+  "#000000", "#FFFFFF", "#888888")
+  )
+```
+
+- Dado que contamos con $16 \times 16 = 256$ valores posibles para intensidades de cada uno de los 3 colores, la cantidad total de tonalidades disponibles asciende a $256^3 = 16.777.216$.
+
+- Algunas de estas más de 16 millones de combinaciones posibles poseen nombres específicos en R. No necesitamos acordarnos que el color rojo posee un código hexadecimal igual a "#FF0000", ya que podemos escribirlo directamente como `"red"`.
+
+- El listado completo de colores con nombre propio en R puede consultarse mediante la función `colors()`. Debajo los vemos en una paleta interactiva:
+
+```{r, echo=FALSE, out.width="99%"}
+
+#https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf
+
+library(plotly)
+library(gplots)
+library(tidyverse)
+
+grilla <- expand.grid(x = 1:26, y = 1:26) %>% 
+  filter(!(y == 1 & x >= 8))
+
+rgbs <- t(col2rgb(colors())) %>% 
+  as.data.frame() %>% 
+  mutate(
+    color = colors(),
+    hex = col2hex(color),
+    texto = paste0(
+      "<b>Nombre:</b> ", color, "<br>",
+      "<b>Código HEX:</b> ", hex
+    )
+    ) %>% 
+  arrange(red, green, blue) %>% 
+  mutate(color = factor(color, levels = color)) %>% 
+  bind_cols(grilla)
+
+paletas <- ggplot(data = rgbs) +
+  aes(x = x, y = y, fill = color, text = texto) +
+  geom_tile() +
+  scale_fill_manual(values = as.character(rgbs$color)) +
+  #geom_label(aes(label = color)) +
+  theme_minimal() +
+  theme(
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank(),
+    plot.title = element_blank(),
+    legend.position = "none"
+    )
+
+ggplotly(paletas, tooltip = "text")
+
+```
+
+- Una vez que ya elegimos los colores que más nos gustan, podemos escribir su código hexadecimal en la función `scale_` correspondiente:
+
+```{r}
+ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total, color = awake) +
+  geom_point(size = 2) +
+  scale_color_continuous(low = "#54FF9F", high = "#0B0B61")
+```
+
+- Elegir colores "a dedo" puede ser cansador, ya que como vimos, hay millones de posibilidades. Muchas veces la opción más cómoda es utilizar paletas creadas por expertos en teoría del color, de las cuales R ofrece varias posibilidades.
+
+- Unas de las más conocidas son las paletas de Brewer, mencionadas en la primera clase de la materia:
+
+```{r, echo=F}
+#library(RColorBrewer)
+#display.brewer.all()
+knitr::include_graphics("colores.jpg")
+```
+
+- Ya vimos ejemplos de cómo usarlas mediante las funciones `scale_color_brewer()` (valores discretos) o bien `scale_color_distiller()` (valores continuos).
+
+- Otras paletas que vale la pena mencionar son las del paquete `viridis`:
+
+```{r, echo=FALSE}
+knitr::include_graphics("viridis.png")
+```
+
+- Estas paletas poseen dos ventajas importantes: son **aptas para personas con diferentes grados de daltonismo** ([más info acá](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html)) y mantienen su uniformidad cuando se las imprime en blanco y negro.
+
+- Ejemplo de uso:
+
+```{r}
+library(viridis)
+
+ggplot(data = msleep) +
+  aes(x = sleep_rem, y = sleep_total, color = awake) +
+  geom_point(size = 2) +
+  scale_color_viridis(option = "inferno")
+```
+
+- Para más información sobre el uso de colores en R y otros tipos de paletas, recomendamos leer [este post de DataNovia](https://www.datanovia.com/en/blog/top-r-color-palettes-to-know-for-great-data-visualization/).
+
+# Extensiones de `ggplot2`
+
+- Existen muchos libros gratuitos que enseñan sobre visualización con `ggplot2`. Si bien una búsqueda rápida en Google revela decenas de posibilidades, mencionamos sólo 2 de los más populares:
+
+    - [ggplot2: Elegant Graphics for Data Analysis - Hadley Wickham](https://ggplot2-book.org/)
+    - [R Graphics Cookbook - Winston Chang](https://r-graphics.org/)
+    
+- Además, hay paquetes con funciones muy útiles que extienden la cantidad de cosas que se pueden hacer con `ggplot2`, las cuales generalmente están pensadas para facilitar la interpretación de resultados de algún tipo de análisis en particular. 
+
+- Algunos paquetes que vale la pena explorar son:
+
+  - [GGally](http://ggobi.github.io/ggally)
+  - [ggfortify](https://CRAN.R-project.org/package=ggfortify)
+  - [ggforce](https://CRAN.R-project.org/package=ggforce)
+  - [ggrepel](https://CRAN.R-project.org/package=ggrepel)
+  - [gganimate](https://CRAN.R-project.org/package=gganimate)
+  - [patchwork](https://CRAN.R-project.org/package=patchwork)
+  - [plotly](https://CRAN.R-project.org/package=plotly)
+
+
+- Veamos a continuación algunos ejemplos desarrollados con estas herramientas.
+
+### GGally{-}
+
+- Este paquete ofrece muchas herramientas interesantes, entre ellas, la función `ggpairs()` que permite hacer **matrices de gráficos** para ver la relación de a pares entre conjuntos de variables:
+
+```{r, echo=F}
+knitr::include_graphics("ggpairs1.jpg")
+```
+
+```{r, echo=F}
+knitr::include_graphics("ggpairs2.jpg")
+```
+
+```{r, echo=F}
+knitr::include_graphics("ggpairs3.jpg")
+```
+
+### ggforce{-}
+
+- Se publicita como un paquete con nuevas `geoms_` para extender el potencial del `ggplot2` original. Vemos por ejemplo el uso de una elipse para agregar anotaciones:
+
+```{r}
+library(ggforce)
+
+ggplot(data = msleep) +
+  aes(x = log(bodywt), y = log(sleep_total), color = vore) +
+  geom_point() + 
+  geom_mark_ellipse(
+    aes(
+      filter = bodywt >= 1000,
+      label = "Animales con peso mayor a 1 Tn.",
+      description = "Elefante asiático y elefante africano"
+    ),
+    show.legend = FALSE
+  )
+```
+
+### ggfortify{-}
+
+- Implementa gráficos en `ggplot2` para salidas de métodos estadísticos como modelos lineales, curvas de supervivencia, regresiones penalizadas, georreferenciamiento, series de tiempo, componentes principales, clustering, etc.
+
+```{r, echo=F}
+knitr::include_graphics("ggfortify.jpg")
+```
+
+### ggrepel{-}
+
+- Ofrece algoritmos que optimizan la ubicación de etiquetas dentro del gráfico:
+
+```{r}
+library(ggrepel)
+
+graf1 +
+	geom_label_repel(aes(label = name), show.legend = FALSE)
+```
+
+### patchwork{-}
+
+- Facilita la unión de diferentes gráficos en una sola figura:
+
+```{r}
+library(patchwork)
+
+graf1 + graf2 + 
+  plot_layout(nrow = 2, heights = c(0.3, 0.7))
+```
+
+### gganimate y plotly{-}
+
+- Ofrecen herramientas para la creación de gráficos animados. Los presentaremos en las próximas unidades de la materia.

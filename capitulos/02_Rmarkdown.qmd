@@ -1,0 +1,803 @@
+---
+title: "Comunicación de Resultados: R Markdown"
+subtitle: "Análisis Exploratorio de Datos | Licenciatura en Estadística | FCEyE | UNR"
+lang: es
+knitr:
+  opts_chunk: 
+    echo: true
+    message: false
+    warning: false
+    fig.align: center
+---
+
+<!-- themes: https://bootswatch.com/ -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, fig.align = "center", out.width = "75%")
+```
+
+# Introducción
+
+* Los contenidos de esta unidad están motivados por el concepto de **comunicación eficiente**.
+
+* Esta idea se encuentra íntimamente ligada al contexto en el cual nos desempeñamos. No es lo mismo escribir una tesis académica, que un reporte para uso interno dentro de una empresa, que generar un informe que será publicado en redes sociales. La manera en que presentamos los resultados, el lenguaje que utilizamos, el formato de salida y muchas otras características dependerán del público al que va dirigido el mensaje.
+
+* Como ya sabemos, la aparición de nuevas herramientas informáticas ha revolucionado la manera en que nos comunicamos, no sólo a través del lenguaje oral, sino también del escrito. En particular, consideramos que existen dos paradigmas muy arraigados que necesitan ser repensados (no eliminados) dado el contexto actual:
+
+
+    1. El concepto de informe **estático**, generalmente impreso en papel o compartido en formato Word, PDF, PowerPoint, etc. En ocasiones es aconsejable otorgarle cierto poder de decisión al usuario/a que leerá el informe, dándole la posibilidad de elegir qué variables o categorías graficar, cómo ordenar las tablas presentadas, etc. En este sentido, repasaremos algunas herramientas para dinamizar y hacer interactivos los informes que elaboramos: **R Markdown**, y más adelante, **R Shiny** y **Power BI**.
+
+    2. El concepto de informe **definitivo**. Muchas veces parece que hemos llegado a un punto final, a partir del cual no hay lugar para la actualización, la mejora o la revisión del trabajo realizado. ¿Qué pasa si descubrimos un error de carga en los datos y es necesario cambiar todos los resultados? O bien, ¿qué hacemos si hay nueva información disponible y también queremos actualizar el material? En este punto, R sale otra vez al rescate, gracias a su flujo de trabajo **integrado** y fácilmente **reproducible**.
+
+* Para reproducir los ejemplos de este apunte, necesitamos los siguientes paquetes:
+
+```{r}
+library(DT)
+library(kableExtra)
+library(tinytex)
+library(tidyverse)
+library(knitr)
+library(rmarkdown)
+```
+
+**Disclaimer:** la autoría de este material corresponde en parte al profesor Marcos Prunello.
+
+# Qué es R Markdown
+
+* En R, la posibilidad de entrelazar el análisis estadístico con la generación de reportes se logra a través de **R Markdown** y todos sus productos derivados. Estas herramientas pueden ser utilizadas, entre otras cosas, para construir:
+
+
+    * Informes o reportes laborales
+    * Presentaciones con diapositivas
+    * Artículos académicos (papers)
+    * Páginas web
+    * Blogs
+    * Libros (sí, libros enteros)
+
+<p></p>
+
+* Estamos acostumbrados a realizar estas tareas con diferentes programas: Word para documentos que contienen una gran cantidad de texto, PowerPoint para presentaciones, Excel para reportes que incluyen tablas y gráficos, etc. ¿Por qué deberíamos pensar en cambiar estas costumbres? Existen tres razones que podemos agregar a los ya mencionados cambios de paradigma:
+
+
+    1. **Integración:** si trabajamos con R podemos llevar a cabo todos los pasos del proceso de análisis mediante el mismo software (no más copiado y pegado de resultados de R a otros programas). Es posible escribir artículos, lanzar páginas web o publicar libros sin salir de RStudio.
+    
+    2. **Replicación:** la estructura de trabajo de R Markdown facilita su replicabilidad, ya que gracias a la mencionada integración, todos los pasos del proceso se encuentran contenidos en un solo lugar: lectura y limpieza de datos, análisis estadístico, ajuste de modelos, escritura de texto y conclusiones, generación de un reporte que incluya resultados, tablas, gráficos, código utilizado, etc. [Algunos autores](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6255984/) definen la replicación como una parte esencial del método científico.
+    
+    3. **Salto de Categoría:** la calidad de los archivos generados y las opciones de personalización que podemos alcanzar con R son enormes, dándole un aspecto mucho más profesional a nuestro trabajo.
+
+
+* Pero, ¿qué es **Markdown**? Es el nombre de un lenguaje de *marcado ligero* que sirve para producir distintos tipos de documentos, a partir de una sintaxis donde las sentencias incluyen exclusivamente el uso de caracteres básicos. Además, se guardan en archivos de texto plano, sin formato.
+
+* Si bien este lenguaje fue desarrollado originalmente para producir textos de páginas web y así simplificar la escritura de código HTML, su diseño permite convertir un documento de tipo *markdown* a una gran variedad de formatos de salida. Generalmente se usa para escribir archivos *README* o documentación, publicaciones en foros online, servicios de mensajería instantánea, etc.
+
+* El formato de documentos **R Markdown** se encarga de incorporar este tipo de escritura en R para poder combinar texto, código y salidas en la creación de archivos publicables de excelente calidad, resultando en un proceso de creación *relativamente* sencillo.
+
+* Los paquetes que implementan todo esto son `rmarkdown` y `knitr`:
+
+<center> ![](rmarkdown.png){#id .class width=150px} ![](knitr.png){#id .class width=150px} </center>
+<p></p>
+
+* Podemos elegir diferentes formatos de salida, entre ellos **HTML**, **PDF**, **Word** y **PowerPoint**. Si bien en esta clase nos enfocaremos únicamente en los dos primeros, aquellos interesados en conocer más sobre la conexión entre R Markdown y Word pueden consultar este [tutorial](https://rmarkdown.rstudio.com/articles_docx.html). Por otro lado, una pequeña introducción a la relación R Markdown - PowerPoint puede encontrarse en el capítulo 4.4 de [R Markdown - The Definitive Guide](https://bookdown.org/yihui/rmarkdown/).
+
+::: {.callout-note}
+
+## Aclaración
+
+En 2022 **Posit** (la compañía antes llamada RStudio) relanzó R Markdown bajo el nombre de **Quarto**. Si bien este nuevo producto posee algunas diferencias con respecto al original, estas son mínimas, y todo lo que figura a continuación puede aplicarse en cualquiera de las dos versiones.
+
+:::
+
+# Primeros Pasos
+
+* Un documento R Markdown básico puede crearse de forma sencilla con RStudio accediendo a *File > New File > R Markdown*, o bien haciendo click en la cruz blanca sobre fondo verde y eligiendo R Markdown en el menú desplegable:
+
+```{r, echo=FALSE}
+knitr::include_graphics('iniciarRmd.png')
+```
+
+* En la siguiente ventana se nos pregunta qué tipo de documento queremos crear, con varias opciones disponibles:
+
+
+    * Documento de texto (HTML, PDF o Word)
+    * Presentación (diapositivas)
+    * Shiny (*app* que puede ejecutarse a través de un navegador web e incorpora contenido interactivo)
+    * Desde un *template* (documentos con formato pre-seteado provistos por algunos paquetes)
+
+```{r, echo=FALSE, out.width="50%"}
+knitr::include_graphics('elformato.png')
+```
+
+* Podemos tomar de ejemplo un documento de texto en formato **HTML**. 
+* Una vez elegido el tipo de documento, RStudio ofrece por defecto una plantilla que incluye varias secciones, las cuales analizaremos en detalle a continuación. Es importante notar que, a diferencia de los archivos de código comunes (con extensión **.R**), este archivo posee la extensión **.Rmd** (o bien *.qmd* si usamos Quarto).
+* Debemos guardar este documento en alguna carpeta de nuestra compu.
+* Su estructura general se representa en la siguiente imagen:
+
+```{r, fig.show='hold', echo=FALSE}
+knitr::include_graphics('partesRmd.png')
+```
+
+## Encabezado
+
+* El encabezado, también conocido como *YAML Metadata*, se coloca al comienzo del documento entre dos tiras de guiones. Aquí se incluyen el título del documento y subtítulo si lo tuviera, autor, fecha y varias opciones más.
+
+* En `output` se indica el formato de salida que se desea; si bien esta opción se genera automáticamente al elegir el formato en la pantalla anterior, podemos modificarlo manualmente si cambiamos de opinión.
+
+```
+---
+title: "Mi Primer Markdown en HTML"
+subtitle: "AED | Lic. en Estadística | FCEyE | UNR"
+author: "Diego & Iván"
+date: "Agosto 2024"
+output: html_document
+---
+```
+
+* Más adelante mencionaremos más opciones que dependen del output elegido.
+
+## Texto
+
+* Para la escritura de texto se usa el lenguaje **Pandoc's Markdown**, una extensión del Markdown original. Un amplio manual sobre esta herramienta puede consultarse en la [web oficial de Pandoc](https://pandoc.org/MANUAL.html), un software libre que se utiliza para convertir documentos de un formato a otro.
+
+* En la siguiente tabla mostramos algunos *trucos* para darle un aspecto más interesante al texto que escribimos en R Markdown:
+
+```{r, echo=FALSE, out.width="50%"}
+knitr::include_graphics('formatotxt.png')
+```
+
+* Los encabezados de cada sección se definen mediante numerales: un numeral equivale a un título principal, dos numerales a un subtítulo, tres numerales a un sub-subtítulo, etc.:
+
+```{r, echo=FALSE, out.width="50%"}
+knitr::include_graphics('titulos.png')
+```
+
+* Por defecto, el índice de un documento R Markdown incluye los encabezados de nivel 1, 2 y 3. Si queremos cambiar este comportamiento, podemos utilizar la opción `toc_depth: x` dentro del encabezado, para mostrar los niveles 1 a *x*.
+
+* Recomendamos dejar un espacio entre el numeral y el título de la sección (`# Título`), ya que para ciertos formatos de salida de R Markdown, la expresión `#Título` no será reconocida como tal.
+
+* Para iniciar un nuevo párrafo en *Pandoc* debemos dejar dos espacios al final de una línea de texto o bien un renglón vacío entre una cadena de texto y la otra. Con un solo **Enter** no lograremos nada.
+
+## Código
+
+* Para añadir código dentro de un documento **Rmd** es necesario insertar un `chunk`, término que podemos traducir como *pedazo* o *bloque*. Las dos maneras más directas de hacerlo son:
+
+
+    1. Apretar las teclas Ctrl + Alt + i, o bien...
+    2. Hacer click en el ícono `Insert` en la barra de edición y elegir la primera opción (R). También es posible insertar chunks que contengan sentencias escritas en otros lenguajes (Python, SQL, Stan, etc.)
+
+<p></p>
+
+* Dentro de estos bloques podemos escribir código de R, tal como lo hacemos regularmente en un archivo de sentencias común y corriente. En lo posible, se recomienda crear bloques relativamente autónomos y enfocados en una sola tarea: por ejemplo, un bloque para importar datos, otro para ajustes, otro para generar gráficos, etc.
+
+* Para correr todo el código presente en un bloque se puede usar el atajo `Ctrl + Shift + Enter` o bien el triángulo verde ubicado en la parte superior derecha del chunk.
+
+* La salida generada por cada chunk puede personalizarse con distintos argumentos que se indican en su encabezado. El paquete **knitr** provee casi 60 opciones para personalizar chunks: [acá podemos consultar la lista completa](http://yihui.name/knitr/options/).
+
+* A continuación repasamos algunas de los más útiles:
+
+
+    * `eval = TRUE/FALSE` define si el código de ese chunk debe ejecutarse, o no (en este caso no se generan resultados). Esta opción es útil para mostrar ejemplos de sentencias que no deseamos correr, o bien para deshabilitar la ejecución de un gran bloque de código sin comentar cada línea.
+
+    * `echo = TRUE/FALSE` define si el código se muestra en el documento final, o no. Por defecto todo chunk se ejecuta y se imprime. Dado que en numerosas ocasiones no deseamos que nuestro código se haga público, la opción `echo = FALSE` es una de las más utilizadas.
+
+    * `message`, `warning` y `error` definen si los mensajes, advertencias o errores generados por las funciones ejecutadas dentro del chunk deben mostrarse (`TRUE`) o no (`FALSE`).
+    
+    * `results` define qué hacer con los resultados del código presente en ese chunk: imprimir con formato (`"markup"`), sin formato (`"asis"`), no imprimir (`"hide"`) o imprimir todo junto al final (`"hold"`).
+
+    * `fig.height` y `fig.width` definen el alto y el ancho (en pulgadas) de los gráficos generados por ese chunk.
+    
+    * `out.width` define el ancho de los gráficos generados por ese chunk, con respecto al tamaño relativo de la página; por ejemplo `out.width="75%"` imprime un gráfico que ocupa las tres cuartas partes del ancho total.
+    
+    * `fig.align` define la justificación de la imagen: a la izquierda (`"left"`), centradas (`"center"`) o a la derecha (`"right"`).
+    
+    * `fig.cap` define el texto que describe el gráfico generado (*caption*), el cual se ubica debajo de la imagen.
+
+<p></p>
+
+* Los chunks pueden recibir nombres, que no deben repetirse a lo largo del documento. Esta opción facilita la organización en archivos extensos, permite crear vínculos a resultados de chunks específicos a lo largo del documento, y además, nos ayuda a encontrar y resolver problemas de forma más eficaz.
+
+* Un ejemplo de chunk bautizado *BloqueMuyImportante* con algunas opciones luce así:
+
+````markdown
+`r ''````{r BloqueMuyImportante, warning=TRUE, echo=TRUE}
+`r ''` datos <- read_excel("Plantilla.xlsx")
+`r ''` summary(datos)
+`r ''````
+````
+
+* Las opciones de personalización de chunks, tal como las escribimos hasta ahora, afectan sólo al código contenido dentro de ese bloque. Si deseamos definir estas opciones de manera **global**, de tal manera que abarquen a todos los chunks del documento, podemos hacerlo mediante la función `opts_chunk()` del paquete `knitr`.
+
+* Es común que el primer chunk del archivo contenga un llamado a esta función, definiendo los detalles globales de todos los bloques generados en el resto del documento. Generalmente se le da el nombre *setup*, aunque esto es opcional. Por ejemplo:
+
+````markdown
+`r ''````{r setup, include = FALSE}
+`r ''`knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, 
+`r ''`                      comment = NA, fig.align = "center", out.width = "100%")
+`r ''````
+````
+
+Si quiero cambiar el comportamiento definido en `opts_chunk()` sólo en algunos bloques determinados, alcanza con volver a definir las opciones en sus respectivos encabezados.
+
+## Compilar
+
+Para generar el documento definitivo basta con cliquear el botón **Knit** (literalmente, *tejer*) que se encuentra en la barra de herramientas de RStudio:
+
+```{r, echo=FALSE, out.width="60%"}
+knitr::include_graphics('botonknitr.png')
+```
+
+* Otra opción para generar documentos es utilizar la función `render()` del paquete `rmarkdown`:
+
+```{r, eval=FALSE}
+render("MiArchivo.Rmd")
+```
+
+**Para tener en cuenta:** 
+
+- Al momento de generar un documento, R sólo podrá utilizar los objetos definidos dentro del **Rmd** mismo: de nada sirve cargar un objeto en nuestro ambiente de trabajo, si luego no replicamos esa sentencia en el Markdown.
+
+- Al lado del botón **Knit** hay una lista desplegable que nos permite elegir otro formato de salida, diferente al que tenemos indicado por default.
+
+# Herramientas útiles
+
+## Listas
+
+* Para crear listas de elementos no numerados, podemos usar un asterisco (*) o bien un guion (-). Si deseamos agregar sublistas dentro de algunas listas, el asterisco o guion debe estar precedido una tabulación o cuatro espacios.
+
+* Por otro lado, para listas numeradas debemos agregar al principio de cada elemento el número correspondiente a cada ítem, seguido de un punto (1., 2., etc.). Si no tenemos ganas de contar la cantidad de ítems, podemos usar la numeración 1. para cada elemento y R hará los incrementos automáticamente:
+
+```{r, echo=FALSE, out.width="50%"}
+knitr::include_graphics('listas.png')
+```
+
+## Enlaces
+
+* Para añadir links a páginas web se puede escribir lo siguiente: `[Link a la página web de la FCEyE-UNR](https://www.fcecon.unr.edu.ar/)`, lo cual se mostrará así: [Link a la página web de la FCEyE-UNR](https://www.fcecon.unr.edu.ar/).
+
+* Si queremos que el link quede visible, podemos escribir `<https://www.fcecon.unr.edu.ar>` y se verá así: <https://www.fcecon.unr.edu.ar>.
+
+
+## Imágenes
+
+* Si queremos insertar imágenes dentro de nuestro documento, recomendamos utilizar la función `include_graphics()` de `knitr`:
+
+````markdown
+`r ''````{r, out.width="50%"}
+`r ''`knitr::include_graphics("C:/Mis Documentos/messi.jpg")
+`r ''````
+````
+
+```{r, echo=FALSE, out.width="50%"}
+knitr::include_graphics("messi.jpg")
+```
+
+
+* Este recurso es válido para imágenes de formato *png*, *jpg*, *gif*, *pdf* (entre otros) que estén guardadas en nuestra PC o que se encuentren alojadas online. 
+
+* No es necesario utilizar esta función si queremos incluir un gráfico generado dentro de R, directamente escribimos el código correspondiente en un chunk (que seguramente queramos dejar oculto):
+
+
+````markdown
+`r ''````{r, out.width = "60%", echo = TRUE}
+`r ''`ggplot(mpg) +
+`r ''`  aes(x = cty, fill = factor(cyl)) +
+`r ''`  geom_density(alpha = 0.8) +
+`r ''`  labs(title = "Gráfico de densidad", 
+`r ''`       subtitle = "Millaje en ciudad según número de cilindros",
+`r ''`       caption = "Fuente: datos mpg",
+`r ''`       x = "Millas por galón", y = "Densidad",
+`r ''`       fill = "Nro de cilindros") +
+`r ''`  theme(legend.position = "bottom")
+`r ''````
+````
+
+```{r, out.width = "60%", echo = FALSE}
+ggplot(mpg) +
+  aes(x = cty, fill = factor(cyl)) +
+  geom_density(alpha = 0.8) +
+  labs(title = "Gráfico de densidad", 
+       subtitle = "Millaje en ciudad según número de cilindros",
+       caption = "Fuente: datos mpg",
+       x = "Millas por galón", y = "Densidad",
+       fill = "Nro de cilindros") +
+  theme(legend.position = "bottom")
+```
+
+## Tablas
+
+* Frecuentemente necesitamos presentar tablas con resultados de nuestros análisis.
+* Por ejemplo, el promedio de algunas variables calculado según la cantidad de cilindros que tienen los autos listados en el dataset `mtcars`, como vemos a continuación:
+
+```{r}
+resultado <- mtcars %>% 
+  group_by(cyl) %>% 
+  summarise_at(c(1, 3:7), mean)
+
+resultado
+```
+
+<br>
+
+* También podemos recurrir a la sintaxis de Markdown para crear tablas, que indica que hay definir el encabezado separándolo con guiones del resto de las filas e identificar las columnas con barras verticales.
+
+* Por ejemplo:
+
+  ```
+  | cyl|   mpg|     hp| drat|   wt|  qsec|   vs|
+  |:--:|-----:|------:|----:|----:|-----:|----:|
+  |   4| 26.66|  82.64| 4.07| 2.29| 19.14| 0.91|
+  |   6| 19.74| 122.29| 3.59| 3.12| 17.98| 0.57|
+  |   8| 15.10| 209.21| 3.23| 4.00| 16.77| 0.00|
+  ```
+  
+* Debajo vemos los resultados en nuestros archivos compilados, primero en versión html y luego en pdf:
+  
+  | cyl|   mpg|     hp| drat|   wt|  qsec|   vs|
+  |:--:|-----:|------:|----:|----:|-----:|----:|
+  |   4| 26.66|  82.64| 4.07| 2.29| 19.14| 0.91|
+  |   6| 19.74| 122.29| 3.59| 3.12| 17.98| 0.57|
+  |   8| 15.10| 209.21| 3.23| 4.00| 16.77| 0.00|
+    
+  
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("tabla1_pdf.png")
+```
+  
+* Hay páginas que nos ayudan a generar esas tablas con guiones y barras (recomendamos explorar la web [Tables Generator](https://www.tablesgenerator.com/markdown_tables)), pero la idea es no hacerlo a mano.
+
+* Existen muchos paquetes muy potentes para este configurar cualquier aspecto de las tablas (como `xtable`, `huxtable`, `formattable`, `kableExtra` y varios otros) con opciones que en algunos casos son específicas para cada formato de salida. Cada uno provee herramientas particulares para generar tablas con formato a partir código de R.
+
+## Código dinámico
+
+* Una manera de insertar resultados dentro del texto escrito es utilizando el formato `` `r "\u0060r MiObjeto\u0060"` ``, donde `MiObjeto` es cualquier valor definido en los chunks del documento. Por ejemplo, puedo definir un objeto llamado *pvalue* en un reporte que genero mensualmente; cada vez que vuelvo a correr las sentencias, *pvalue* cambiará de valor.
+
+* Si dentro del texto del reporte deseo mencionar el valor exacto de *pvalue*, el formato de código dinámico nos ayuda a imprimir de forma automática este valor, sin tener que preocuparnos por cambiarlo manualmente.
+
+* Probamos esta técnica con un **test t** a dos colas, donde la hipótesis nula es $H_0)\mu=0$ y la alternativa $H_1)\mu\neq0$. En nuestro documento *.Rmd* tenemos este chunk:
+
+````markdown
+`r ''````{r, echo = FALSE}
+`r ''`prueba <- t.test(rnorm(30), alternative = "two.sided", mu = 0) 
+`r ''`pvalue <- prueba$p.value
+`r ''````
+````
+
+```{r, echo=FALSE}
+prueba <- t.test(rnorm(30), alternative = "two.sided", mu = 0)
+pvalue <- prueba$p.value
+```
+
+* En algún lugar del documento escribimos:
+
+````markdown
+Se realizó la prueba T-Student (pvalue = `r '\x60r pvalue\x60'`).
+````
+
+* Y el resultado final en el archivo compilado será:
+
+````markdown
+Se realizó la prueba T-Student (pvalue = `r pvalue`).
+````
+
+* Incluso el texto podría estar controlado por objetos de R, como se puede ver en esta otra versión más "sofisticada" del caso anterior. En el documento ponemos:
+
+````markdown
+El promedio `r '\x60r ifelse(pvalue <= 0.05, "", "no")\x60'` difiere significativamente de cero (pvalue = `r '\x60r round(pvalue, 4)\x60'`).
+````
+
+* Y el resultado final en el archivo compilado será:
+
+````markdown
+El promedio `r ifelse(pvalue < 0.05, "", "no")` difiere significativamente de cero (pvalue = `r round(pvalue, 4)`).
+````
+
+## Escritura matemática 
+
+- R Markdown también admite el uso de notación matemática para la escritura de fórmulas, siempre que encerremos la expresión en cuestión con un símbolo "\$" si deseamos ecuaciones ubicadas en la misma línea que el texto escrito, o bien mediante un doble símbolo "\$$", para ecuaciones ubicadas en un nuevo renglón.
+
+- Por ejemplo `$\sum_{i=1}^{N} (x_i-\mu)^2$` se muestra como $\sum_{i=1}^{N} (x_i-\mu)^2$, mientras que `$$\sum_{i=1}^{N} (x_i-\mu)^2$$` se muestra como $$\sum_{i=1}^{N} (x_i-\mu)^2$$
+
+- ¿De dónde sale esa sucesión extraña de caracteres para definir la fórmula? R Markdown, como muchos otros lenguajes de marcado ligero, toma prestada la sintaxis de LaTeX para la escritura de fórmulas.
+
+<!-- * Una *interminable* lista de operadores matemáticos puede encontrarse [en este link](https://en.wikibooks.org/wiki/LaTeX/Mathematics). -->
+
+* Una gran lista de ejemplos de notación matemática puede encontrarse [en este link](https://rpruim.github.io/s341/S19/from-class/MathinRmd.html).
+
+* Veamos ahora algunos ejemplos de símbolos y formatos comunes a la hora de escribir textos matemáticos:
+
+```
+Operadores: 
+$5 + z \leq 4 \times \sqrt[3]{x}$
+```
+
+$5 + z \leq 4 \times \sqrt[3]{x}$
+
+```
+Subíndices y superíndices:
+$x^2 + y^3 - z_0$
+```
+
+$x^2 + y^3 - z_0$
+
+```
+Letras griegas:
+$\delta + \Delta + \gamma + \Gamma - \pi - \phi$
+```
+
+$\delta + \Delta + \gamma + \Gamma - \pi - \phi$
+
+```
+Fracciones:
+$\frac{3}{4} + \frac{\lambda}{\omega}$
+```
+
+$\frac{3}{4} + \frac{\lambda}{\omega}$
+
+```
+Sumatorias:
+$\sum_{i=1}^{N} (x_i-\mu)^2$
+```
+
+$\sum_{i=1}^{N} (x_i-\mu)^2$
+$\displaystyle\sum_{i=1}^{N} (x_i-\mu)^2$
+
+```
+Integrales:
+$\int_{0}^{+\infty} \cos{(x)}dx$
+```
+
+$\int_{0}^{+\infty} \cos{(x)}dx$
+$\displaystyle\int_{0}^{+\infty} \cos{(x)}dx$
+
+```
+Especiales:
+$\hat{\mu} = \bar{x} \iff \bar{x} = \hat{\mu}$
+```
+
+$\hat{\mu} = \bar{x} \iff \bar{x} = \hat{\mu}$
+
+
+# Detalles específicos para html
+
+- Todo lo que vimos hasta acá funciona para cualquier formato de salida deseado. Esta es una de las mayores virtudes de R Markdown, ya que podemos independizar nuestro trabajo de los detalles propios de cada sistema, generando cualquiera de ellos a partir del mismo script.
+
+- Ahora bien, si tenemos en mente un formato de salida en particular, podemos personalizar aún más detalles con opciones específicas para ese formato.
+
+- Una posible manera de lograr esto consiste en agregar detalles en la sección `output` del encabezado *YAML*. 
+
+* Por ejemplo, el encabezado del archivo que genera este HTML luce así:
+
+```
+---
+title: "Comunicación de Resultados: R Markdown"
+subtitle: "Análisis Exploratorio de Datos | Licenciatura en Estadística | FCEyE | UNR"
+author: 
+  - Mg. Diego Marfetán Molina
+  - Lic. Iván Millanes
+date: "8/26/24"
+lang: es
+toc: true
+format: 
+  html:
+    self-contained: true
+    df-print: paged
+    theme:
+      light: journal
+      dark: darkly
+knitr:
+  opts_chunk: 
+    echo: true
+    message: false
+    warning: false
+    fig.align: center
+---
+```
+
+* `self-contained` indica que las figuras se deben incrustar en el código, con lo cual el documento es "portable" (cualquiera que tenga el HTML puede ver todas las imágenes incluidas).
+
+* `theme` define el aspecto general del documento, con respecto a colores, sombreados, estilo del texto, etc. ([link a lista de temas disponibles](https://www.datadreaming.org/posts/2018-04-11-r-markdown-theme-gallery/2018-04-11-r-markdown-theme-gallery)).
+
+<!-- * Las opciones que comienzan con `toc` hacen referencia a la "tabla de contenidos": queremos que esté presente (`yes`), que incluya hasta el tercer nivel de títulos y que sea flotante para que siempre esté visible. -->
+
+* Quienes se sientan cómodos/as escribiendo código HTML, pueden definir más opciones de personalización (colores, tamaños, fuentes, espaciados, etc.) en otro archivo de formato `.css` (*cascading style sheet*) y avisarle a R Markdown que lo tenga en cuenta nombrándolo en el encabezado:
+
+```
+--- 
+title: "Comunicación de Resultados: R Markdown"
+format: 
+  html:
+    self-contained: true
+    df-print: paged
+    css: archivo_de_estilo.css
+---
+```
+
+* Otro aspecto que se puede personalizar bastante al trabajar con salida en html es la forma en la que se conjuntos de datos o tablas. Veamos algunas opciones:
+
+- **Opción 1**: agregar `df_print: paged` entre las opciones del output en el YAML, logrando que los conjuntos de datos se puedan explorar interactivamente.
+  
+- **Opción 2**: usando el paquete `DT`, que con su función `datatable()`, que hace que los conjuntos de datos se presenten en tablas filtrables y reordenables. Ejemplo:
+
+```{r}
+mtcars %>% 
+  datatable(filter = "top", options = list(scrollX = TRUE)) %>% 
+  formatStyle(columns = 0:11, fontSize = "75%")
+```
+
+<br>
+
+  - **Opción 3**: combinar la función `kable()` del paquete `knitr` con funciones de configuración adicionales provistas por el paquete `kableExtra`. Por ejemplo, con las funciones `row_spec()` y `column_spec()` podemos modificar el aspecto del texto (color, formato, etc.) de columnas y filas determinadas; además, agregamos una barra de desplazamiento para evitar imprimir la tabla entera mediante `scroll_box()`. Muchas más opciones de personalización de tablas con `kableExtra` pueden consultarse en [su viñeta oficial](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html).
+
+```{r}
+mtcars %>% 
+  kable() %>% 
+  kable_styling(font_size = 10, bootstrap_options = "hover") %>% 
+  column_spec(1, bold = TRUE, background = "#DF0101", color = "white") %>% 
+  row_spec(0, background = "#2E2E2E", bold = TRUE, color = "white") %>% 
+  row_spec(4:5, italic = TRUE, color = "#2E9AFE") %>% 
+  scroll_box(height = "300px")
+```
+
+<br>
+
+  - **Opción 4**: para tablas pequeñas, podemos recurrir a [Tables Generator](https://www.tablesgenerator.com/markdown_tables). Generamos allí la tabla a mano, copiamos el código html y lo pegamos directamente en el Rmd.
+
+<p></p>
+
+
+# Detalles específicos para pdf
+
+* Si queremos producir documentos en formato PDF desde RStudio, necesitamos tener instalado `LaTeX` en nuestra computadora... pero ¿qué es `LaTeX`? Según [su propia web](https://www.latex-project.org/), `LaTeX` (pronunciado *latech*) es un sistema para preparación de documentos "de alta calidad".
+
+* Incluye herramientas diseñadas para producir muchos tipos de documentación técnica, gracias a lo cual se ha convertido en el programa *estándar* dentro del ámbito académico y, sobre todo, de la divulgación científica (especialmente entre las ciencias duras).
+
+```{r, echo=FALSE, out.width="30%"}
+knitr::include_graphics('latex.png')
+```
+
+* La principal diferencia entre `LaTeX` y otros sistemas de generación de documentos de texto, como por ejemplo **Word**, puede resumirse en dos puntos:
+
+
+    * En Word, lo que escribo (lo que veo en la pantalla) es lo que obtengo cuando guardo el documento
+    * Con `LaTeX` no obtengo lo mismo que veo, sino que describo cómo quiero que luzca el documento mediante comandos específicos
+
+
+* Al igual que R y RStudio, `LaTeX` es un software gratuito y de distribución libre. Una muestra de la gran cantidad de documentos que podemos crear mediante `LaTeX` puede consultarse en [Overleaf](https://www.overleaf.com/latex/templates), donde se listan ejemplos de libros, currículums, posters, tesis y muchos otros formatos.
+
+## Instalación de LaTeX
+
+* La descarga y posterior instalación de `LaTeX` ha sido siempre proceso generalmente tedioso que puede variar mucho de una PC a otra, sobre todo debido a configuraciones de red, versiones de sistemas operativos, permisos para agregar paquetes, etc. 
+
+* Para usuarios/as de Windows, la manera más recomendable de instalar `LaTeX` es a través de [MiKTeX](https://miktex.org/), una especie de "distribuidor oficial". Para usuarios/as de otros sistemas operativos, sugerimos consultar las mejores opciones [en la web oficial del proyecto LaTeX](https://www.latex-project.org/get/), o bien [aquí](https://en.wikibooks.org/wiki/LaTeX/Installation).
+
+* **Sin embargo, quienes usan R no tienen de qué preocuparse**. Se puede usar R para instalar una distribución de LaTeX minimalista que funciona como un encanto, con estos pasos:
+
+```{r, eval = F}
+# Primero, instalá el paquete tinytex:
+install.packages("tinytex")
+# Luego, instalá LaTeX corriendo en R:
+tinytex::install_tinytex()
+```
+
+* Una vez instalado `LaTeX` (ya sea por fuera de R o con este paquete) no es necesario abrir este programa para poder utilizarlo, ya que RStudio se comunicará directamente con él *detrás de escena*, tal como lo hace con R.
+
+* Cabe mencionar nuevamente a [Overleaf](https://es.overleaf.com/), que nos ofrece un editor online de `LaTeX` totalmente gratuito (requiere que nos registremos definiendo usuario y contraseña) por si queremos hacer cosas en LaTeX sin instalar nada o en forma colaborativa.
+    
+## Opciones para LaTeX
+
+* La principal diferencia con lo visto hasta aquí es que en el encabezado YAML vamos a tener que especificar el tipo de salida que estamos buscando:
+
+```{r, eval=FALSE}
+---
+title: "Mi Primer Markdown en PDF"
+subtitle: "AED | Lic. en Estadística | FCEyE | UNR"
+author: "Diego & Iván"
+date: "Agosto 2024"
+output: pdf_document
+---
+```
+
+* Para salidas en PDF, las opciones de personalización del *YAML Metadata* se multiplican. Algunas de las más comunes son:
+
+
+    * **fontsize:** tamaño de la fuente (*10pt*, *11pt*, *12pt*)
+    * **geometry:** márgenes, orientación de la hoja, tamaño del papel (*a4paper*, *letterpaper*, etc.)
+    * **documentclass:** tipo de documento (*article*, *report*, *book*, etc.)
+
+<p></p>
+
+* Al igual que R, el sistema `LaTeX` depende en gran medida de funciones que se encuentran disponibles en paquetes que deberemos instalar a medida que sean necesarios. La inclusión de paquetes puede realizarse directamente en el encabezado, siguiendo el formato `\usepackage[opciones]{nombre_del_paquete}`.
+
+* Durante la instalación, es posible configurar `LaTeX` para que los paquetes mencionados dentro del archivo que estamos ejecutando se instalen automáticamente, ahorrándonos la molestia de hacerlo manualmente (como en RStudio):
+
+```{r, eval=FALSE}
+---
+title: "Mi Primer Markdown en PDF"
+subtitle: "AED | Lic. en Estadística | FCEyE | UNR"
+author: "Diego & Iván"
+date: "Agosto 2024"
+fontsize: 12pt
+geometry: a4paper
+documentclass: article
+output: pdf_document
+header-includes:
+  - \usepackage[spanish]{babel}
+---
+```
+
+* En este caso, estamos utilizando el paquete `babel` con la opción *spanish* para que ciertos aspectos del documento se generen en idioma español.
+
+* Un comentario al paso: si lo que necesitamos es crear tablas, las funciones ya mencionadas del paquete `kableExtra` también ofrecen opciones específicas para trabajar con LaTeX y poder generar lo que se necesita. También podemos generar la tabla en otro entorno, como el ya mencionado [Tables Generator](https://www.tablesgenerator.com/markdown_tables), y pegar el código de LaTeX directamente en el Rmd.
+
+## Diapositivas
+
+* Un formato útil de salida PDF es la presentación de diapositivas, la cual estamos acostumbrados a crear mediante programas como PowerPoint. En este caso la opción que debemos elegir en el menú es **Presentation** y luego **PDF (Beamer)**:
+
+```{r, echo=FALSE, out.width="75%"}
+knitr::include_graphics('beamer1.png')
+```
+
+* El encabezado de nuestro **Rmd** luce así:
+
+```{r, eval=FALSE}
+---
+title: "Mi Primer Documento Beamer"
+subtitle: "Análisis Exploratorio de Datos"
+author: "Diego & Iván"
+date: "Lic. en Estadística - FCEyE - UNR"
+output: beamer_presentation
+---
+```
+
+* Si bien los comandos de `LaTeX` presentados en este tutorial son válidos tanto para reportes PDF como para diapositivas, diagramar informes o artículos es totalmente diferente a preparar una presentación en diapositivas.
+
+* De forma *exageradamente* resumida podemos remarcar ciertas ventajas y desventajas al comparar las estructuras de estos diversos formatos:
+
+
+    * **Ventajas** de utilizar Beamer: documento más compacto, el formato diapositiva permite una mejor separación de ideas
+    * **Desventajas** de utilizar Beamer: hay que dedicarle mucho tiempo a organizar código, texto e imágenes para lograr que algunas ideas entren en una misma diapositiva
+
+* En Beamer, podemos crear una nueva diapositiva mediante encabezados de primer (`#`) o segundo orden (`##`), o bien con tres asteriscos (`***`) o puntos (`---`) consecutivos.
+
+```
+# Titulo de la Diapo 1
+Texto de la diapositiva 1
+
+# Titulo de la Diapo 2
+Texto de la diapositiva 2
+
+***
+Texto de la diapositiva 3 (esta diapo no tiene título)
+```
+
+* Las presentaciones en Beamer se caracterizan por contar con una gran cantidad de **temas** (*themes*) disponibles para personalizar el aspecto de las diapositivas, con respecto a fuentes, colores y demás formatos.
+
+* En el encabezado del documento podemos definir los temas a utilizar de la siguiente manera:
+
+```{r, eval=FALSE}
+---
+title: "Mi Primer Documento Beamer"
+subtitle: "Análisis Exploratorio de Datos"
+author: "Diego & Iván"
+date: "Lic. en Estadística - FCEyE - UNR"
+output: beamer_presentation
+theme: "Madrid"
+colortheme: "orchid"
+fonttheme: "serif"
+---
+```
+
+* Una lista de los temas disponibles, tanto generales como de colores y fuentes, puede consultarse [en esta web](http://deic.uab.es/~iblanes/beamer_gallery/).
+
+* En la siguiente imagen podemos apreciar el aspecto de las diapositivas generadas con el tema *Madrid*, color *orchid* y fuente *serif*:
+
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics('beamer2.png')
+```
+
+# Comentarios finales
+
+* Con tantos términos dando vueltas (Markdown, RMarkdown, Knit, Pandoc, html, LaTeX... 😖), lo natural es perderse y no saber quién es quién ni qué hace qué.
+
+* Lo bueno es que en general podemos usar todo esto sin tenerlo muy en claro, pero acá van algunas aclaraciones solo para los que estén interesados en saber más.
+
+## Lenguajes de Marcado Ligero, Markdown y R Markdown
+
+* Un lenguaje de marcado ligero (*markup language*) es un sistema estandarizado con reglas para insertar símbolos en un documento de texto plano para controlar su estructura, formato y relación entre sus partes.
+
+* Los símbolos que se utilizan para este "marcado" son caracteres básicos interpretables por algún dispositivo (computadora, impresora, navegador, etc.). Un documento con marcado ligero tiene entonces dos tipos de texto: texto para ser mostrado y caracteres que controlan la forma de mostrarlo.
+
+* Dos lenguajes de marcado ligero muy conocidos y utilizados, aunque no muy sencillos de usar, son **XML** (Extensive Markup Language) y **HTML** (Hypertext Markup Language).
+
+* Markdown es un lenguaje de marcado ligero muy sencillo de usar que sólo emplea caracteres simples (como numerales o asteriscos) para indicar el formato y la estructura del texto. Surgió con la idea de simplificar algunos aspectos del lenguaje HTML, de modo que sea más fácil editar contenido para páginas web.
+
+* La idea de su desarrollador, John Gruber, era que sea una sintaxis fácil de escribir, pero sobre todo de leer. A diferencia de lo que pasa con HTML, tranquilamente podemos abrir un documento marcado con Markdown (.md) y leer su texto sin problemas.
+
+* Con el tiempo fueron surgiendo varios derivados, haciendo que no haya una sintaxis única de Markdown. Por ejemplo:
+
+  - **Pandoc Markdown** es el nombre de una de estas versiones que extienden Markdown con sintaxis para incluir tablas, listas, pies de página, citas, etc.
+
+  - **R Markdown** se basa en Pandoc Markdown pero agrega sus propias reglas para poder incluir bloques de código de R y reglas, tanto para controlar su ejecución como la forma en la que se muestran los resultados. Los documentos escritos en R Markdown son de extensión .Rmd (.qmd desde el lanzamiento de Quarto). Este lenguaje está implementado en el paquete `rmarkdown`.
+  
+* Además de RStudio/Posit, algunas compañías que también utilizan Markdown son OpenAI (desarrolladora de ChatGPT), Discord, GitHub, Microsoft, Mozilla, entre otras.
+
+## El proceso detrás de R Markdown
+
+* Una vez que hemos creado un archivo Rmd siguiendo las reglas de R Markdown y estamos listos para producir el resultado final, hacemos clic en el botón Knit o, equivalentemente, corremos la función `render()` del paquete `rmarkdown`.
+
+* Esta acción genera un proceso de dos etapas:
+
+    - El paquete `knitr` toma al archivo, identifica cuáles son las porciones de código a ejecutar, lo evalúa, toma los resultados y los "incrusta" en el archivo siguiendo las reglas de markdown. Es decir, genera un archivo .md intermedio que no vemos, ni nos interesa.
+
+    - Luego viene Pandoc, toma el archivo .md y lo convierte en un archivo de salida con el formato deseado: .html, .pdf o .docx, entre otros. Este programa ya viene instalado con RStudio, y lo mencionamos antes porque, además de convertir los .md en el formato que queramos, es el software que implementa la versión extendida del lenguaje *Pandoc's Markdown*.
+
+  - Cuando el formato de salida es un PDF, hay un paso más. Pandoc convierte el .md en un archivo .tex, que sigue la sintaxis de LaTeX (por default este archivo es elimnado pero podríamos pedir que se conserve). Para convertir el .tex a un .pdf, se necesita que venga uno de los motores de compilación de LaTeX para hacer su tarea. Por defecto, se usa el motor `pdflatex`, pero hay otros disponibles (`xelatex` o `lualatex`). De estas instalaciones se encarga, por ejemplo, `tinytex`.
+
+* ¡Voilà! Con esos pasos mágicos tenemos nuestro ansiado archivo. Debajo vemos un esquema que representa el proceso de compilación:
+
+```{r, echo=FALSE, out.width="60%"}
+knitr::include_graphics('proceso.png')
+```
+
+## Otros recursos relacionados al mundo de R Markdown
+
+Si tenés ganas de seguir aprendiendo sobre `R Markdown`, podés consultar esta pequeña lista de guías y tutoriales:
+
+* [Sitio oficial de R Markdown](https://rmarkdown.rstudio.com/)
+* [R Markdown - The Definitive Guide (Libro de Yihui Xie)](https://bookdown.org/yihui/rmarkdown/)
+* [Guía de Referencia en la web de RStudio](https://rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf)
+* [Machete en la web de RStudio](https://rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf)
+* [Tips para mejorar el aspecto de un documento R Markdown](https://holtzy.github.io/Pimp-my-rmd/)
+* [Paquete *knitr*](https://yihui.org/knitr/)
+* [Paquete *bookdown*](https://bookdown.org/): para escribir y publicar nuestros propios libros desde R. Incluye formatos de salida HTML, PDF, ePub o Kindle, estos dos últimos para lectores de *ebooks*. El libro creado se puede hospedar de forma gratuita y sencilla en *GitHub* e integrarse a plataformas de Moodle.
+* [Paquete *blogdown*](https://bookdown.org/yihui/blogdown/): permite desarrollar páginas web desde R.
+* [Paquete *learnr*](https://rstudio.github.io/learnr/): permite transformar documentos Rmd en tutoriales interactivos para ser usados como material didáctico.
+* [Paquete *exams*](http://www.r-exams.org/): basándose en R Markdown, permite generar automáticamente ejercicios para exámenes de Moodle, con la posibilidad de no sólo emplear valores aleatorios sino también preguntas aleatorias dentro de un mismo enunciado.
+* Tutoriales de *gganimate*: [Post en *datanovia.com*](https://www.datanovia.com/en/blog/gganimate-how-to-create-plots-with-beautiful-animation-in-r/), [Viñetas del paquete](https://gganimate.com/articles/gganimate.html) y [Laboratorio de experimentación de rOpenSci](https://github.com/ropenscilabs/learngganimate).
+
+<!-- ## Trabajo en Equipo -->
+
+<!-- * Crear un archivo **Rmd** con las siguientes especificaciones: -->
+
+
+<!--     * **Título:** "Análisis de datos de cultivos" -->
+<!--     * **Autor:** nombre de los integrantes del grupo -->
+<!--     * **Formato de salida:** HTML -->
+<!--     * **Código de R:** visible -->
+
+<!-- <p></p> -->
+
+<!-- * El objetivo del reporte es mostrar las siguientes figuras, armadas a partir de la base de cultivos presentada en clases anteriores. -->
+
+```{r, echo=FALSE, eval=FALSE}
+load("cultivos.RData")
+
+z <- cultivos %>% 
+  mutate(
+    prov = ifelse(prov %in% c("BUENOS AIRES", "SANTA FE", "CORDOBA"), prov, "RESTO PAIS"),
+    prov = factor(prov, levels = c("BUENOS AIRES", "CORDOBA", "SANTA FE", "RESTO PAIS")),
+    cultivo = ifelse(cultivo %in% c("Maíz", "Soja", "Trigo"), cultivo, "Otros"),
+    cultivo = factor(cultivo, levels = c("Maíz", "Soja", "Trigo", "Otros"))
+    ) %>% 
+  group_by(prov, cultivo) %>% 
+  summarise(prod_millones = sum(prod)/1000000) %>% 
+  ungroup()
+
+z %>% 
+  mutate(prod_millones = round(prod_millones, 2)) %>% 
+  pivot_wider(names_from = cultivo, values_from = prod_millones) %>% 
+  janitor::adorn_totals(where = c("row", "col")) %>% 
+  kable() %>% 
+  kable_styling() %>% 
+  row_spec(0, bold = TRUE, background = "forestgreen", color = "white") %>% 
+  row_spec(5, bold = TRUE, background = "lightgreen") %>% 
+  column_spec(6, bold = TRUE)
+  
+ggplot(data = z) +
+  aes(x = cultivo, y = prod_millones, fill = cultivo) +
+  geom_bar(stat = "identity") +
+  facet_wrap(vars(prov)) +
+  labs(title = "Toneladas producidas en Argentina - Campaña 2019/20",
+       x = "Cultivo", y = "Tn. (en millones)") +
+  theme_bw() +
+  theme(legend.position = "none")
+```
