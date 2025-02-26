@@ -1,0 +1,1093 @@
+---
+title: "Comunicación de Resultados: Shiny"
+subtitle: "Análisis Exploratorio de Datos | Licenciatura en Estadística | FCEyE | UNR"
+lang: es
+number-sections: false
+format: 
+  html:
+    code-fold: true
+---
+
+<!-- Texto justificado -->
+
+```{=html}
+<style>
+body {
+text-align: justify}
+</style>
+```
+<!-- Agregamos esto para que no haya mucho espacio extra, en blanco, al final de la pagina (es un problema con el toc flotante) -->
+
+::: {.tocify-extend-page data-unique="tocify-extend-page" style="height: 0;"}
+:::
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, fig.align = "center", out.width = "90%", echo = TRUE)
+```
+
+## Introducción a Shiny
+
+::: {.alert .alert-success}
+**¿Qué es Shiny?**
+
+<span style="color: red;"><b>Shiny</b></span> (W. Chang et al, 2021) es un paquete de R que permite construir aplicaciones web directamente desde RStudio.
+:::
+
+```{r, echo = FALSE, out.width="25%"}
+knitr::include_graphics("../imagenes/unidad05/shiny.png")
+```
+
+-   Una característica importante de las aplicaciones web creadas mediante Shiny es que son **dinámicas e interactivas**. Esto implica que los usuarios pueden decidir qué datos ver, cómo verlos, y *jugar* con ellos.
+
+-   Shiny puede instalarse como cualquier otro paquete de R:
+
+```{r, eval=FALSE}
+#| code-fold: false
+#| 
+install.packages("shiny")
+```
+
+### Usos comunes de Shiny
+
+Actualmente Shiny es utilizado con una gran variedad de propósitos, en diversos ámbitos de aplicación. Algunos ejemplos son:
+
+-   Empresas que desarrollan **tableros de información** (*dashboards*) para analizar en tiempo real cientos de indicadores, métricas y gráficas relativas a la situación actual de la compañía, por ejemplo: [tablero para analizar tráfico aéreo según mes y aerolínea](https://edgarruiz.shinyapps.io/db-dashboard/). En el mercado actual existen alternativas a Shiny, como por ejemplo Power BI o Tableau; si bien la preferencia entre uno u otro software dependerá del contexto, una búsqueda rápida en Google (*'shiny vs power bi'* o bien *'shiny vs tableau'*) nos demuestra que la discusión sigue abierta. 
+
+-   Organismos públicos que buscan **digitalizar grandes volúmenes de información**, evitando de esa manera recurrir a la impresión de miles de hojas de papel. Para poder comunicar resultados de manera eficiente, es necesario que el medio a través del cual circula la información sea flexible y de fácil acceso; por ejemplo, compartir los resultados de un Censo de Población y Hogares de manera física requiere editar varios libros con cientos de tablas y cuadros desagregados según múltiples variables (provincia, género, edad, condición de empleo, etc.). Mediante una Shiny app podemos almacenar toda esta información en un solo lugar, ahorrando así costos de impresión, envío, etc. Ejemplo: [evolución de la cantidad de estudiantes, ingresantes y egresados/as en carreras de grado de la UNR](https://estadistica-unr.shinyapps.io/series/). Otros ejemplos: <https://appsilon.com/r-shiny-in-government-examples/>.
+
+-   Docentes que desarrollan apps interactivas con el objetivo de **facilitar la enseñanza** de conceptos mediante visualizaciones apropiadas. Ejemplo: [visualización de distribuciones muestrales para la media, variancia y proporción](https://mpru.shinyapps.io/samplingDistributions/).
+
+-   Organizaciones que desean **comunicar resultados** de estudios o investigaciones de manera dinámica y actualizada en tiempo real. Algunos ejemplos son: seguimiento del avance de la pandemia de COVID-19 mediante referenciación geográfica, análisis de métricas relacionadas a deportistas, aplicaciones que permiten importar datasets sobre los cuales se ajustan modelos predefinidos, y un largo etcétera. Ejemplos: [app para monitoreo de casos de COVID-19](https://shiny.posit.co/r/gallery/life-sciences/covid19-tracker/) y [app para visualizar en vivo los tweets más relevantes con cierto hashtag](https://gadenbuie.shinyapps.io/tweet-conf-dash/).
+
+- Personas que arman aplicaciones sólo por diversión: [nube de palabras de obras de Shakespeare](https://shiny.rstudio.com/gallery/word-cloud.html), [juego de la memoria con stickers de paquetes de R](https://dreamrs.shinyapps.io/memory-hex/).
+
+
+Para una muestra más completa de las posibilidades que ofrece Shiny, recomendamos visitar la [galería de apps seleccionadas por RStudio](https://shiny.rstudio.com/gallery/) y las [apps ganadoras de la 3° edición del concurso Shiny Contest](https://www.rstudio.com/blog/winners-of-the-3rd-annual-shiny-contest/).
+
+Además, en la [página web oficial de Shiny](https://shiny.rstudio.com/) existen numerosos [ejemplos](https://shiny.rstudio.com/gallery/), [machetes](https://raw.githubusercontent.com/rstudio/cheatsheets/main/shiny.pdf) y [tutoriales](https://shiny.rstudio.com/tutorial/) altamente recomendables para aquellas personas que estén dando sus primeros pasos con esta herramienta.
+
+::: {.callout-tip}
+
+### Bibliografía
+
+Aquellas personas interesadas en profundizar sus conocimientos sobre Shiny pueden consultar el muy recomendable libro <span style="color: red;"><b>Mastering Shiny</b></span> (2021) escrito por Hadley Wickham, desarrollador del **tidyverse** y referente de Posit (empresa anteriormente conocida como RStudio). El libro se encuentra disponible para ser leído de manera gratuita [en este link](https://mastering-shiny.org/index.html), y además, el código utilizado para generarlo puede consultarse [en este repositorio público de GitHub](https://github.com/hadley/mastering-shiny).
+
+:::
+
+### Estructura de una Shiny App
+
+-   A lo largo de este curso usaremos el término **Shiny App** para referirnos al conjunto de sentencias que generan la aplicación. Una Shiny App debe guardarse en un script de R, al cual llamaremos *app.R*.
+
+-   Este archivo de sentencias estará conformado por 3 secciones bien diferenciadas:
+
+    1.  **Interfaz del usuario** (*user interface*)
+    2.  **Función servidor** (*server function*)
+    3.  **Publicación de la app** (*app deployment*)
+
+::: {.callout-important}
+
+### Aclaraciones
+
+- En versiones antiguas de Shiny era necesario crear la interfaz y el servidor en archivos separados (`ui.R` y `server.R` respectivamente), aunque hoy en día esto es optativo.
+
+- Llamar a nuestro archivo de sentencias `app.R` no surge por un capricho, sino que es el nombre requerido por algunos servidores para poder ejecutar la aplicación de manera correcta cuando se encuentra disponible online. Si estamos trabajando con Shiny apps de manera local (en nuestra PC, sin publicación en web) podemos nombrar al script como más nos guste.
+
+- Usaremos la notación `NombrePaquete::NombreFunción()` para especificar explícitamente la función que estamos utilizando. Esta es una práctica recomendada para escribir código en R que mejora la claridad, evita conflictos y facilita el mantenimiento del código a largo plazo.
+
+:::
+
+#### Interfaz
+
+-   La **interfaz del usuario** (*user interface* o *ui*, por sus siglas en inglés) se encarga de controlar el aspecto de la página web. Muchos de los conceptos necesarios para desarrollar una interfaz están vinculados a lenguajes de programación como HTML, CSS o JavaScript. Afortunadamente, las funciones del paquete `bslib` facilitan en gran medida nuestro trabajo y no debemos preocuparnos (demasiado) por aprender a utilizar estos lenguajes.
+
+::: {.callout-note}
+
+### Paquete {bslib}
+
+- [`bslib`](https://rstudio.github.io/bslib/) proporciona un moderno conjunto de herramientas de interfaz de usuario para Shiny basado en [Bootstrap](https://getbootstrap.com/). A diferencia de `shiny` (que utiliza Bootstrap 3) `bslib` utiliza la versión más moderna de Bootstrap (actualmente Bootstrap 5)
+
+- El paquete `bslib` es una *dependencia* de `shiny`, es decir, se instala al momento de instalar `shiny`.
+
+:::
+
+#### Servidor
+
+-   En la sección **server** se escribe el código de R que le indica a la app qué debe hacer y cómo debe funcionar. Aquí se incluyen generalmente la manipulación de datos, el ajuste de modelos, el armado de gráficos, etc.
+
+-   En algunas ocasiones será recomendable realizar estas tareas *por fuera* del servidor para reducir tiempos de ejecución (más adelante hablaremos de este tema en mayor profundidad).
+
+-   La versión más simple del **server** es una función con dos argumentos:
+
+    -   **input:** almacena elementos de entrada tales como opciones elegidas por los/as usuarios/as a través de la interfaz.
+    -   **output:** almacena elementos de salida para mostrar en la app: valores numéricos, textos, tablas, gráficos, mapas o cualquier tipo de resultado que deseemos visualizar.
+
+#### Ejecución
+
+-   La parte final de la aplicación es un llamado a la función `shiny::shinyApp()`, cuyos dos argumentos principales son *ui* y *server*, es decir, los dos elementos definidos anteriormente.
+
+-   Ejecutar esta función da como resultado el lanzamiento de la aplicación, la cual podremos utilizar dentro de RStudio o usando nuestro navegador preferido (Google Chrome, Mozilla Firefox, Microsoft Edge, etc.).
+
+-   Para ver la app fuera de RStudio debemos elegir la opción *Run External* al momento de la ejecución, o bien copiar y pegar en un navegador la dirección URL que se muestra en la consola mientras la app está activa.
+
+-   Es importante destacar que, al seguir estos pasos, la aplicación sólo funcionará mientras la sesión de RStudio desde la cual se lanzó **esté vigente**. Más adelante veremos cómo subir nuestra aplicación a la web para que cualquier persona con conexión a Internet pueda acceder a ella.
+
+::: {.callout-important}
+
+### Importante
+
+**A continuación plantearemos algunos objetivos específicos y desarrollaremos un camino paso a paso para construir nuestra primera Shiny App.**
+
+:::
+
+## Datos: canciones de Queen
+
+- La popular aplicación [Spotify](https://open.spotify.com/) registra numerosas variables para cada una de las canciones disponibles en su servicio de streaming, las cuales tratan de cuantificar ciertas características musicales.
+
+- Por ejemplo, a cada canción se le miden conceptos algo abstractos como "energía", "positividad", "instrumentalidad", etc., además de otros mejor definidos, como duración, volumen o nivel de popularidad.
+
+```{r, out.width="50%", echo=FALSE}
+knitr::include_graphics("../imagenes/unidad05/Spotify_Logo_CMYK_Green.png")
+```
+
+- Estos datos pueden descargarse usando R mediante el paquete [Rspotify](https://cran.r-project.org/web/packages/Rspotify/index.html), el cual se conecta a la API de Spotify para acceder a la información de cada artista, álbum y canción presente en la plataforma.
+
+- Para este curso hemos seleccionado canciones pertenecientes a la emblemática banda de rock británica **Queen**, formada en Londres en 1970.
+
+```{r, out.width="50%", echo=FALSE}
+knitr::include_graphics("../imagenes/unidad05/queen.png")
+```
+
+- La base se encuentra almacenada en el archivo de texto plano `queen.txt`, el cual cuenta con 152 registros (canciones) y 14 variables:
+
+| **Variable** | **Descripción** |
+|--------------|-----------------|
+| **id** | Código de identificación de la canción. |
+| **name** | Nombre de la canción. |
+| **album** | Álbum donde aparece la canción. |
+| **popularity** | Nivel de popularidad en Spotify. |
+| **danceability** | Mide qué tan "bailable" es la canción de acuerdo a características musicales como tempo, estabilidad rítmica, fuerza del pulso, etc. |
+| **energy** | Mide intensidad y actividad, por ejemplo, canciones de *heavy metal* poseen valores altos de energía. |
+| **loudness** | Volumen promedio en decibeles. |
+| **speechiness** | Mide el nivel de oralidad: una canción muy "hablada" posee valores altos de esta variable. |
+| **acousticness** | Mide el nivel de acústica de la canción. |
+| **instrumentalness** | Mide qué tan instrumental es la canción. |
+| **liveness** | Detecta si la canción fue grabada en vivo (recitales), en cuyo caso recibe un valor alto de esta variable. |
+| **valence** | Mide el nivel de positividad: canciones con valores altos suenan alegres y eufóricas, mientras que canciones con valores bajos suenan tristes y apagadas. |
+| **tempo** | Tempo promedio (pulsos/minuto). |
+| **duration_ms** | Duración de la canción en milisegundos. |
+
+
+- Podemos cargar los datos en R y darles una mirada rápida:
+
+```{r}
+datos <- readr::read_delim("../data/unidad05/queen.txt", delim = "\t")
+dplyr::glimpse(datos)
+```
+
+### ACP
+
+- Si bien la base de datos presentada se puede explorar de diversas maneras, nos enfocaremos en una meta puntual: aplicar la técnica de **Componentes Principales** para reducir la dimensionalidad de los datos y al mismo tiempo buscar canciones con patrones de comportamiento similares.
+
+- El Análisis de Componentes Principales (ACP) puede llevarse a cabo en **R** de diversas maneras; en este curso aplicaremos la función `PCA()` del paquete `FactoMineR`:
+
+```{r}
+cp <- FactoMineR::PCA(
+  # matriz de datos: elegimos variables numéricas
+  X = dplyr::select(datos, dplyr::where(is.numeric)),
+  ncp = 11, # cantidad de componentes a retener
+  graph = FALSE # no mostrar los gráficos
+)
+```
+
+- En particular, vamos a focalizarnos en tres aspectos del ACP:
+
+    1. Las **cargas** (*loadings*) asociadas a cada variable en cada una de las componentes halladas.
+    1. El **porcentaje de variancia explicada** por cada componente.
+    1. El **gráfico de los individuos** proyectados sobre algún par de componentes.
+
+- A continuación mostramos estos resultados para el análisis llevado a cabo sobre la base completa:
+
+```{r, echo=FALSE}
+cargas <- cp$var$coord |> 
+  as.data.frame() |> 
+  round(4) |> 
+  tibble::rownames_to_column()
+
+colnames(cargas) <- c("Variable", paste0("CP", 1:11))
+
+custom_background <- function(kable_input, datos_cargas, column, CP) {
+  kable_input |> 
+    kableExtra::column_spec(
+      column, 
+      #color = "white",
+      background = kableExtra::spec_color(
+        datos_cargas[[paste0("CP", CP)]],
+        scale_from = c(-1, 1),
+        palette = RColorBrewer::brewer.pal(11, name = "RdYlGn")
+    )
+  )
+}
+
+cargas |> 
+  kableExtra::kbl(caption = "Cargas para las 11 Componentes") |> 
+  kableExtra::kable_styling(font_size = 11) |> 
+  custom_background(cargas, column = 2, CP = 1) |> 
+  custom_background(cargas, column = 3, CP = 2) |> 
+  custom_background(cargas, column = 4, CP = 3) |> 
+  custom_background(cargas, column = 5, CP = 4) |> 
+  custom_background(cargas, column = 6, CP = 5) |> 
+  custom_background(cargas, column = 7, CP = 6) |> 
+  custom_background(cargas, column = 8, CP = 7) |> 
+  custom_background(cargas, column = 9, CP = 8) |> 
+  custom_background(cargas, column = 10, CP = 9) |> 
+  custom_background(cargas, column = 11, CP = 10) |> 
+  custom_background(cargas, column = 12, CP = 11)
+```
+
+```{r, echo=FALSE}
+n_cps <- nrow(cp$eig)
+
+cp$eig |> 
+  as.data.frame() |> 
+  round(4) |> 
+  dplyr::mutate(CP = 1:n_cps) |> 
+  dplyr::select(CP, 
+                Autovalor = 1,
+                "% Variancia" = 2,
+                "% Acumulado" = 3) |> 
+  kableExtra::kbl(caption = "Variancia explicada por cada Componente",
+                  row.names = FALSE) |> 
+  kableExtra::kable_styling(font_size = 11)
+
+tibble::tibble(CP = 1:n_cps, PVE = cp$eig[,2]) |> 
+  ggplot2::ggplot() +
+  ggplot2::aes(x = CP, y = PVE) +
+  ggplot2::geom_line(linewidth = 1) +
+  ggplot2::geom_point(size = 3, color = "red") +
+  ggplot2::scale_x_continuous(breaks = 1:n_cps) +
+  ggplot2::scale_y_continuous(name = "% Variancia Explicada", 
+                              breaks = seq(0, 30, 5),
+                              limits = c(0, 30)) +
+  ggplot2::ggtitle("Scree Plot") +
+  ggplot2::theme_bw()
+
+```
+
+```{=html}
+<style>
+g.pointtext {display: none;}
+</style>
+```
+
+```{r, echo=FALSE, fig.height=5.5}
+library(plotly)
+
+individuos <- cp$ind$coord |> 
+  as.data.frame() |> 
+  dplyr::bind_cols(datos) |> 
+  dplyr::mutate(name = stringr::str_wrap(name, 25)) |> 
+  ggplot2::ggplot() +
+  ggplot2::aes(x = Dim.1, y = Dim.2, color = album, label = name) +
+  ggplot2::geom_hline(yintercept = 0, linewidth = 0.1) +
+  ggplot2::geom_vline(xintercept = 0, linewidth = 0.1) +
+  ggplot2::geom_point(alpha = 0) +
+  ggplot2::scale_x_continuous(breaks = seq(-6, 3, 1)) +
+  ggplot2::scale_y_continuous(breaks = seq(-3, 3, 1)) +
+  ggplot2::geom_text(size = 2, show.legend = FALSE) +
+  ggplot2::labs(title = "Gráfico de los individuos en las dos primeras CP (plotly)",
+                x = "CP1",
+                y = "CP2") +
+  ggplot2::theme_bw()
+
+plotly::ggplotly(individuos)
+```
+
+```{r, echo=FALSE, fig.height=5.5}
+individuos_echarts4r <- cp$ind$coord |>
+  as.data.frame()  |>  
+  dplyr::bind_cols(datos) |> 
+  dplyr::mutate(name = stringr::str_wrap(name, 25)) |> 
+  dplyr::select(Dim.1, Dim.2, album, name) 
+
+# Este approach funciona porque el numero de albumes es menor a 20
+chart_palette <- ggthemes::tableau_color_pal("Tableau 20")(n = 20)
+
+individuos_echarts4r |> 
+  # Agrupamos por album
+  dplyr::group_by(album) |> 
+  # Creamos id por grupo para seleccionar color en la palette elegida
+  dplyr::mutate(album_id = dplyr::cur_group_id()) |> 
+  # Definimos un color por grupo
+  dplyr::mutate(color = chart_palette[album_id]) |> 
+  # Comenzamos a construir el grafico usando echarts4r
+  echarts4r::e_charts(x = Dim.1) |>
+  # Definimos el scatterplot
+  echarts4r::e_scatter(
+    serie = Dim.2,
+    # Usamos bind = name para poder usan el nombre de la cancion como "symbol"
+    bind = name,
+    # Hacemos que en lugar de un punto aparezca el nombre de la cancion
+    label = list(
+      show = TRUE,
+      formatter = htmlwidgets::JS("function(params) {return(params.name)}"),
+      fontSize = 11
+    ),
+    # Workaround para eliminar los "puntos" del scatterplot
+    symbolSize = 0,
+    emphasis = list(
+      disabled = TRUE
+    )
+  ) |> 
+  # Definimos el color de los nombres de las canciones
+  echarts4r::e_add_nested("label", color) |> 
+  # Definimos el color del borde del tooltip
+  echarts4r::e_add_nested("itemStyle", color) |> 
+  # Workaround para agregar informacion en el tooltip
+  echarts4r::e_add_nested("album", album) |>
+  # Definimos el tooltip
+  echarts4r::e_tooltip(formatter = htmlwidgets::JS(
+    "function(params) {
+       return(
+         '<strong>Cancion: </strong>' + params.name + '<br>' +
+         '<strong>Album: </strong>' + params.data.album.album + '<br>' +
+         '<strong>Dim.1: </strong>' + params.value[0].toFixed(2) + '<br>' +
+         '<strong>Dim.2: </strong>' + params.value[1].toFixed(2) + '<br>'
+       )
+     }"
+  )) |> 
+  # Matcheamos el color de los grupos definidos con los usados para las canciones
+  echarts4r::e_color(color = chart_palette) |> 
+  # Definimos la leyenda
+  echarts4r::e_legend(
+    left = "right",
+    top = "middle",
+    orient = "vertical"
+  ) |> 
+  echarts4r::e_title(
+    "Gráfico de los individuos en las dos primeras CP (echarts4r)"
+  ) |> 
+  # Definimos los ejes
+  echarts4r::e_x_axis(
+    name = "CP1",
+    nameTextStyle = list(
+      fontWeight = "bold",
+      fontSize = 15
+    ),
+    nameLocation = "middle",
+    min = -6,
+    max = 6,
+    nameGap = 25
+  ) |> 
+  echarts4r::e_y_axis(
+    name = "CP2",
+    nameTextStyle = list(
+      fontWeight = "bold",
+      fontSize = 15
+    ),
+    nameLocation = "middle",
+    nameGap = 25
+  )
+```
+
+## Paso I: Preliminares
+
+- Nuestro objetivo consiste en desarrollar una app que permita al usuario/a seleccionar:
+
+    - Qué álbum (o álbumes) incluir en el análisis de CP.
+    - Cuáles componentes graficar.
+   
+
+- Ahora que ya tenemos un objetivo planteado, **llegó el momento de construir una Shiny App desde cero**. Una recomendación importante es guardar cada app en un directorio único, donde no haya aplicaciones creadas previamente ni otros archivos innecesarios.
+
+- En consecuencia, para empezar a armar la aplicación, comenzamos por crear un nuevo directorio y guardar allí dos archivos:
+
+    1.  `app.R` (por ahora vacío) con codificación UTF-8
+    2.  `queen.txt`
+
+<p></p>
+
+- Lo primero que podemos hacer dentro de `app.R` es leer los datos, definir interfaz y servidor vacíos, y hacer un llamado a la función `shiny::shinyApp()`:
+
+```{r, eval=FALSE}
+#| code-fold: false
+
+# Importación de datos y ajuste CP
+datos <- readr::read_delim("queen.txt", delim = "\t")
+cp <- FactoMineR::PCA(
+  # matriz de datos: elegimos variables numericas
+  X = dplyr::select(datos, dplyr::where(is.numeric)), 
+  ncp = 11, # cantidad de componentes a almacenar
+  graph = FALSE # no mostrar los graficos
+)
+
+# Esqueleto de la Web
+MiInterfaz <- bslib::page_fluid()
+MiServidor <- function(input, output) {}
+
+# Lanzamiento de la app
+shiny::shinyApp(ui = MiInterfaz, server = MiServidor)
+```
+
+- Al detectar la función `shiny::shinyApp()`, RStudio reconoce que nuestro archivo es una aplicación web y agregará la opción **Run App** en la barra de herramientas:
+
+```{r, echo = FALSE}
+knitr::include_graphics("../imagenes/unidad05/Run_App.png")
+```
+
+## Paso II: Interfaz
+
+- El segundo paso consiste en definir el aspecto de la página web. Algunas de las opciones disponibles en `bslib` son `bslib::page_fluid()`, `bslib::page_fixed()`, `bslib::page_fillable()`, `bslib::page_navbar()` y `bslib::page_sidebar()`, todas con diferentes estructuras predefinidas.
+
+- Comenzaremos utilizando `bslib::page_fluid()`, la cual permite una gran flexibilidad a la hora de diseñar la aplicación. Dado que estamos dando nuestros primeros pasos con Shiny, vamos a enfocarnos en construir una página web simple, conformada sólo por dos paneles; más adelante estudiaremos en mayor detalle diseños más complejos.
+
+- Por costumbre, en el panel más angosto (*sidebar*) ubicaremos los comandos que nos permiten controlar el *output*; a su vez, en el panel principal (*main panel*) vamos a situar los resultados que queremos visualizar.
+
+- Podemos armar la estructura recién descripta usando la función `bslib::layout_sidebar()` dentro de `bslib::page_fluid()`. El esquema de la interfaz luce así:
+
+```{r, eval=FALSE}
+# Importación de datos y ajuste CP
+datos <- readr::read_delim("queen.txt", delim = "\t")
+cp <- FactoMineR::PCA(
+  # matriz de datos: elegimos variables numericas
+  X = dplyr::select(datos, dplyr::where(is.numeric)),
+  ncp = 11, # cantidad de componentes a almacenar
+  graph = FALSE # no mostrar los graficos
+)
+
+# User Interface
+MiInterfaz <- bslib::page_fluid( # Estructura general de la web
+  # Título de la web
+  shiny::titlePanel("Mi Primera Shiny App - ACP sobre Canciones de Queen"), 
+  bslib::layout_sidebar( # Función para crear paneles
+    sidebar = bslib::sidebar(), # Panel secundario
+    # Panel principal
+  )
+)
+
+# Servidor
+MiServidor <- function(input, output) {}
+
+# Lanzamiento de la app
+shiny::shinyApp(ui = MiInterfaz, server = MiServidor)
+```
+
+## Paso III: Outputs
+
+- Ahora es el turno de definir lo que mostraremos en el panel principal. En general, cuando deseamos mostrar en Shiny algún elemento creado por nosotros/as, debemos utilizar alguna de las funciones de tipo *output*. Las más comunes son:
+
+    -   `shiny::textOutput()` para texto plano
+    -   `shiny::htmlOutput()` para texto con formato HTML
+    -   `shiny::tableOutput()` para tablas, matrices o conjuntos de datos
+    -   `DT::DTOutput()` para tablas creadas con el paquete `DT`
+    -   `reactable::reactableOutput()` para tablas creadas con el paquete `reactable`
+    -   `shiny::plotOutput()` para gráficos creados con el paquete `ggplot2`
+    -   `plotly::plotlyOutput()` para gráficos creados con el paquete `plotly`
+    -   `echarts4r::echarts4rOutput()` para gráficos creados con el paquete `echarts4r`
+    -   `leaflet::leafletOutput()` para mapas creados con el paquete `leaflet`
+
+<p></p>
+
+- En nuestro caso usaremos `DT::DTOutput()` y `reactable::reactableOutput()` para mostrar tablas con las cargas y autovalores del ACP respectivamente (observación: usamos ambos tipos de *Output* con fines didácticos; al momento de desarrollar una app deberán elegir uno u otro paquete) y `plotly::plotlyOutput()` para mostrar gráficos.
+
+- Mediante el siguiente código le avisamos a R que dentro del *panel principal* habrá 4 objetos llamados *tabla_cargas*, *tabla_pjevar*, *plot_scree* y *plot_indiv*:
+
+```{r, eval=FALSE}
+# Importación de datos y ajuste CP
+datos <- readr::read_delim("queen.txt", delim = "\t")
+cp <- FactoMineR::PCA(
+  # matriz de datos: elegimos variables numericas
+  X = dplyr::select(datos, dplyr::where(is.numeric)), 
+  ncp = 11, # cantidad de componentes a almacenar
+  graph = FALSE # no mostrar los graficos
+)
+
+# User Interface
+MiInterfaz <- bslib::page_fluid(
+  shiny::titlePanel("Mi Primera Shiny App - ACP sobre Canciones de Queen"), 
+  bslib::layout_sidebar(
+    sidebar = bslib::sidebar(), 
+    
+    DT::DTOutput("tabla_cargas"),
+    reactable::reactableOutput("tabla_pjevar"),
+    plotly::plotlyOutput("plot_scree"),
+    plotly::plotlyOutput("plot_indiv")
+
+  )
+)
+
+# Servidor
+MiServidor <- function(input, output) {}
+
+# Lanzamiento de la app
+shiny::shinyApp(ui = MiInterfaz, server = MiServidor)
+```
+
+## Paso IV: Servidor
+
+- Ahora podemos ocuparnos de definir la sección *server*. Este bloque estará constituido por una función con dos argumentos: **input** y **output**:
+
+    1.  el argumento **input** es una lista donde se guardan los valores que pueden cambiar según el deseo del usuario/a, en este caso álbums incluidos y componentes a graficar.
+
+    2.  el argumento **output** es una lista donde se almacenan los resultados que dependen de los valores elegidos en **input**, en este caso las tablas y gráficos.
+
+<p></p>
+
+- Por ahora no nos preocuparemos por el argumento *input*; únicamente colocaremos dentro de la función `MiServidor` el código necesario para generar los 4 objetos que deseamos mostrar:
+
+```{r, eval=FALSE}
+# Importación de datos y ajuste CP
+datos <- readr::read_delim("queen.txt", delim = "\t")
+cp <- FactoMineR::PCA(
+  # matriz de datos: elegimos variables numericas
+  X = dplyr::select(datos, dplyr::where(is.numeric)), 
+  ncp = 11, # cantidad de componentes a almacenar
+  graph = FALSE # no mostrar los graficos
+)
+  
+# User Interface
+MiInterfaz <- bslib::page_fluid(
+  shiny::titlePanel("Mi Primera Shiny App - ACP sobre Canciones de Queen"), 
+  bslib::layout_sidebar(
+    sidebar = bslib::sidebar(), 
+    
+    # Usamos bslib::card() para evitar superposición de las tablas
+    # Esto parece ser comportamiento inesperado de DT::DTOutput
+    bslib::card(DT::DTOutput("tabla_cargas"), height = "620px"), 
+    reactable::reactableOutput("tabla_pjevar"),
+    plotly::plotlyOutput("plot_scree"),
+    plotly::plotlyOutput("plot_indiv")
+
+  )
+)
+
+# Servidor
+MiServidor <- function(input, output) {
+  
+  output$tabla_cargas <- DT::renderDT({
+    cp$var$coord |> 
+      DT::datatable(options = list(pageLength = 11)) |> 
+      DT::formatRound(columns = 1:11, digits = 4)
+  })
+  
+  output$tabla_pjevar <- reactable::renderReactable({
+    cp$eig |> 
+      reactable::reactable(
+        pagination = FALSE,
+        defaultColDef = reactable::colDef(
+          format = reactable::colFormat(digits = 2)
+        )
+      )
+  })
+  
+  output$plot_scree <- plotly::renderPlotly({
+    gg_scree <- tibble::tibble(CP = 1:nrow(cp$eig),
+                               PVE = cp$eig[,2]) |> 
+      ggplot2::ggplot() +
+      ggplot2::aes(x = CP, y = PVE) +
+      ggplot2::geom_line(linewidth = 1) +
+      ggplot2::geom_point(size = 3, color = "red") +
+      ggplot2::scale_x_continuous(breaks = 1:nrow(cp$eig)) +
+      ggplot2::scale_y_continuous(name = "% Variancia Explicada") +
+      ggplot2::ggtitle("Scree Plot") +
+      ggplot2::theme_bw()
+    
+    plotly::ggplotly(gg_scree)
+    
+  })
+  
+  output$plot_indiv <- plotly::renderPlotly({
+    
+    individuos <- cp$ind$coord |> 
+      dplyr::bind_cols(datos) |> 
+      dplyr::mutate(name = stringr::str_wrap(name, 25)) |> 
+      ggplot2::ggplot() +
+      ggplot2::aes(x = Dim.1, y = Dim.2, color = album, label = name) +
+      ggplot2::geom_hline(yintercept = 0, linewidth = 0.1) +
+      ggplot2::geom_vline(xintercept = 0, linewidth = 0.1) +
+      ggplot2::geom_point(alpha = 0) +
+      ggplot2::geom_text(size = 2, show.legend = FALSE) +
+      ggplot2::ggtitle("Gráfico de los individuos en las CP seleccionadas") +
+      ggplot2::theme_bw()
+
+    plotly::ggplotly(individuos)
+
+  })
+  
+}
+
+# Lanzamiento de la app
+shiny::shinyApp(ui = MiInterfaz, server = MiServidor)
+```
+
+::: {.alert .alert-success}
+**Importante: estructura del servidor**
+
+-   Estudiemos el formato de escritura empleado: dentro de la función que juega el rol de **servidor** debemos listar los elementos que deseamos que estén disponibles para ser incluidos en el resultado final de la app, siguiendo la estructura `output$NombreObjeto`.
+
+-   Asociado a este nombre debe haber un llamado a una función de tipo *render*, las cuales son la contraparte de las funciones *output* mencionadas arriba. Ejemplos:
+
+    -   `plotly::plotlyOutput()` en la interfaz --\> `plotly::renderPlotly()` en el servidor
+    -   `DT::DTOutput()` en la interfaz --\> `DT::renderDT()` en el servidor
+    -   `reactable::reactableOutput()` en la interfaz --\> `reactable::renderReactable()` en el servidor
+:::
+
+## Paso V: Widgets
+
+-  Todavía no hemos otorgado a nuestra app la interactividad deseada: sólo muestra las primeras 2 componentes e incluye todos los álbums disponibles de Queen en la base, ya que así está programado en el código mostrado arriba.
+
+-   Para lograr la interactividad será necesario incluir ciertos **widgets** (término traducido como "dispositivos" o "artilugios") en nuestra app. Podemos pensar a un *widget* como un elemento prefabricado que nos da la posibilidad de transmitirle información a la app sobre lo que queremos. Los más comunes son:
+
+    -   `shiny::checkboxGroupInput()`: listado de opciones para marcar (*multiple choice*)
+    -   `shiny::radioButtons()`: listado de opciones que admite una respuesta única
+    -   `shiny::textInput()`: entrada manual de texto
+    -   `shiny::numericInput()`: entrada de valores numéricos
+    -   `shiny::dateInput()`: entrada de fechas
+    -   `shiny::fileInput()`: permite subir un archivo desde mi PC para ser utilizado por la app
+    -   `shiny::actionButton()`: botón de acción para activar o desactivar cierta opción
+    -   `shiny::sliderInput()`: barra horizontal que permite elegir un valor numérico o un intervalo dentro de un rango determinado
+
+<p></p>
+
+-  Shiny ofrece una variada lista de posibilidades, las cuales podemos consultar en esta [galería de widgets](https://shiny.rstudio.com/gallery/widget-gallery.html). Una alternativa recomendable es el paquete `shinyWidgets` el cual ofrece muchas otras opciones, las cuales vale la pena repasar en su [página web](http://shinyapps.dreamrs.fr/shinyWidgets/). Más adelante hablaremos más sobre este paquete.
+
+- Para continuar con el armado de nuestra app, existen dos *widgets* que serán particularmente útiles:
+
+    - `shiny::checkboxGroupInput()` para poder elegir los discos de Queen a incluir en el ACP
+    - `shiny::numericInput()` para poder elegir las componentes a graficar (uno para cada eje)
+    
+<p></p>
+
+-   A cada *widget* que creamos debemos asignarle un **ID**, el cual luego podrá ser usado para hacer referencia a los valores que cada uno de ellos tomen en determinado momento.
+
+-   El código para generar los *widgets* puede incluirse directamente dentro del **sidebarPanel** presente en la interfaz de nuestra aplicación:
+
+```{r, eval=FALSE}
+# Datos
+datos <- readr::read_delim("queen.txt", delim = "\t")
+cp <- FactoMineR::PCA(
+  # matriz de datos: elegimos variables numericas
+  X = dplyr::select(datos, dplyr::where(is.numeric)), 
+  ncp = 11, # cantidad de componentes a almacenar
+  graph = FALSE # no mostrar los graficos
+)
+
+# User Interface
+MiInterfaz <- bslib::page_fluid(
+  shiny::titlePanel("Mi Primera Shiny App - ACP sobre Canciones de Queen"), 
+  bslib::layout_sidebar(
+    sidebar = bslib::sidebar(
+      
+      # Listado de Albums
+      shiny::checkboxGroupInput(
+        inputId = "album", # ID del widget
+        label = "Álbums a incluir", # Título a mostrar en la app
+        choices = sort(unique(datos$album)), # Opciones disponibles
+        selected = sort(unique(datos$album))[1:3] # Opciones seleccionadas al inicio
+      ),
+
+      # Componente Eje X
+      shiny::numericInput(
+        inputId = "ejex", # ID del widget
+        label = "CP Eje X", # Título a mostrar en la app
+        value = 1, # Valor seleccionado inicialmente
+        min = 1, # Mínimo valor posible
+        max = 11 # Máximo valor posible
+      ),
+
+      # Componente Eje Y
+      shiny::numericInput(
+        inputId = "ejey", # ID del widget
+        label = "CP Eje Y", # Título a mostrar en la app
+        value = 2, # Valor seleccionado inicialmente
+        min = 1, # Mínimo valor posible
+        max = 11 # Máximo valor posible
+      )
+      
+    ), 
+    
+    # Usamos bslib::card() para evitar superposición de las tablas
+    # Esto parece ser comportamiento inesperado de DT::DTOutput
+    bslib::card(DT::DTOutput("tabla_cargas"), height = "620px"), 
+    reactable::reactableOutput("tabla_pjevar"),
+    plotly::plotlyOutput("plot_scree"),
+    plotly::plotlyOutput("plot_indiv")
+
+  )
+)
+
+# Servidor
+MiServidor <- function(input, output) {
+  
+  output$tabla_cargas <- DT::renderDT({
+    cp$var$coord |> 
+      DT::datatable(options = list(pageLength = 11)) |> 
+      DT::formatRound(columns = 1:11, digits = 4)
+  })
+  
+  output$tabla_pjevar <- reactable::renderReactable({
+    cp$eig |> 
+      reactable::reactable(
+        pagination = FALSE,
+        defaultColDef = reactable::colDef(
+          format = reactable::colFormat(digits = 4)
+        )
+      )
+  })
+  
+  output$plot_scree <- plotly::renderPlotly({
+    
+    gg_scree <- tibble::tibble(CP = 1:nrow(cp$eig),
+                               PVE = cp$eig[,2]) |> 
+      ggplot2::ggplot() +
+      ggplot2::aes(x = CP, y = PVE) +
+      ggplot2::geom_line(linewidth = 1) +
+      ggplot2::geom_point(size = 3, color = "red") +
+      ggplot2::scale_x_continuous(breaks = 1:nrow(cp$eig)) +
+      ggplot2::scale_y_continuous(name = "% Variancia Explicada") +
+      ggplot2::ggtitle("Scree Plot") +
+      ggplot2::theme_bw()
+    
+    plotly::ggplotly(gg_scree)
+    
+  })
+  
+  output$plot_indiv <- plotly::renderPlotly({
+    
+    individuos <- cp$ind$coord |> 
+      dplyr::bind_cols(datos) |> 
+      dplyr::mutate(name = stringr::str_wrap(name, 25)) |> 
+      ggplot2::ggplot() +
+      ggplot2::aes(x = Dim.1, y = Dim.2, color = album, label = name) +
+      ggplot2::geom_hline(yintercept = 0, linewidth = 0.1) +
+      ggplot2::geom_vline(xintercept = 0, linewidth = 0.1) +
+      ggplot2::geom_point(alpha = 0) +
+      ggplot2::geom_text(size = 2, show.legend = FALSE) +
+      ggplot2::ggtitle("Gráfico de los individuos en las CP seleccionadas") +
+      ggplot2::theme_bw()
+
+    plotly::ggplotly(individuos)
+
+  })
+  
+}
+
+# Lanzamiento de la app
+shiny::shinyApp(ui = MiInterfaz, server = MiServidor)
+```
+
+## Paso VI: Reactividad
+
+- Cada uno de los *widgets* comunica al *server* el valor seleccionado por el usuario a través de la lista `input`. Para acceder al valor definido por un usuario para un determinado *widget* usamos el **input ID**. En este caso, `input$album` nos permite acceder a los albumes seleccionados mientras que `input$ejex` e `input$ejey` nos permiten acceder al valor seleccionado para cada eje.
+
+- En esta sección utilizaremos `input$album` para filtrar el conjunto de datos original de acuerdo a los albumes seleccionados por el usuario, obtendremos las CP a partir de la base filtrada y luego armaremos el gráfico según los valores de `input$ejex` e `input$ejey`.
+
+- La base filtrada debe ser un **elemento reactivo**, es decir, un objeto de R cuyo valor no sea fijo, sino que se actualice de acuerdo a las opciones que seleccionemos en pantalla. Esto se logra mediante la función `shiny::reactive()`. Dentro de nuestra función servidor podemos incluir el siguiente código:
+
+```{r, eval=FALSE}
+#| code-fold: false
+
+base_filtrada <- shiny::reactive({
+  dplyr::filter(datos, album %in% input$album)
+})
+```
+
+- **Importante:** cuando estamos utilizando elementos reactivos debemos llamarlos agregando un par de paréntesis al final de su nombre, por ejemplo, `base_filtrada()` en vez de `base_filtrada`.
+
+- El elemento reactivo definido arriba permite R **actualice su valor** a medida que el usuario de la app elige diferentes albumes. La lógica es simple: si definimos `base_filtrada <- dplyr::filter(datos, album %in% c("Innuendo", "Jazz"))`, luego la app usará siempre las canciones que pertenecen a los albumes `Innuendo` y `Jazz`; si definimos `base_filtrada <- shiny::reactive({dplyr::filter(datos, album %in% input$album)})`, el valor cambiará siempre que el usuario modifique manualmente el input asociado.
+
+- Dado que **los objetos de R que dependen de valores reactivos también son reactivos**, el objeto donde guardamos el resultado del ACP también es reactivo (depende de la base de datos, que a su vez depende de los discos elegidos). Todos estos detalles requieren que modifiquemos el código original. Por ejemplo, lo que antes era:
+
+```{r, eval=FALSE}
+#| code-fold: false
+
+cp <- FactoMineR::PCA(
+  X = dplyr::select(datos, dplyr::where(is.numeric)), 
+  ncp = 11, 
+  graph = FALSE 
+)
+```
+
+ahora se convierte en:
+
+```{r, eval=FALSE}
+#| code-fold: false
+
+cp <- shiny::reactive({
+  FactoMineR::PCA(
+    X = dplyr::select(base_filtrada(), dplyr::where(is.numeric)), 
+    ncp = 11, 
+    graph = FALSE 
+  )
+})
+```
+
+::: {.alert .alert-warning}
+
+**Aclaración:** el concepto de *reactividad* es un tema complejo que requiere de cierto tiempo para ser comprendido plenamente. Si bien la reactividad es un elemento fundamental de cualquier aplicación Shiny, por una cuestión de tiempo disponible no profundizaremos demasiado en este tópico. Aquellas personas interesadas en aprender más sobre el tema pueden consultar el capítulo **"Mastering reactivity"** del ya mencionado libro **Mastering Shiny**.
+
+:::
+
+## Paso VII: Ejecución
+
+- ¡Llegamos al último paso! Una vez que ya tenemos listas la interfaz y el servidor, sólo falta agregar la sentencia que permite ejecutar la aplicación:
+
+```{r, eval=FALSE}
+#| code-fold: false
+
+shiny::shinyApp(ui = MiInterfaz, server = MiServidor)
+```
+
+-   Esta línea de código debe figurar siempre dentro del archivo *app.R*, respetando los nombres asignados a la interfaz y al server.
+
+-   Existen 3 maneras diferentes de lanzar la aplicación:
+
+    1)  Apretar el botón **Run App** en la barra de herramientas de RStudio, donde podemos elegir si queremos ejecutarla dentro de RStudio o en un navegador externo.
+
+    2)  Entrar a `app.R`, seleccionar todo el código y ejecutarlo.
+
+    3)  Usar la función `shiny::runApp()` en la consola de RStudio, eligiendo la ruta donde está ubicado el directorio que contiene la app, por ejemplo `runApp("C:/Mis Documentos/MiApp")`.
+
+<p></p>
+
+- Uniendo el código presentado en cada paso, llegamos a este resultado final:
+
+```{r, eval=FALSE}
+# Datos
+datos <- readr::read_delim("queen.txt", delim = "\t")
+
+# User Interface
+MiInterfaz <- bslib::page_fluid(
+  shiny::titlePanel("Mi Primera Shiny App - ACP sobre Canciones de Queen"), 
+  bslib::layout_sidebar( 
+    sidebar = bslib::sidebar(
+      
+      # Listado de Albums
+      shiny::checkboxGroupInput(
+        inputId = "album", # ID del widget
+        label = "Álbums a incluir", # Título a mostrar en la app
+        choices = sort(unique(datos$album)), # Opciones disponibles
+        selected = sort(unique(datos$album))[1:3] # Opciones seleccionadas al inicio
+      ),
+
+      # Componente Eje X
+      shiny::numericInput(
+        inputId = "ejex", # ID del widget
+        label = "CP Eje X", # Título a mostrar en la app
+        value = 1, # Valor seleccionado inicialmente
+        min = 1, # Mínimo valor posible
+        max = 11 # Máximo valor posible
+      ),
+
+      # Componente Eje Y
+      shiny::numericInput(
+        inputId = "ejey", # ID del widget
+        label = "CP Eje Y", # Título a mostrar en la app
+        value = 2, # Valor seleccionado inicialmente
+        min = 1, # Mínimo valor posible
+        max = 11 # Máximo valor posible
+      )
+
+    ), 
+
+    # Usamos bslib::card() para evitar superposición de las tablas
+    # Esto parece ser comportamiento inesperado de DT::DTOutput
+    bslib::card(DT::DTOutput("tabla_cargas"), height = "620px"), 
+    reactable::reactableOutput("tabla_pjevar"),
+    plotly::plotlyOutput("plot_scree"),
+    plotly::plotlyOutput("plot_indiv")
+
+  )
+)
+
+#Servidor
+MiServidor <- function(input, output) {
+  
+  base_filtrada <- shiny::reactive({
+    dplyr::filter(datos, album %in% input$album)
+  })
+    
+  cp <- shiny::reactive({
+ 
+    FactoMineR::PCA(
+      # matriz de datos: elegimos variables numericas
+      X = dplyr::select(base_filtrada(), dplyr::where(is.numeric)), 
+      ncp = 11, # cantidad de componentes a almacenar
+      graph = FALSE # no mostrar los graficos
+    )
+    
+  })
+    
+  output$tabla_cargas <- DT::renderDT({
+    cp()$var$coord |> 
+      DT::datatable(options = list(pageLength = 11)) |> 
+      DT::formatRound(columns = 1:11, digits = 4)
+  })
+  
+  output$tabla_pjevar <- reactable::renderReactable({
+    cp()$eig |> 
+      reactable::reactable(
+        pagination = FALSE,
+        defaultColDef = reactable::colDef(
+          format = reactable::colFormat(digits = 4)
+        )
+      )
+  })
+  
+  output$plot_scree <- plotly::renderPlotly({
+    
+    gg_scree <- tibble::tibble(CP = 1:nrow(cp()$eig),
+                               PVE = cp()$eig[,2]) |> 
+      ggplot2::ggplot() +
+      ggplot2::aes(x = CP, y = PVE) +
+      ggplot2::geom_line(linewidth = 1) +
+      ggplot2::geom_point(size = 3, color = "red") +
+      ggplot2::scale_x_continuous(breaks = 1:nrow(cp()$eig)) +
+      ggplot2::scale_y_continuous(name = "% Variancia Explicada") +
+      ggplot2::ggtitle("Scree Plot") +
+      ggplot2::theme_bw()
+    
+    plotly::ggplotly(gg_scree)
+    
+  })
+  
+  output$plot_indiv <- plotly::renderPlotly({
+    
+    individuos <- cp()$ind$coord |> 
+      dplyr::bind_cols(base_filtrada()) |> 
+      dplyr::mutate(name = stringr::str_wrap(name, 25)) |> 
+      dplyr::select(album,
+                    name, 
+                    x = paste0("Dim.", input$ejex), 
+                    y = paste0("Dim.", input$ejey)) |> 
+      ggplot2::ggplot() +
+      ggplot2::aes(x = x, y = y, color = album, label = name) +
+      ggplot2::geom_hline(yintercept = 0, linewidth = 0.1) +
+      ggplot2::geom_vline(xintercept = 0, linewidth = 0.1) +
+      ggplot2::geom_point(alpha = 0) +
+      ggplot2::geom_text(size = 2, show.legend = FALSE) +
+      ggplot2::ggtitle("Gráfico de los individuos en las CP seleccionadas") +
+      ggplot2::labs(x = paste0("CP", input$ejex), y = paste0("CP", input$ejey)) +
+      ggplot2::theme_bw()
+
+    plotly::ggplotly(individuos)
+
+  })
+  
+}
+
+# Lanzamiento de la app
+shiny::shinyApp(ui = MiInterfaz, server = MiServidor)
+```
+
+- Es interesante notar que se implementaron algunos cambios en el servidor, para adaptarnos a la reactividad definida en el paso anterior; prestemos especial atención al proceso de selección de componentes dentro del código del gráfico de individuos:
+
+```{r, eval=FALSE}
+#| code-fold: false
+
+dplyr::select(
+  album, 
+  name, 
+  x = paste0("Dim.", input$ejex), 
+  y = paste0("Dim.", input$ejey)
+)
+```
+
+ 
+::: {.callout-note}
+
+### Datos Importantes
+
+- Si lanzamos la app desde RStudio, es necesario detenerla para poder seguir utilizando R. Esto se logra apretando el botón rojo "STOP" ubicado en el sector superior derecho de la consola.
+
+- En la versión final del código de la app, algunas sentencias se incorporan dentro de la función server y otras fuera de ella. La recomendación a seguir es **incluir en el server sólo los outputs y aquellos objetos que sean reactivos (o que dependan de objetos reactivos)**, y dejar fuera cualquier otro. Gracias a esto evitamos sobrecargar y/o enlentecer la app, ya que los objetos definidos fuera del server se evalúan una única vez, mientras que aquellos definidos dentro del server son re-evaluados constantemente.
+
+- Se recomienda crear un **esquema** que replique la estructura principal de la app, ya que esto ayuda a comprender mejor su funcionamiento. En nuestro caso, el esquema está compuesto por tres inputs (*album*, *ejex* y *ejey*) y cuatro outputs (*tabla_cargas*, *tabla_pjevar*, *plot_scree* y *plot_indiv*).
+
+:::
+
+-   El orden de los pasos seguidos en este tutorial no es necesariamente fijo, y dependerá en gran medida de las características de la app que estemos desarrollando. Algunas apps simples quizás no necesiten reactividad, widgets o gráficos, mientras que aquellas apps más complejas seguramente requieran de un ida y vuelta retroalimentado entre los pasos 2 a 6, hasta que alcancemos el resultado deseado.
+
+-   Una vez que hayamos adquirido cierta experiencia en la construcción de apps, resulta una buena idea construir en primer lugar la interfaz con sus widgets incluidos (pasos 2 y 5), para luego dedicarle tiempo al servidor y el contenido (pasos 3, 4 y 6). Obviamente esta es sólo una sugerencia, y el proceso de creación de una app debe responder a las necesidades y gustos de su respectivo/a autor/a.
+
+## Trabajo en Equipo
+
+* Intentar replicar la siguiente app, en la cual se muestra un histograma para alguna de las variables numéricas presentes en la base.
+
+* Detalles a considerar:
+
+    * Se pueden elegir múltiples álbums
+    * El título del gráfico debe mostrar los nombres de los álbums seleccionados
+    * El histograma utiliza siempre 10 barras
+
+<p></p>
+
+* **Ayuda:** el *widget* empleado en ambos casos es `pickerInput()` del paquete `shinyWidgets`, el cual permite agregar una barra de búsqueda (*liveSearch*) en su argumento `options`.
+
+```{r, echo=FALSE}
+knitr::include_graphics("../imagenes/unidad05/app_ejercicio.png")
+```
+
+```{r, echo=FALSE, eval=FALSE}
+
+# User Interface
+MiInterfaz <- bslib::page_fluid(
+  
+  shiny::titlePanel("Mi Segunda Shiny App"), 
+  
+  bslib::layout_sidebar( 
+    sidebar = bslib::sidebar(
+      
+      # Listado de Albums
+      shinyWidgets::pickerInput(
+        inputId = "album", 
+        label = "Álbum(s)", 
+        choices = sort(unique(datos$album)),
+        options = shinyWidgets::pickerOptions(liveSearch = TRUE),
+        multiple = TRUE,
+        selected = sort(unique(datos$album))
+      ),
+      
+      shinyWidgets::pickerInput(
+        inputId = "var",
+        label = "Variable",
+        choices = colnames(dplyr::select(datos, dplyr::where(is.numeric))),
+        options = shinyWidgets::pickerOptions(liveSearch = TRUE)
+      )
+      
+    ), 
+    
+    shiny::plotOutput("hist")
+  )
+)
+
+#Servidor
+MiServidor <- function(input, output) {
+  
+  datos_filtrados <- reactive({
+
+    datos |> dplyr::filter(album %in% input$album) |> dplyr::pull(input$var)
+
+  })
+  
+  output$hist <- shiny::renderPlot({
+
+    ggplot2::ggplot() +
+      ggplot2::aes(x = datos_filtrados()) +
+      ggplot2::geom_histogram(fill = "steelblue", color = "black", bins = 10) +
+      ggplot2::labs(
+        x = input$var,
+        y = "Frecuencia",
+        title = stringr::str_wrap(
+          paste0(
+            "Albums considerados: ",
+            paste0(input$album, collapse = " / ")
+            ), 125)) +
+      ggplot2::theme_bw()
+
+  })
+  
+}
+
+# Lanzamiento de la app
+shiny::shinyApp(ui = MiInterfaz, server = MiServidor)
+```

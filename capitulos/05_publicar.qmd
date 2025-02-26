@@ -1,0 +1,291 @@
+---
+title: "Publicar"
+subtitle: "Análisis Exploratorio de Datos | Licenciatura en Estadística | FCEyE | UNR"
+lang: es
+---
+
+<!-- Texto justificado -->
+
+```{=html}
+<style>
+body {
+text-align: justify}
+</style>
+```
+<!-- Agregamos esto para que no haya mucho espacio extra, en blanco, al final de la pagina (es un problema con el toc flotante) -->
+
+::: {.tocify-extend-page data-unique="tocify-extend-page" style="height: 0;"}
+:::
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, eval = FALSE,
+                      fig.align = "center", out.width = "90%", echo = TRUE)
+```
+
+## Subir mi Shiny App a la web
+
+* Existen algunas preguntas que se repiten siempre que usamos Shiny: **¿cómo puedo hacer para compartir mi aplicación con otras personas? ¿Tengo que obligarlas a instalar R y que ejecuten el código? ¿Hay alguna manera fácil de subir mi app a Internet?**
+
+* Hay varias maneras de dar respuesta a estos interrogantes, cada una orientada a diferentes perfiles de usuarios/as. A continuación repasaremos las más populares.
+
+### Shiny Server
+
+* Es un servicio de hosting **gratuito** ofrecido por RStudio que funciona en servidores Linux.
+
+* Esta opción es interesante si deseamos alojar apps en el servidor de la institución donde trabajamos, generalmente para uso interno.
+
+* **Ventajas:** es gratuito y podemos alojar múltiples aplicaciones, cada una con su respectiva dirección URL.
+
+* **Desventajas:** habitualmente el acceso a la configuración del servidor Shiny depende del área de Informática o Sistemas de la organización donde trabajamos; en este sentido una comunicación fluida entre nosotros y el/la responsable del sector será indispensable, ya que generalmente no tendremos los permisos necesarios para instalar paquetes o actualizar las versiones de R y RStudio (no cualquier empleado/a puede "meter mano" en los servidores de la empresa o institución donde trabaja). Además, **no es trivial** habilitar el acceso a las apps por fuera de la red donde está instalado el Shiny Server.
+
+* Para más detalles sobre esta opción, visitar <https://posit.co/download/shiny-server/>.
+
+```{r, echo = FALSE, eval = TRUE, fig.cap="Página de bienvenida de Shiny Server cuando se completa el proceso de instalación"}
+knitr::include_graphics("../imagenes/unidad05/shinyserver.png")
+```
+
+### RStudio Connect
+
+* RStudio Connect (actualmente Posit Connect) es la alternativa **paga** a Shiny Server. Ofrece mayor seguridad y atención personalizada, y es uno de los productos más populares lanzados por RStudio.
+
+* Permite publicar aplicaciones desde RStudio y programar la ejecución de scripts, de tal manera que los datos empleados en la app se pueden actualizar con la periodicidad que deseemos.
+
+* Además, se integra perfectamente con Python, Tableau, Jupyter Notebook y otras aplicaciones.
+
+* Al día de hoy (octubre 2023) las versiones más económicas de RStudio Connect poseen un precio de entre \$23.000 y \$61.000 dólares anuales... `r emo::ji("scream")` `r emo::ji("scared")`
+
+* Entre sus clientes más destacados podemos mencionar a las universidades de Harvard y Oxford, la empresa de bienes raíces Redfin, las farmacéuticas Janssen y AstraZeneca, la aseguradora Liberty Mutual, etc.
+
+* **Ventajas:** tiene todo lo que podemos necesitar en un servidor para alojar Shiny apps.
+* **Desventajas:** es muy caro, y encima en USD.
+
+* Para más información sobre este producto, visitar <https://posit.co/products/enterprise/connect/>.
+
+<p></p>
+
+```{r, echo = FALSE, eval = TRUE, out.width="65%"}
+knitr::include_graphics("../imagenes/unidad05/positconnect.png")
+```
+
+### Amazon Web Services (AWS)
+
+* AWS es una compañía subsidiaria de Amazon que ofrece servidores virtuales y plataformas de computación **en la nube** a individuos particulares, empresas u organizaciones. Su estrategia de mercado se basa en cobrar por la cantidad de uso (volumen de tráfico, espacio utilizado, cantidad de visitas, etc.) de las aplicaciones o programas allí alojados, en vez de hacerlo a través de una cuota fija mensual.
+
+* Según estimaciones correspondientes al 2° trimestre 2023 sobre empresas que ofrecen **infraestructura de computación en la nube**, AWS tiene una participación en el mercado (*market share*) equivalente a la de Microsoft y Google combinados (!!!) ([fuente](https://www.statista.com/chart/18819/worldwide-market-share-of-leading-cloud-infrastructure-service-providers/)).
+
+* Uno de los tantos servicios que ofrece AWS es **EC2** (*Elastic Compute Cloud*), el cual permite que cualquier usuario/a tenga acceso a un *cluster* virtual de computadoras para procesar su información. Si queremos subir nuestras shiny apps a la web, EC2 es la herramienta que necesitamos.
+
+* **Ventajas:** eligiendo los mínimos niveles de prestaciones, **el primer año de servicio es gratuito** (de todas formas, Amazon solicita datos de tarjeta de crédito para dar acceso a este "período de prueba" sin costo). Los protocolos de seguridad aplicados y las características del servidor (velocidad, estabilidad, capacidad, etc.) son de primera calidad.
+
+* **Desventajas:** el proceso de creación de una cuenta en AWS, apertura de instancia EC2, instalación de R, RStudio y Shiny Server en la nube, configuración de llaves SSH, etc. puede requerir de varias horas de sufrimiento. Dos tutoriales muy recomendables que nos orientan durante este proceso pueden encontrarse [aquí](https://www.charlesbordet.com/en/guide-shiny-aws/#create-your-first-server-on-ec2) y [aquí](https://www.linkedin.com/pulse/how-host-r-shiny-app-aws-cloud-7-simple-steps-venkat-raman/).
+
+* Más info sobre AWS y EC2 en <https://aws.amazon.com/es/>.
+
+```{r, echo = FALSE, eval = TRUE, out.width="65%"}
+knitr::include_graphics("../imagenes/unidad05/aws.jpg")
+```
+
+### shinyapps.io
+
+* [shinyapps.io](https://www.shinyapps.io/) es el servicio de hosting **gratuito** ofrecido por RStudio. Si estamos dando nuestros primeros pasos con Shiny, esta es sin dudas la opción más recomendable a la hora de publicar apps en la web.
+
+* Para utilizar esta herramienta es necesario instalar el paquete `rsconnect`, crear una cuenta personal en [shinyapps.io](https://www.shinyapps.io/) y luego conectarla con RStudio mediante una clave autogenerada (*token*).
+
+* Si bien este proceso **no es demasiado complejo**, recomendamos leer un [tutorial](https://shiny.rstudio.com/articles/shinyapps.html) que nos guiará paso a paso a lo largo del recorrido.
+
+* Una vez completada la configuración, tendremos una URL a nuestro nombre alojada en [shinyapps.io](https://www.shinyapps.io/). Por ejemplo, si nuestro nombre de usuario es *diego* y hemos subido a la web una app llamada *tuto4*, la encontraremos disponible en el enlace <https://diego.shinyapps.io/tuto4/>.
+
+* La conexión entre [shinyapps.io](https://www.shinyapps.io/) y RStudio se da a través del botón **Publish Application** que figura en la barra de herramientas del editor:
+
+```{r, echo = FALSE, eval = TRUE}
+knitr::include_graphics("../imagenes/unidad05/publish.png")
+```
+
+* Haciendo click allí accedemos a un menú donde podemos definir tres aspectos: archivos necesarios para la ejecución de la app (incluye código, imágenes, estilos CSS, etc.); cuenta asociada de [shinyapps.io](https://www.shinyapps.io/) y nombre de la aplicación (texto que se mostrará a continuación de la barra en la URL):
+
+```{r, echo = FALSE, eval = TRUE}
+knitr::include_graphics("../imagenes/unidad05/publishApp.png")
+```
+
+* Al apretar el botón **Publish** comenzará un proceso que puede llevar algunos minutos, durante los cuales veremos varias líneas de código ejecutándose en la consola de RStudio. Una vez finalizado, la aplicación se encontrará disponible online para ser visitada por cualquier persona con acceso a internet.
+
+* **Ventajas:** es la manera más fácil y directa de publicar nuestras apps. Ofrece un tablero desde el cual podemos ver estadísticas de uso y *logs* (registros) de cada una de las aplicaciones que subimos. Por sobre todas las cosas, **es gratis y funciona bien**.
+
+* **Desventajas:** la versión gratuita de [shinyapps.io](https://www.shinyapps.io/) sólo permite que cada usuario aloje 5 apps al mismo tiempo, con un máximo de 25 hs. de uso mensual en cada una de ellas. Para acceder a un número ilimitado de apps y 10.000 hs. mensuales de uso, debemos abonar la suma de \$3.860 dólares al año (precio actualizado a octubre 2023).
+
+## Proteger mi App con contraseña
+
+* Existen ocasiones en las cuales queremos que nuestra app esté subida a la web, pero al mismo tiempo deseamos limitar al acceso a un grupo determinado de usuarios/as.
+
+* Esto puede lograrse agregando una pantalla de **inicio de sesión** que solicite Usuario y Contraseña a las personas que visitan la app. Para aplicar una estrategia como esta, haremos uso del paquete `shinymanager`.
+
+```{r, echo = FALSE, eval = TRUE, out.width="25%"}
+knitr::include_graphics("../imagenes/unidad05/shinymanager.png")
+```
+
+* El primer paso consiste en definir un listado de usuarios y contraseñas habilitados para acceder a la app:
+
+```{r}
+credenciales <- tibble(
+  user = c("diego", "ivan", "santiago", "julia"),
+  password = paste0(user, "123")
+)
+```
+
+```{r, echo=FALSE, eval=TRUE}
+library(dplyr)
+library(kableExtra)
+
+tibble(
+  user = c("diego", "ivan", "santiago", "julia"),
+  password = paste0(user, "123")
+) %>% 
+  kbl() %>% 
+  kable_styling(full_width = FALSE)
+```
+
+* Segundo paso: creamos una app simple para utilizar como ejemplo:
+
+```{r}
+library(shiny)
+library(shinymanager)
+
+ui <- fluidPage(
+  titlePanel("App con Contraseña"),
+  plotOutput("grafico")
+  )
+
+server <- function(input, output) {
+  output$grafico <- renderPlot(plot(iris))
+  }
+
+shinyApp(ui, server)
+```
+
+* Tercer paso: aplicamos la función `secure_app()` a nuestra interfaz y agregamos un llamado a `secure_server()` dentro del servidor:
+
+```{r}
+library(shiny)
+library(shinymanager)
+library(dplyr)
+
+credenciales <- tibble(
+  user = c("diego", "ivan", "santiago", "julia"),
+  password = paste0(user, "123")
+)
+
+ui <- fluidPage(
+  titlePanel("App con Contraseña"),
+  plotOutput("grafico")
+  ) %>% 
+  secure_app(language = "es")
+
+server <- function(input, output) {
+  
+  #Defino usuarios y contraseñas habilitadas
+  servidor_seguro <- secure_server(
+    check_credentials = check_credentials(credenciales)
+    )
+  
+  #Objeto lista con info sobre el usuario conectado
+  #es una función de uso interno del paquete shinymanager
+  output$auth_output <- renderPrint({
+    reactiveValuesToList(servidor_seguro)
+    })
+  
+  output$grafico <- renderPlot(plot(iris))
+  }
+
+shinyApp(ui, server)
+```
+
+```{r, echo = FALSE, eval = TRUE, out.width="50%", fig.cap="Pantalla inicial mostrada en la app"}
+knitr::include_graphics("../imagenes/unidad05/iniciosesion.png")
+```
+
+* ¡Listo! Ya tenemos una Shiny app protegida mediante contraseña. El dataset con el listado de usuarios autorizados (llamado en este ejemplo `credenciales`) también puede contener columnas llamadas *start* y *expire* con fechas de inicio y caducidad del acceso brindado.
+
+* Existe un tipo especial de usuario (*admin* = `TRUE`) que posee la potestad de agregar, modificar o eliminar otros usuarios. La ventaja más importante de ser *admin* es el acceso a estadísticas de uso de la app, por ejemplo cantidad de conexiones de cada usuario, número de visitas diarias, etc.
+
+* Lamentablemente, no es posible acceder al 100% de las funcionalidades del *admin* cuando la app está alojada en <https://www.shinyapps.io/>, ni tampoco cuando generamos un tablero mediante `flexdashboard`.
+
+<div class="alert alert-danger">
+
+**Cuidado!**
+
+Si en el servidor de nuestra app hacemos uso de algún *input* que depende del usuario/a, es recomendable invocar a la función `req()` de antemano para evitar problemas: el hecho de aplicar contraseñas **retrasa** la ejecución de cierto código, creando un rezago en el flujo de información entre interfaz y servidor.
+
+</div>
+
+* Por ejemplo:
+
+```{r}
+
+ui <- fluidPage(
+  numericInput("numerito", label = "Elegir Valor", value = 0),
+  textOutput("salida")
+  ) 
+
+server <- function(input, output) {
+  output$salida <- renderText({
+    req(input$numerito)
+    paste0("El número elegido es ", input$numerito)
+  })
+}
+
+shinyApp(ui, server)
+```
+
+## Personalizar la pantalla de inicio
+
+* El paquete `shinymanager` permite personalizar el aspecto de la página donde se solicita el nombre de usuario y contraseña necesarios para ingresar a la app.
+
+* Para esto, agregamos dentro de la interfaz un llamado a la función `auth_ui()`, mientras que en el servidor debemos modificar levemente el código original.
+
+* Continuando con el ejemplo anterior:
+
+```{r}
+library(shiny)
+library(shinymanager)
+library(dplyr)
+
+credenciales <- tibble(
+  user = c("diego", "ivan", "santiago", "julia"),
+  password = paste0(user, "123")
+)
+
+ui <- fluidPage(
+  
+  auth_ui(
+    id = "pantalla_ini",
+    status = "danger",
+    background = "url('https://jeremymack-lu.github.io/shinyapps/images/shiny_hex.png');",
+    lan = use_language("es"),
+    choose_language = TRUE
+  ),
+  
+  # Resultado de la autenticación
+  #verbatimTextOutput(outputId = "res_auth"),
+
+  titlePanel("App con Contraseña"),
+  plotOutput("grafico")
+  )
+
+server <- function(input, output, session) {
+  
+  #Defino usuarios y contraseñas habilitadas
+  auth <- callModule(
+      module = auth_server,
+      id = "pantalla_ini",
+      check_credentials = check_credentials(credenciales)
+    )
+  
+  #Objeto lista con info sobre el usuario conectado
+  #función de uso interno del paquete shinymanager
+  output$res_auth <- renderPrint({reactiveValuesToList(auth)})
+  
+  output$grafico <- renderPlot(plot(iris))
+  }
+
+shinyApp(ui, server)
+```

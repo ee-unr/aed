@@ -5,7 +5,7 @@ book:
   title: "Análisis Exploratorio de Datos"
   subtitle: "Licenciatura en Estadística"
   author: 
-    - "Mgs. Lic. Diego Marfetán Molina"
+    - "Mgs. Diego Marfetán Molina"
     - "Lic. Iván Millanes"
   date: today
   date-format: long
@@ -32,7 +32,13 @@ book:
         - capitulos/03_visualizacion_variables_cualitativas.qmd
     - part: capitulos/04.qmd
       chapters:
-        - capitulos/04_visualizacion_variables_cuantitativas.qmd  
+        - capitulos/04_visualizacion_variables_cuantitativas.qmd
+    - part: capitulos/05.qmd
+      chapters:
+        - capitulos/05_shiny.qmd  
+        - capitulos/05_tableros.qmd 
+        - capitulos/05_reactividad.qmd  
+        - capitulos/05_publicar.qmd  
     # - part: capitulos/90.qmd
     #   chapters:
     #     - capitulos/90_soluciones_01.qmd

@@ -1,0 +1,1238 @@
+---
+title: "Reactividad"
+subtitle: "Análisis Exploratorio de Datos | Licenciatura en Estadística | FCEyE | UNR"
+lang: es
+number-sections: false
+eval: false
+format: 
+  html:
+    code-fold: true
+---
+
+<!-- Texto justificado -->
+
+```{=html}
+<style>
+body {
+text-align: justify}
+</style>
+```
+<!-- Agregamos esto para que no haya mucho espacio extra, en blanco, al final de la pagina (es un problema con el toc flotante) -->
+
+::: {.tocify-extend-page data-unique="tocify-extend-page" style="height: 0;"}
+:::
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, eval = FALSE,
+                      fig.align = "center", out.width = "90%", echo = TRUE)
+```
+
+## Principios de la Reactividad
+
+### *Side Effects*
+
+Resulta necesario estudiar el concepto de ***side effects*** antes de avanzar con la "reactividad".
+
+Las funciones en R pueden ejecutarse por una (o ambas) de las siguientes razones:
+
+1.  Querés su ***return value***.
+2.  Querés que produzca otro efecto, los cuales se denominan ***side effects***.
+
+Cualquier efecto que no sea un *return value* es un *side effect.*
+
+#### Ejemplo de Funciones con *Side Effects*
+
+```{r}
+write.csv(...)
+
+plot(cars)
+
+print(x)
+
+value <<- 10
+
+source("script.R")
+
+library(dplyr)
+```
+
+Nunca usamos el *return value* de estas funciones ya que no estamos interesados en lo que tienen para decir, sino en lo que hacen.
+
+#### ¿Por qué se consideran ***side effects***?
+
+`<<-` define una variable en el *parent environment*.
+
+`source("script.R")`: carga todo en el *global environment*.
+
+`library()` Altera la sesión (*global search list*).
+
+#### No son *side effects* (dentro de una función):
+
+```{r}
+# Modificación de variables locales
+value <- 10
+
+# Creación de la mayoría de los tipos de objetos
+list(a = 1, b = 2)
+
+# La mayoría de los cálculos
+a + 1
+summary(pressure)
+lm(speed ~ dist, data = cars)
+predict(wfit, interval = "prediction")
+
+# Lectura de archivos
+readLines("data.csv")
+```
+
+Modificar variables locales no se considera un *side effect* porque ese valor no va a ser visible fuera de la función.
+
+A grandes rasgos se puede decir que:
+
+-   Si la ejecución de tu función / expresión deja el estado del mundo un poco distinto a lo que era antes de ser ejecutada, tiene *side effects*.
+
+-   Si "lo que pasa en `func` queda en `func`" (a excepción del *return value*), entonces no tiene *side effects*.
+
+#### Quiz: *side effects*
+
+Para cada función, determinar si tiene o no *side effects*.
+
+```{r}
+# FUNCION 1
+function(a, b) {
+  (b - a) / a
+}
+
+# FUNCION 2
+function() {
+  options(digits.secs = 6)
+  as.character(Sys.time())
+}
+
+# FUNCION 3
+function(df) {
+  df$foo <- factor(df$foo)
+  df
+}
+
+# FUNCION 4
+function() {
+  readLines("~/data/raw.txt")
+}
+
+# FUNCION 5
+function(values) {
+  hist(values, plot = TRUE)
+}
+```
+
+#### Soluciones
+
+```{r}
+# FUNCION 1: NO
+
+# FUNCION 2: SI
+
+# FUNCION 3: NO
+
+# FUNCION 4: NO
+
+# FUNCION 5: SI
+```
+
+#### ¿Por qué esto es importante?
+
+Los *side effects* hacen que sea más difícil razonar acerca del código dado que el **orden de ejecución** de diferentes funciones con *side effects* puede importar (de maneras no obvias).
+
+Sin embargo, las necesitamos. Sin *side effects*, nuestros programas serían inútiles ya que si un programa se ejecuta pero no tiene interacciones observables con el mundo, es como si no se hubiese ejecutado.
+
+### Programación Reactiva
+
+La programación reactiva, también conocida como *reactive programming*, es un estilo de programación que se concentra en valores que cambian en el tiempo y en cálculos y acciones que dependen de esos valores.
+
+La reactividad es importante en aplicaciones Shiny porque las mismas son interactivas: los usuarios cambian ***input controls*** (mueven *sliders*, escriben en *textboxes*, seleccionan *checkboxes*) lo que causa que se ejecuten acciones en el servidor (leer archivos csv, elegir un subconjunto de datos, ajustar modelos) lo cual resulta en la actualización de ***outputs*** (gráficos que se vuelven a generar, tablas que se actualizan). Esto es completamente diferente a la mayoría de los scripts que creamos con R, los cuales usualmente lidian con datos estáticos.
+
+Para maximizar la utilidad de las aplicaciones Shiny necesitamos que las *reactive expressions* y los *outputs* se actualicen si y solo si los *inputs* cambian. Queremos que los *outputs* estén sincronizados con los *inputs* asegurando que no haremos más trabajo del necesario.
+
+#### *Escalera de Conocimiento*
+
+1.  He usado `output` e `input`
+2.  He usado *reactive expressions* (`reactive()`)
+3.  He usado `observe()` y/o `observeEvent()`. También he escrito *reactive expressions* que dependen de otras *reactive expressions*. He usado `isolate()` de manera adecuada.
+4.  Entiendo la diferencia y sé cuando corresponde usar `reactive()` vs. `observe()`.
+5.  Escribo *reactives* de alto nivel (funciones que tienen *reactive expressions* como *input parameters* y *return values*).
+
+En el Nivel 3 es posible escribir apps complicadas. Es una zona de riesgo. Las apps por lo general funcionan pero a veces se lucha con entender por qué las cosas se ejecutan demasiado o no lo suficiente. Cada nueva *feature* que se agrega parece incrementar la complejidad de la app.
+
+El objetivo de esta Unidad es llegar al Nivel 4. Con un conocimiento firme de los conceptos fundamentales de Shiny es posible construir redes complicadas de *reactive expressions* y *observers* con seguridad.
+
+##### Ejercicio 1
+
+Completar la *server function* de modo tal que el *plot output* muestre un simple gráfico con las primeras `nrows` filas del conjunto de datos `cars`.
+
+Ayuda: `plot(head(cars, nrows))`
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  h1("App de Ejemplo"),
+  sidebarLayout(
+    sidebarPanel(
+      numericInput("nrows", "Cantidad de Filas", 10)
+    ),
+    mainPanel(
+      plotOutput("plot")
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  # Objetivo: Graficar las primeras input$nrows filas de 
+  # cars, usando head() y plot()
+}
+
+shinyApp(ui, server)
+```
+
+Solución
+
+```{r}
+output$plot <- renderPlot({
+  plot(head(cars, input$nrows))
+})
+```
+
+Anti-solución
+
+```{r}
+observe({
+  df <- head(cars, input$nrows)
+  output$plot <- renderPlot(plot(df))
+})
+```
+
+Este patrón de poner `renderPlot` dentro de un `observe` usualmente significa que quien escribe el código tiene una idea equivocada de lo que significa asignar un bloque de código *render* a un *output*.
+
+```{r}
+output$plot1 <- renderPlot(...)
+```
+
+**NO SIGNIFICA**: "Actualizá el *output* de `plot1` con el resultado de este código".
+
+**SIGNIFICA**: "Este código es la **receta** que debe seguirse para actualizar el *output* `plot1` ".
+
+¿Cómo hace Shiny para saber cómo se relacionan las líneas de código? ¿Cómo hace para saber qué *outputs* dependen de qué *inputs*, *reactives*?
+
+Existen dos posibilidades: análisis **estático***,* donde se revisa el código buscando cosas que parezcan reactivas o análisis de **tiempo de ejecución** (*runtime analysis*), donde se ejecuta el código y se observa qué pasa.
+
+Shiny usa *runtime analysis*. Ejecuta el código y ve qué es lo que sucede. Escucha a escondidas para detectar qué *reactive values* (como `input`) o *reactive expressions* son leídas por *output*, y todo aquello que *output* lee es considerado una **dependencia**. Cualquier cambio que se produzca en una de esas dependencias significa que *output* es considerado desactualizado (o **invalidado**) y es probable que necesite ser ejecutado nuevamente.
+
+### Bloques de Construcción Reactivos (*Reactive Building Blocks*)
+
+En esta Sección veremos cómo entra en juego la reactividad en R. Existen tres bloques de construcción fundamentales de programación reactiva: *reactive values*, *reactive expressions* y *observers*.
+
+#### *Reactive Values*
+
+Un objeto `reactiveValues` almacena pares nombre/valor, algo así como un *named list*. Los valores se obtienen o fijan usando `$` o `[[nombre]]` .
+
+Existen dos tipos de *reactive values*:
+
+-   Un único *reactive value*, creado usando `reactiveVal()`.
+
+-   Una lista de *reactive values*, creada usando `reactiveValues()`.
+
+La forma de obtener (*get*) y asignar (*set*) valores para cada uno de ellos es la siguiente:
+
+```{r}
+x <- reactiveVal(10)
+x()       # get
+#> [1] 10
+x(20)     # set
+x()       # get
+#> [1] 20
+
+r <- reactiveValues(x = 10)
+r$x       # get
+#> [1] 10
+r$x <- 20 # set
+r$x       # get
+#> [1] 20
+```
+
+Es importante mencionar que ambos tipos de *reactive values* tienen lo que se denomina *reference semantics*. La mayoría de los objetos de R tienen *copy-on-modify* *semantics*, lo que significa que si se le asigna el mismo valor a dos nombres, la conexión se rompe en el momento que uno es modificado:
+
+```{r}
+a1 <- a2 <- 10
+a2 <- 20
+a1 # unchanged
+#> [1] 10
+```
+
+Este no es el caso con *reactive values* ya que siempre mantienen una referencia al mismo valor por lo cual modificar cualquier copia modifica todos los valores:
+
+```{r}
+b1 <- b2 <- reactiveValues(x = 10)
+b1$x <- 20
+b2$x
+#> [1] 20
+```
+
+La mayoría de los *reactive values* que encontrarán provendrán del argumento `input` de la función del servidor. Una diferencia con los `reactiveValues()` creados por uno mismo es que aquellos provenientes de `input` son de solo lectura: sus valores no se pueden modificar porque Shiny los actualiza automáticamente basado en acciones del usuario en el navegador.
+
+#### Ejemplo de Uso
+
+Uso de *reactive values* en botones de Anterior/Siguiente.
+
+```{r}
+library(shiny)
+
+messages_list <- c("Mensaje 1/3", "Mensaje 2/3", "Mensaje 3/3")
+
+ui <- fluidPage(
+  actionButton("left", "Anterior"),
+  actionButton("right", "Siguiente"),
+  textOutput("message")
+)
+
+server <- function(input, output, session) {
+  index <- reactiveVal(1)
+  
+  output$message <- renderText(messages_list[[index()]])
+  
+  observeEvent(input$left, {
+    if (index() == 1) index(3)
+    else index(index() - 1)
+  })
+  
+  observeEvent(input$right, {
+    if (index() == 3) index(1)
+    else index(index() + 1)
+  })
+  
+}
+
+shinyApp(ui, server)
+```
+
+#### *Reactive Expressions*
+
+Las *reactive expressions* son **expresiones** que son **reactivas**.
+
+-   Expresión: Código que produce un valor.
+
+-   Reactivo: Detecta cambios en cualquier cosa reactiva que lee.
+
+```{r}
+function(input, output, session) {
+  # Cuando input$min_size o input$max_size cambian, large_diamonds
+  # será informado sobre ello.
+  large_diamonds <- reactive({
+    diamonds %>%
+      filter(carat >= input$min_size) %>%
+      filter(carat < input$max_size)
+  })
+  
+  # Si eso pasa, large_diamonds notificará a output$table.
+  output$table <- renderTable({
+    large_diamonds() %>% select(carat, price)
+  })
+  
+  # Las reactive expressions pueden usar otras reactive expressions.
+  mean_price <- reactive({
+    mean(large_diamonds()$price)
+  })
+  
+  # Tanto large_diamonds como mean_price notificarán a output$message
+  # acerca de los cambios que detecten.
+  output$message <- renderText({
+    paste0(nrow(large_diamonds()), " diamantes en ese rango, ",
+      "con un precio promedio igual a $", mean_price())
+  })
+}
+```
+
+```{r}
+function(input, output, session) {
+  
+  # Esto NO funciona.
+  large_diamonds <- diamonds %>%
+    filter(carat >= input$min_size) %>%
+    filter(carat < input$max_size)
+  
+  output$table <- renderTable({
+    large_diamonds %>% select(carat, price)
+  })
+}
+```
+
+##### Ejercicio 2
+
+Factorizar la *server function* removiendo duplicación de código y evitando que la operación se ejecute dos veces por cada cambio en `input$nrows`.
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  h1("App de Ejemplo"),
+  sidebarLayout(
+    sidebarPanel(
+      numericInput("nrows", "Cantidad de Filas", 10)
+    ),
+    mainPanel(
+      plotOutput("plot"),
+      tableOutput("table")
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  # Objetivo: Factorizar head(cars, input$nrows) de modo tal
+  # que el codigo no se duplique y que la operación no se 
+  # ejecute dos veces por cada cambio en input$nrows.
+  
+  output$plot <- renderPlot({
+    plot(head(cars, input$nrows))
+  })
+  
+  output$table <- renderTable({
+    head(cars, input$nrows)
+  })
+}
+
+shinyApp(ui, server)
+```
+
+Solución
+
+```{r}
+function(input, output, session) {
+  df <- reactive({
+    head(cars, input$nrows)
+  })
+  
+  output$plot <- renderPlot({
+    plot(df())
+  })
+  
+  output$table <- renderTable({
+    df()
+  })
+}
+```
+
+Anti-solución
+
+```{r}
+function(input, output, session) {
+  values <- reactiveValues(df = cars)
+  observe({
+    values$df <- head(cars, input$nrows)
+  })
+  
+  output$plot <- renderPlot({
+    plot(values$df)
+  })
+  
+  output$table <- renderTable({
+    values$df
+  })
+}
+```
+
+La solución usa una *reactive expression* para almacenar el cálculo. La anti-solución crea un objeto de *reactive values* y usa un *observer* para mantener el valor actualizado.
+
+El primer enfoque es mejor. ¿Por qué? Continuemos con el curso para poder responder esta pregunta...
+
+#### *Observers*
+
+Los *observers* son bloques de código que **realizan acciones**.
+
+Se ejecutan en respuesta a cambios en *reactive values/expressions.*
+
+No devuelven un valor.
+
+```{r}
+observe({
+  cat("El valor actual de input$x es ", input$x, "\n")
+})
+```
+
+Existen dos tipos de *observers*:
+
+-   **Implícitos**: Dependen de todos los *reactives values/expressions* encontrados durante su ejecución.
+
+    `observe({…})` configura un bloque de código que es ejecutado cada vez que uno de los *reactive values* o *expressions* que utiliza es actualizado.
+
+-   **Explícitos**: Dependen de *reactive values/expressions* específicos ignorando a los demás. Son conocidos como *event handler*.
+
+    `observeEvent(eventExpr, {…})`
+
+```{r}
+function(input, output, session) {
+  # Se ejecuta inmediatamente y cada vez que input$cambia.
+  observe({
+    cat("El valor actual de input$x es ", input$x, "\n")
+  })
+  
+  # Solo se ejecuta cuando input$upload_button es presionado. 
+  # Cualquier reactive value/expression en el código es 
+  # tratado como si no fuese reactivo.
+  observeEvent(input$upload_button, {
+    httr::POST(server_url, jsonlite::toJSON(dataset()))
+  })
+}
+```
+
+`observe()` es la herramienta de bajo nivel que alimenta `observeEvent()`. Generalmente, es mejor usar `observeEvent()` a menos que resulte imposible usarlo para lo que uno quiere hacer.
+
+`observe()` también alimenta *outputs* reactivos. Los *outputs* reactivos son un tipo especial de *observers* que cuentan con dos importantes propiedades:
+
+-   Son definidos al ser asignados a `output`, por ejemplo, `output$text <- …` crea el *observer*.
+
+-   Tienen habilidad limitada para detectar cuando no son visibles (es decir, cuando están en una ventana no activa) de modo tal que no tienen que volver a calcularse.
+
+Es importante notar que `observe()` y los *outputs* reactivos no "hacen" algo sino que "crean" algo (que después toma acción cuando es necesario). Esto permite entender lo que sucede en este ejemplo:
+
+```{r}
+x <- reactiveVal(1)
+y <- observe({
+  x()
+  observe(print(x()))
+})
+#> [1] 1
+x(2)
+#> [1] 2
+#> [1] 2
+x(3)
+#> [1] 3
+#> [1] 3
+#> [1] 3
+```
+
+Cada cambio a `x` causa que el *observer* se dispare. Este *observer* llama a `observe()` lo cual configura **otro** *observer*. De este modo, cada vez que `x` cambia, obtiene otro *observer* por lo cual su valor es impreso otra vez.
+
+Como regla general uno solo debería crear *observers* y *outputs* en el nivel más alto de la función del servidor. Si uno se encuentra tratando de anidarlos o crear *observers* dentro de un *output* es momento de pensar en lo que uno está creando ya que seguramente hay una mejor manera de hacerlo.
+
+Un *observer* es ejecutado inmediatamente cuando es creado. Esto es necesario para que determine sus dependencias reactivas.
+
+#### Ejemplo de Uso: *Interactive Drill Down*
+
+En este Ejemplo veremos una aplicación conjunta de *reactive expressions* y *observers* junto con una de las funciones de la familia `updateInput`: `updateSelectInput`.
+
+```{r}
+library(shiny)
+
+sales <- vroom::vroom("data/sales_data_sample.csv", 
+                      col_types = list(),
+                      na = "")
+
+ui <- fluidPage(
+  selectInput("territory", "Territory", choices = unique(sales$TERRITORY)),
+  selectInput("customername", "Customer", choices = NULL),
+  selectInput("ordernumber", "Order number", choices = NULL),
+  tableOutput("data")
+)
+
+server <- function(input, output, session) {
+  territory <- reactive({
+    filter(sales, TERRITORY == input$territory)
+  })
+  observeEvent(territory(), {
+    choices <- unique(territory()$CUSTOMERNAME)
+    updateSelectInput(inputId = "customername", choices = choices) 
+  })
+  
+  customer <- reactive({
+    req(input$customername)
+    filter(territory(), CUSTOMERNAME == input$customername)
+  })
+  observeEvent(customer(), {
+    choices <- unique(customer()$ORDERNUMBER)
+    updateSelectInput(inputId = "ordernumber", choices = choices)
+  })
+  
+  output$data <- renderTable({
+    req(input$ordernumber)
+    customer() %>% 
+      filter(ORDERNUMBER == input$ordernumber) %>% 
+      select(QUANTITYORDERED, PRICEEACH, PRODUCTCODE)
+  })
+}
+
+shinyapp(ui, server)
+```
+
+##### Ejercicio 3
+
+Modificar la *server function* de modo tal que al apretar el botón "Guardar" se cree el archivo datos.csv.
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  h1("App de Ejemplo"),
+  sidebarLayout(
+    sidebarPanel(
+      numericInput("nrows", "Cantidad de Filas", 10),
+      actionButton("save", "Guardar")
+    ),
+    mainPanel(
+      plotOutput("plot"),
+      tableOutput("table")
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  df <- reactive({
+    head(cars, input$nrows)
+  })
+  
+  output$plot <- renderPlot({
+    plot(df())
+  })
+  
+  output$table <- renderTable({
+    df()
+  })
+  
+  # Objetivo: Agregar la lógica necesaria de modo tal que al apretar
+  # el boton "Guardar", los datos se guarden en "datos.csv"
+}
+
+shinyApp(ui, server)
+```
+
+Solución
+
+```{r}
+# Usar observeEvent para avisarle a Shiny qué hacer
+# cuando se hace click en input$save.
+observeEvent(input$save, {
+  write.csv(df(), "datos.csv")
+})
+```
+
+#### *Reactive Expressions* vs *Observers*
+
+##### **`reactive()`**
+
+-   Como una función, puede ser **llamado** y **devuelve un valor**, ya sea la última expresión o `return()`.
+
+-   Es **lazy** (vago). No ejecuta su código hasta que alguien lo llama (incluso si sus dependencias reactivas cambiaron). Esto también es una característica de las funciones. En otras palabras, solo trabaja cuando es necesario.
+
+-   **Cachea** sus resultados. La primera vez que es llamado ejecuta el código y almacena el valor resultante. Las siguientes llamadas se saltean la ejecución y únicamente regresan el valor.
+
+-   Es **reactivo**. Es notificado cuando sus dependencias cambian. Cuando eso pasa, vacía el cache y notifica a quienes dependen de él.
+
+```{r}
+r1 <- function() { runif(1) }
+r1()
+# [1] 0.8403573
+r1()
+# [1] 0.4590713
+r1()
+# [1] 0.9816089
+```
+
+```{r}
+r2 <- reactive({ runif(1) })
+r2()
+# [1] 0.5327107
+r2()
+# [1] 0.5327107
+r2()
+# [1] 0.5327107
+```
+
+Resulta crítico el hecho que las *reactive expressions* son **lazy** y **cached**.
+
+Es **difícil razonar** cuándo se ejecutará el código de una *reactive expression* (o incluso si se ejecutará o no).
+
+Todo lo que Shiny garantiza es que **cuando solicitas una respuesta a una *reactive expression*, obtendrás la respuesta actualizada**.
+
+```{r}
+function(input, output, session) {
+  reactive({
+    # Este código nunca se ejecutará!
+    cat("El valor actual de input$x es ", input$x, "\n")
+  })
+}
+```
+
+##### `observe() / observeEvent()`
+
+-   **No se puede llamar** y **no devuelve un valor**. El valor de la última expresión será eliminado, así como los valores pasados a `return()`.
+
+-   Es ***eager*** (ansioso). Cuando sus dependencias cambian, se ejecuta al instante. Esta ansiedad es infecciosa porque si usan una *reactive expression*, la misma también será evaluada.
+
+-   Como no puede ser llamado y no tiene un *return value* no existe una noción de *caching* que se pueda aplicar en este caso.
+
+-   Es **reactivo**. Es notificado cuando sus dependencias cambian y cuando eso sucede, se ejecuta lo más rápido posible (no necesariamente en el instante que se produjo el cambio).
+
+| `reactive()`      | `observe()`          |
+|-------------------|----------------------|
+| Se puede invocar  | No se puede invocar  |
+| Devuelve un valor | No devuelve un valor |
+| Lazy              | Eager                |
+| Cached            | No aplica            |
+
+Existen dos cosas que resulta **necesario** recordar:
+
+-   `reactive()` se usa para **calcular valores, sin *side effects***
+
+-   `observe()` se usa para **realizar acciones, con *side effects***
+
+Esto es lo que cada uno de ellos es bueno haciendo. No hay que utilizar `observe` para calcular un valor y especialmente no hay que usar `reactive` para realizar acciones con *side effects*.
+
+Un **cálculo** es un bloque de código donde no te interesa si el código se ejecuta o no, sólo te importa la respuesta. Es seguro para cachear. En este caso, hay que **usar `reactive()`.**
+
+En una acción el foco está en que el código se ejecute y no hay una respuesta, sólo *side effects*. En este caso, hay que usar `observe()`/`observeEvent()`.
+
+En el caso que alguien esté interesado tanto en la respuesta como en que el código se ejecute lo que habría que hacer es refactorear el código en dos bloques distintos, separando el cálculo de la acción.
+
+|                     | `reactive()` | `observe()` |
+|---------------------|--------------|-------------|
+| **Propósito**       | Cálculos     | Acciones    |
+| ***Side effects***? | Prohibidos   | Permitidos  |
+
+: Poema escrito por Joe Cheng:
+
+El objetivo de este poema es ser usado como un ayuda memoria:
+
+> Keep your side effects
+>
+> Outside of your reactives
+>
+> Or I will kill you
+>
+> -Joe Cheng
+
+### Aislando Código con `isolate()`
+
+`observeEvent()` y `eventReactive()` son alimentados por `isolate()`, el cual permite evitar crear dependencias reactivas cuando no son necesarias.
+
+A veces los *observers* se emparejan con *reactive values* para poder seguir cambios de estado a través del tiempo. Por ejemplo, el siguiente código cuenta cuántas veces `x` cambió:
+
+```{r}
+r <- reactiveValues(conteo = 0, x = 1)
+observe({
+  r$x
+  r$conteo <- r$conteo + 1
+})
+```
+
+Si uno corre ese código, inmediatamente entraría en un bucle infinito porque el *observer* toma una dependencia reactiva en `x` **y** `conteo` y dado que el *observer* modifica `conteo`, inmediatamente volvería a ejecutarse.
+
+Afortunadamente, `isolate()` resuelve este problema. Esta función permite acceder al valor actual de un *reactive value* o *expression* **sin** tomar una dependencia sobre él:
+
+```{r}
+r <- reactiveValues(conteo = 0, x = 1)
+class(r)
+#> [1] "rv_flush_on_write" "reactivevalues"
+observe({
+  r$x
+  r$conteo <- isolate(r$conteo) + 1
+})
+
+r$x <- 1
+r$x <- 2
+r$conteo
+#> [1] 2
+
+r$x <- 3
+r$conteo
+#> [1] 3
+```
+
+Del mismo modo que `observe()`, muchas veces no será necesario usar `isolate()` directamente porque existen dos funciones útiles que "envuelven" su uso más común. Estas funciones son `observeEvent()` y `eventReactive()`.
+
+#### `observeEvent()` y `eventReactive()`
+
+`observeEvent(x, y)` es equivalente a `observe({x; isolate(y)})`. Esta función separa la acción que querés tomar de aquello que la inicia.
+
+`eventReactive()` realiza un trabajo idéntico, pero en este caso para *reactives*. `eventReactive(x, y)` es equivalente a `reactive({x; isolate(y)})`.
+
+#### Malos Hábitos
+
+Vamos a comparar dos formas en la que se obtendrían, en principio, resultados iguales:
+
+```{r}
+server <- function(input, output, session) {
+  r <- reactiveValues(df = cars)
+  observe({
+    r$df <- head(cars, input$nrows)
+  })
+  
+  output$plot <- renderPlot(plot(r$df))
+  output$table <- renderTable(r$df)
+}
+```
+
+```{r}
+server <- function(input, output, session) {
+  df <- reactive(head(cars, input$nrows))
+  
+  output$plot <- renderPlot(plot(df()))
+  output$table <- renderTable(df())
+}
+```
+
+La segunda opción, a diferencia de la primera, hace uso de `reactive()`. Si bien la primera opción no hace mucho trabajo adicional en comparación con la alternativa que usa `reactive()`, pueden mencionarse dos desventajas:
+
+-   Si la tabla o gráfico se encuentran en *tabs* que no están activas, el *observer* los creará de todos modos.
+
+-   Si `head()` produce un error, `observe()` detendrá la app mientras que `reactive()` propagará el error de modo tal que el *reactive* desplegado lo muestre.
+
+## Ejercicios Complementarios
+
+### Ejercicio 1
+
+Utilizar las siguientes líneas de código para crear una app que salude al usuario por su nombre. El objetivo de este ejercicio es pensar qué líneas de código necesitan ser utilizadas, copiarlas y pegarlas donde corresponda en un script.
+
+Recordatorio: hay líneas de código que no se deben usar.
+
+```{r}
+tableOutput("distribucion")
+output$saludo <- renderText({
+  paste0("Hola ", input$nombre)
+})
+numericInput("edad", "¿Que edad tenes?", value = NA)
+textInput("nombre", "¿Cual es tu nombre?")
+textOutput("saludo")
+output$histograma <- renderPlot({
+  hist(rnorm(1000))
+}, res = 96)
+```
+
+#### Solución
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  textInput("nombre", "¿Cual es tu nombre?"),
+  textOutput("saludo")
+)
+
+server <- function(input, output, session) {
+  output$saludo <- renderText({
+    paste0("Hola ", input$nombre)
+  })
+}
+
+shinyApp(ui, server)
+```
+
+### Ejercicio 2
+
+Supongamos que querés diseñar una app que permita al usuario fijar un numero (**x**) entre 1 y 100, y que muestre el resultado de multiplicar ese número por 10. ¿Podés encontrar el error en el siguiente código y corregirlo?
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  sliderInput("x", label = "Si x es", min = 1, max = 100, value = 30),
+  "entonces x multiplicado por 10 es",
+  textOutput("producto")
+)
+
+server <- function(input, output, session) {
+  output$producto <- renderText({ 
+    x * 10
+  })
+}
+
+shinyApp(ui, server)
+```
+
+#### Solución
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  sliderInput("x", label = "Si x es", min = 1, max = 100, value = 30),
+  "entonces x multiplicado por 10 es",
+  textOutput("producto")
+)
+
+server <- function(input, output, session) {
+  output$producto <- renderText({ 
+    input$x * 10 # Faltaba agregar input$
+  })
+}
+
+shinyApp(ui, server)
+```
+
+### Ejercicio 3
+
+Extender la app del Ejercicio 2 permitiendo al usuario fijar el valor de un multiplicador (**y**), de modo tal que la app muestre el valor **x** \* **y**.
+
+#### Solución
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  sliderInput("x", label = "Si x es", min = 1, max = 100, value = 30),
+  sliderInput("y", label = "e y es", min = 1, max = 100, value = 30),
+  
+  "entonces x multiplicado por y es",
+  textOutput("producto")
+)
+
+server <- function(input, output, session) {
+  output$producto <- renderText({ 
+    input$x * input$y
+  })
+}
+
+shinyApp(ui, server)
+```
+
+### Ejercicio 4
+
+La siguiente app agrega funcionalidades adicionales a la app descripta en el Ejercicio 3. ¿Qué es nuevo? ¿Podrías reducir el código duplicado usando una *reactive expression*?
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  sliderInput("x", "Si x es", min = 1, max = 100, value = 30),
+  sliderInput("y", "e y es", min = 1, max = 100, value = 5),
+  "entonces, (x * y) es", textOutput("producto"),
+  "(x * y) + 5 es", textOutput("producto_mas5"),
+  "(x * y) + 10 es", textOutput("producto_mas10")
+)
+
+server <- function(input, output, session) {
+  output$producto <- renderText({ 
+    producto <- input$x * input$y
+    producto
+  })
+  output$producto_mas5 <- renderText({ 
+    producto <- input$x * input$y
+    producto + 5
+  })
+  output$producto_mas10 <- renderText({ 
+    producto <- input$x * input$y
+    producto + 10
+  })
+}
+
+shinyApp(ui, server)
+```
+
+#### Solución
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  sliderInput("x", "Si x es", min = 1, max = 100, value = 30),
+  sliderInput("y", "e y es", min = 1, max = 100, value = 5),
+  "entonces, (x * y) es", textOutput("producto"),
+  "(x * y) + 5 es", textOutput("producto_mas5"),
+  "(x * y) + 10 es", textOutput("producto_mas10")
+)
+
+server <- function(input, output, session) {
+  producto <- reactive({input$x * input$y})
+  output$producto <- renderText({ 
+    producto()
+  })
+  output$producto_mas5 <- renderText({ 
+    producto() + 5
+  })
+  output$producto_mas10 <- renderText({ 
+    producto() + 10
+  })
+}
+
+shinyApp(ui, server)
+```
+
+### Ejercicio 5
+
+La siguiente app permite seleccionar un dataset de un paquete (en este caso, proveniente de ggplot2) y muestra un resumen y un gráfico de los datos. El código sigue buenas prácticas y hace uso de *reactive expressions* para evitar código redundante. Sin embargo, hay tres errores en dicho código. ¿Podrás encontrar los errores y corregirlos?
+
+```{r}
+library(shiny)
+library(ggplot2)
+
+datasets <- c("economics", "faithfuld", "seals")
+ui <- fluidPage(
+  selectInput("dataset", "Dataset", choices = datasets),
+  verbatimTextOutput("summary"),
+  tableOutput("plot")
+)
+
+server <- function(input, output, session) {
+  dataset <- reactive({
+    get(input$dataset, "package:ggplot2")
+  })
+  output$summmry <- renderPrint({
+    summary(dataset())
+  })
+  output$plot <- renderPlot({
+    plot(dataset)
+  }, res = 96)
+}
+
+shinyApp(ui, server)
+```
+
+#### Solución
+
+```{r}
+library(shiny)
+library(ggplot2)
+
+datasets <- c("economics", "faithfuld", "seals")
+ui <- fluidPage(
+  selectInput("dataset", "Dataset", choices = datasets),
+  verbatimTextOutput("summary"),
+  plotOutput("plot") # Error 3 tableOutput -> plotOutput
+)
+
+server <- function(input, output, session) {
+  dataset <- reactive({
+    get(input$dataset, "package:ggplot2")
+  })
+  output$summary <- renderPrint({ # Error 1 summmry -> summary
+    summary(dataset())
+  })
+  output$plot <- renderPlot({
+    plot(dataset()) # Error 2 dataset -> dataset()
+  }, res = 96)
+}
+
+shinyApp(ui, server)
+```
+
+### Ejercicio 6
+
+Completar la siguiente app con una *server function* que actualice `out`con el valor de `x` únicamente cuando se apreta el botón.
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  numericInput("x", "x", value = 50, min = 0, max = 100),
+  actionButton("capturar", "capturar"),
+  textOutput("out")
+)
+
+server <- function(input, ouutput, session){
+  # Completar
+}
+
+shinyApp(ui, server)
+```
+
+#### Solución
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  numericInput("x", "x", value = 50, min = 0, max = 100),
+  actionButton("capturar", "capturar"),
+  textOutput("out")
+)
+
+server <- function(input, output, session){
+  valor_x <- eventReactive(input$capturar, {
+    input$x
+  })
+  output$out <- renderText(valor_x())
+}
+
+shinyApp(ui, server)
+```
+
+### Ejercicio 7.1
+
+La siguiente UI está compuesta por dos botones y un gráfico. El objetivo de este ejercicio es escribir una *server function* que grafique un histograma de 100 números aleatorios provenientes de la distribución del botón apretado.
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  actionButton("rnorm", "Normal Estándar"),
+  actionButton("runif", "Uniforme [0-1]"),
+  plotOutput("plot")
+)
+
+server <- function(input, output, session){
+  # Completar
+}
+
+shinyApp(ui, server)
+```
+
+#### Solución
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  actionButton("rnorm", "Normal Estándar"),
+  actionButton("runif", "Uniforme [0-1]"),
+  plotOutput("plot")
+)
+
+server <- function(input, output, session){
+  
+  data <- reactiveVal()
+  
+  observeEvent(input$rnorm, data(rnorm(100)))
+  observeEvent(input$runif, data(runif(100)))
+  
+  output$plot <- renderPlot({
+    req(data())
+    hist(data())
+  })
+  
+}
+
+shinyApp(ui, server)
+```
+
+### Ejercicio 7.2
+
+Modificar el código anterior de modo tal que funcione con esta UI.
+
+```{r}
+ui <- fluidPage(
+  selectInput("type", "type", c("Normal Estándar", "Uniforme [0-1]")),
+  actionButton("go", "go"),
+  plotOutput("plot")
+)
+```
+
+#### Solución
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  selectInput("type", "type", c("Normal Estándar", "Uniforme [0-1]")),
+  actionButton("go", "go"),
+  plotOutput("plot")
+)
+
+server <- function(input, output, session){
+  
+  data <- reactiveVal()
+  
+  observeEvent(input$go, {
+    if (input$type == "Normal Estándar"){
+      data(rnorm(100))
+    } else {
+      data(runif(100))
+    }
+  })
+  
+  output$plot <- renderPlot({
+    req(data())
+    hist(data())
+  })
+  
+}
+
+shinyApp(ui, server)
+```
+
+### Ejercicio 7.3
+
+Reescribir el código del Ejercicio 7.2 reemplazando `observe()`/`observeEvent()` con `reactive()`. ¿Por qué podemos hacer eso con la segunda UI pero no con la primera?
+
+#### Solución
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  selectInput("type", "type", c("Normal Estándar", "Uniforme [0-1]")),
+  actionButton("go", "go"),
+  plotOutput("plot")
+)
+
+server <- function(input, output, session){
+  
+  data <- reactive({
+    input$go
+    if (input$type == "Normal Estándar"){
+      rnorm(100)
+    } else {
+      runif(100)
+    }
+  })
+  
+  output$plot <- renderPlot({
+    req(data())
+    hist(data())
+  })
+  
+}
+
+shinyApp(ui, server)
+```
+
+Se puede hacer con la segunda UI y no con la primera porque la segunda tiene el `go` actionButton.
+
+## Ejemplo Leaflet
+
+```{r, eval=FALSE}
+library(shiny)
+library(tidyverse)
+library(spData)
+library(leaflet)
+library(sf)
+
+data("world")
+
+interfaz <- fluidPage(
+  
+  titlePanel("Conjunto de datos World"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      selectInput(
+        inputId = "MiLista",
+        label = "Continente",
+        choices = sort(unique(world$continent)),
+        selected = "Europe")
+    ),
+    mainPanel(
+      leafletOutput("MiMapa")
+    )
+  )
+)
+
+MiServer <- function(input, output) {
+  
+  output$MiMapa <- renderLeaflet({
+    
+    datos <- world %>% 
+      filter(continent %in% input$MiLista) %>% 
+      st_as_sf()
+      
+    paleta <- colorFactor("Spectral", datos$subregion)
+    
+      leaflet(datos) %>%
+        addProviderTiles("NASAGIBS.ViirsEarthAtNight2012") %>%
+        addPolygons(weight = 2, 
+                    popup = paste0("<b>Continente:</b> ", datos$continent, "<br>",
+                                   "<b>Región:</b> ", datos$subregion, "<br>",
+                                   "<b>País:</b> ", datos$name_long),
+                    color = ~paleta(subregion))
+  })
+}
+
+shinyApp(ui = interfaz, server = MiServer)
+```

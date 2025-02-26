@@ -969,7 +969,7 @@ ggplot(data = iris) +
 library(readxl)
 library(stringr)
 
-cultivos <- read_excel("../U2_Rmd/cultivos.xlsx", na = "-")
+cultivos <- read_excel("../data/unidad04/cultivos.xlsx", na = "-")
 
 cultivos %>% 
   filter(cultivo == "Girasol", 
