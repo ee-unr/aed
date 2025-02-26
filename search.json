@@ -70,14 +70,113 @@
     ]
   },
   {
-    "objectID": "capitulos/01_a_intro.html",
-    "href": "capitulos/01_a_intro.html",
-    "title": "1  Programación: de qué se trata y para qué nos sirve",
+    "objectID": "capitulos/01_teoria_de_la_visualizacion.html",
+    "href": "capitulos/01_teoria_de_la_visualizacion.html",
+    "title": "1  Teoría de la Visualización",
     "section": "",
-    "text": "1.1 primera subsección\nprogramacion, algoritmo, lenguajes, R, instalación",
+    "text": "2 Introducción",
     "crumbs": [
       "Unidad 1. Introducción",
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Programación: de qué se trata y para qué nos sirve</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Teoría de la Visualización</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_teoria_de_la_visualizacion.html#estéticas",
+    "href": "capitulos/01_teoria_de_la_visualizacion.html#estéticas",
+    "title": "1  Teoría de la Visualización",
+    "section": "3.1 Estéticas",
+    "text": "3.1 Estéticas\n\nLas estéticas describen cada aspecto de un determinado gráfico. Las más comunes son:\n\nPosición (position): generalmente como coordenadas cartesianas \\((x, y)\\) en gráficos en 2D, aunque existen otras posibilidades (coordenadas polares, gráficos tridimensionales, etc.)\nForma (shape)\nTamaño (size)\nColor\nAncho de línea (line width)\nTipo de línea (line type)\n\n\n\n\n\n\n\n\n\n\n\n\nTodas las estéticas se pueden clasificar dentro de 2 posibles grupos: las que permiten representar datos continuos, y las que no. Entre las mencionadas arriba, tenemos que posición, tamaño, color y ancho de línea pueden ser utilizadas para datos continuos, mientras que forma y tipo de línea sólo sirven para datos categóricos o discretos.\nVeamos a continuación algunos ejemplos sencillos con el tradicional conjunto de datos de las flores de Iris.\n\n\nEjemplo 1\nRepresentamos dos variables cuantitativas continuas en un sistema de ejes cartesianos (estética de la posición). Tamaño, forma (círculo) y color (negro) permanecen constantes para todos los datos; son estéticas presentes pero que no agregan información.\n\n\n\n\n\n\n\n\n\n\n\nEjemplo 2\nUtilizamos la estética ‘forma’ para representar una variable categórica (especie) que agrega información. Recordemos que la forma sólo puede asociarse a una cantidad finita (discreta) de valores; no tendría sentido asociar el ancho del pétalo con la forma. Notemos además la necesidad de incorporar una leyenda al gráfico que permita relacionar formas con valores puntuales de los datos.\n\n\n\n\n\n\n\n\n\n\n\nEjemplo 3\nUsamos la estética ‘tamaño’ para representar una tercera variable, en este caso ancho del sépalo. El diámetro de cada punto ahora depende de esta variable: flores con sépalo más anchos se grafican con puntos de mayor diámetro. Una vez más, necesitamos una leyenda adecuada para interpretar el gráfico.\n\n\n\n\n\n\n\n\n\n\n\nEjemplo 4\nEstéticas que se pueden usar para datos continuos, como el tamaño, también sirven para representar datos discretos. Advertimos que este uso no es recomendable, ya que la diferencia de tamaño entre especies dificulta la correcta interpretación de los datos graficados.\n\n\n\n\n\n\n\n\n\n\n\nEjemplo 5\nUna manera correcta de diferenciar las especies es asignando una paleta de colores que las distinga (es importante que la elección de colores no opaque el mensaje; hablaremos de esto más adelante). Si bien la estética del ‘color’ fue planteada arriba como continua, también resulta muy útil para representar datos discretos. Este gráfico es una alternativa al ejemplo 2: ambos muestran exactamente la misma información, pero haciendo uso de diferentes estéticas.\n\n\n\n\n\n\n\n\n\n\n\nEjemplo 6\nAhora usamos la estética ‘color’ para representar datos continuos, en este caso nuevamente el ancho del sépalo. Acá también debemos prestar especial atención a la paleta elegida para que el mensaje sea lo más claro posible. Este gráfico es una versión alternativa al del ejemplo 3: muestra la misma información pero con estéticas distintas.\n\n\n\n\n\n\n\n\n\n\n\nEjemplo 7\nUn mamarracho donde el color se asigna al ancho de sépalo, el tamaño al largo del sépalo y la forma a la especie. No debemos olvidar la máxima que postula que ‘menos es más’. Al querer mostrar todas las variables al mismo tiempo, terminamos creando una visualización demasiado cargada de información, compleja y difícil de interpretar.",
+    "crumbs": [
+      "Unidad 1. Introducción",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Teoría de la Visualización</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_teoria_de_la_visualizacion.html#escalas",
+    "href": "capitulos/01_teoria_de_la_visualizacion.html#escalas",
+    "title": "1  Teoría de la Visualización",
+    "section": "3.2 Escalas",
+    "text": "3.2 Escalas\n\nPara unir el mundo de las estéticas con el mundo de los datos necesitamos especificar qué valores de los datos se corresponden con qué valores específicos de las estéticas.\nPor ejemplo, si nuestro gráfico tiene un eje X, sabemos que el valor “5” estará a una distancia de 5 unidades del origen, el valor “10” estará al doble de distancia, etc. Este mapeo en particular, que corresponde a la estética de posición, se da de manera natural, casi inconsciente.\nLos restantes mapeos requieren de un poco más de reflexión. Si vamos a usar colores para representar grupos, debemos especificar cómo relacionarlos (ej: Argentina = celeste, Brasil = verde, etc.).\nEsta asociación entre valores de los datos y valores de las estéticas se crea mediante la definición de una escala, la cual determina una relación entre datos y estéticas, y al mismo tiempo crea la necesidad de incluir en el gráfico una leyenda que deje en claro los detalles de esa asociación.\nSiempre que se defina una escala, cada valor necesita estar asociado a una única posición, forma o color, y viceversa. En otras palabras, la relación debe ser biunívoca (uno a uno). Escalas que no cumplan esta propiedad básica deben evitarse a toda costa, ya que el gráfico no será coherente.\n\n\nEjemplo: temperaturas mensuales\n\nA continuación se presentan las primeras filas de un conjunto de datos que proporciona las temperaturas mensuales normales (temperatura promedio en cada mes durante una ventana de 30 años) para cuatro ciudades de Argentina. Esta tabla contiene 5 variables: mes, ciudad, provincia, código de la estación meteorológica que mide los datos, y temperatura (en grados centígrados).\n\n\n\n\nMes\nCiudad\nProvincia\nCódigo\nTemperatura\n\n\n\n\nEne\nLa Quiaca\nJujuy\nSASQ\n13.2\n\n\nEne\nRosario\nSanta Fe\nSAAR\n24.8\n\n\nEne\nBariloche\nRío Negro\nSAZS\n15.4\n\n\nEne\nUshuaia\nTierra del Fuego\nSAWH\n9.4\n\n\nFeb\nLa Quiaca\nJujuy\nSASQ\n13\n\n\nFeb\nRosario\nSanta Fe\nSAAR\n23.4\n\n\nFeb\nBariloche\nRío Negro\nSAZS\n15\n\n\nFeb\nUshuaia\nTierra del Fuego\nSAWH\n8.4\n\n\nMar\nLa Quiaca\nJujuy\nSASQ\n12.8\n\n\nMar\nRosario\nSanta Fe\nSAAR\n21.5\n\n\nMar\nBariloche\nRío Negro\nSAZS\n12.1\n\n\nMar\nUshuaia\nTierra del Fuego\nSAWH\n6.2\n\n\n\n\nCon estos datos se realizaron las siguientes figuras:\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nResponder\n\n\n\n\n¿Con qué estéticas se asoció a cada variable en el primer gráfico?\n¿Con qué estéticas se asoció a cada variable en el segundo gráfico?\n¿Podríamos cambiar el orden en el que aparecen las categorías representadas en los ejes del segundo gráfico?",
+    "crumbs": [
+      "Unidad 1. Introducción",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Teoría de la Visualización</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_teoria_de_la_visualizacion.html#coordenadas-cartesianas",
+    "href": "capitulos/01_teoria_de_la_visualizacion.html#coordenadas-cartesianas",
+    "title": "1  Teoría de la Visualización",
+    "section": "4.1 Coordenadas cartesianas",
+    "text": "4.1 Coordenadas cartesianas\n\nEl sistema de coordenadas 2D más utilizado para la visualización de datos es el cartesiano, llamado así en honor al filósofo y matemático francés René Descartes, quien desarrolló este concepto en el siglo XVII.\nCada ubicación en el plano bidimensional se especifica de forma única mediante un valor correspondiente al eje X (eje de las abscisas) y un valor correspondiente al eje Y (eje de las ordenadas).\n\n\n\n\n\n\n\nMuchas veces los ejes representan variables con unidades de medida diferentes. En estos casos es válido estirar o comprimir uno en relación con el otro; el grado de distorsión utilizado dependerá de qué mensaje queremos transmitir a partir del gráfico en cuestión:\n\nuna figura baja y ancha resalta cambios a lo largo del eje X\nuna figura alta y angosta resalta cambios a lo largo del eje Y\n\nIdealmente, vamos a elegir una relación de aspecto que asegure que cualquier diferencia importante sea perceptible, y que al mismo tiempo no distorsione demasiado la visualización.\nEjemplo: temperaturas medias (suavizadas) de Rosario entre el 01/08/2022 y el 31/07/2023. ¿Qué ocurre cuando la relación de aspecto (alto/ancho) está muy distante del 1?\n\n\n\n\n\n\n\n\n\n\n\nSi los ejes se definen en las mismas unidades de medida, se recomienda que los espaciados de la grilla sean iguales, de modo que una distancia de \\(z\\) unidades a lo largo del eje X tenga la misma longitud que una distancia de \\(z\\) unidades a lo largo del eje Y.\nPor último, cabe destacar que el sistema de coordenadas cartesiano es invariante ante transformaciones lineales de las unidades de medida. Esto implica que la forma, aspecto y distancias presentes en el gráfico no se modifican si pasamos de centímetros a kilómetros, gramos a toneladas, Celsius a Fahrenheit, etc.",
+    "crumbs": [
+      "Unidad 1. Introducción",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Teoría de la Visualización</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_teoria_de_la_visualizacion.html#ejes-lineales",
+    "href": "capitulos/01_teoria_de_la_visualizacion.html#ejes-lineales",
+    "title": "1  Teoría de la Visualización",
+    "section": "4.2 Ejes lineales",
+    "text": "4.2 Ejes lineales\n\nEn los ejemplos presentados hasta ahora, las líneas de la cuadrícula a lo largo de cada eje están espaciadas uniformemente. Esto implica que dos pares de puntos que están a la misma distancia tienen la misma magnitud de diferencia entre sus valores.\nEn estos sistemas de coordenadas decimos que las escalas de posición son lineales.",
+    "crumbs": [
+      "Unidad 1. Introducción",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Teoría de la Visualización</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_teoria_de_la_visualizacion.html#ejes-no-lineales",
+    "href": "capitulos/01_teoria_de_la_visualizacion.html#ejes-no-lineales",
+    "title": "1  Teoría de la Visualización",
+    "section": "4.3 Ejes no lineales",
+    "text": "4.3 Ejes no lineales\n\nExisten escenarios en los que se prefieren escalas no lineales, en las cuales dos pares de puntos que visualmente se encuentran a la misma distancia, no poseen la misma magnitud de diferencia entre sus valores.\nLa escala no lineal más utilizada es la logarítmica. Recordemos que \\(\\log_b x = y \\implies b^y = x\\).\nLa siguiente figura muestra la relación entre una escala lineal y otra logarítmica, en base 10. Se representan 5 datos (1, 3.16, 10, 31.6 y 100):\n\n\n\n\n\n\n\n\n\n\n\nLas escalas logarítmicas son lineales en la multiplicación, de modo que un salto constante en la escala corresponde a una multiplicación por un valor fijo. Por ejemplo, en este caso cada dato se obtiene multiplicando el anterior por \\(\\sqrt{10} \\approx 3.16\\), y debido a esto se ven equiespaciados en la escala logarítmica de base 10.\nGeométricamente no hay diferencia entre graficar los datos transformados logarítmicamente en una escala lineal o graficar los datos originales en una escala logarítmica: la única diferencia radica en el etiquetado del eje.\nGeneralmente es preferible etiquetar la escala logarítmica con los valores originales (tercer panel en la figura), porque es más fácil interpretar los números que se muestran. Además, nunca debemos olvidarnos de aclarar la base utilizada en el cálculo de los logaritmos.\nDebido a que la multiplicación en una escala logarítmica se comporta de manera similar que la suma en una escala lineal, las escalas logarítmicas son la elección natural para cualquier dato que se haya obtenido mediante multiplicación o división (por ejemplo, tasas o razones).\n\n\nEjemplo: Censo 2022\n\n\n\nPara los gráficos que se muestran a continuación, se tomó el número de habitantes de cada provincia de Argentina, según el Censo 2022, y se lo dividió por la mediana de esos 24 valores (23 provincias + CABA).\nLa razón resultante es un número que puede ser:\n\nMayor a 1 si la provincia tiene más habitantes que la mediana\nIgual a 1 si la provincia tiene una población igual a la mediana\nMenor a 1 si la provincia tiene menos habitantes que la mediana\n\nCuando trabajamos con razones, el 1 es el punto medio (como el 0 en una escala lineal). Cada valor de 1 a \\(+\\infty\\) se corresponde con un valor entre 0 y 1.\n\n\n\nVeamos estas razones graficadas en escala logarítmica (la línea punteada indica una razón de 1):\n\n\n\n\n\n\n\n\n\n\nPor el contrario, para los mismos datos, una escala lineal esconde las diferencias entre provincias con poblaciones mucho más pequeñas:\n\n\n\n\n\n\n\n\n\n\nLas escalas logarítmicas también se usan cuando el conjunto de datos tiene números de magnitudes muy diferentes, aunque no representen multiplicaciones o divisiones. Si trabajamos con datos que toman el valor 0, se suele recomendar usar una escala de raíz cuadrada.",
+    "crumbs": [
+      "Unidad 1. Introducción",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Teoría de la Visualización</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_teoria_de_la_visualizacion.html#sistemas-de-coordenadas-con-ejes-curvos",
+    "href": "capitulos/01_teoria_de_la_visualizacion.html#sistemas-de-coordenadas-con-ejes-curvos",
+    "title": "1  Teoría de la Visualización",
+    "section": "4.4 Sistemas de coordenadas con ejes curvos",
+    "text": "4.4 Sistemas de coordenadas con ejes curvos\n\nHasta ahora vimos el uso de dos ejes colocados de forma perpendicular (en ángulo recto) entre sí.\nSin embargo, existen otros sistemas de coordenadas en los que los propios ejes son curvos.\nUno de ellos es el sistema de coordenadas polares, en el que especificamos posiciones a través de un ángulo y una distancia radial desde el origen.\nLa siguiente figura muestra la relación entre coordenadas cartesianas y polares.\nLas coordenadas \\(x\\) se usan como coordenadas angulares y las coordenadas \\(y\\) se usan como coordenadas radiales:\n\n\n\n\n\n\n\n\n\n\n\nEn este ejemplo el eje circular \\(x\\) va de 0 a 4 y, por lo tanto, \\(x = 0\\) y \\(x = 4\\) tienen la misma ubicación.\nPor eso, las coordenadas polares pueden ser útiles para datos de naturaleza periódica, de modo que los valores en un extremo de la escala se puedan unir lógicamente a los valores en el otro extremo (ejemplo: cuando se quiere ver cómo varía una cantidad a lo largo del año).\nEl siguiente gráfico muestra ese caso. La figura es adecuada ya que las temperaturas normales diarias son temperaturas promedio que no están vinculadas a ningún año específico: el 31 de diciembre se puede considerar como “364 días después” o bien “un día antes” del 1° de enero.\nAl graficar las temperaturas normales diarias en un sistema de coordenadas polares, enfatizamos la propiedad cíclica que poseen. Además, esta versión polar destaca cuán similares o disímiles son las temperaturas en distintas ciudades a lo largo de ciertos períodos.\nAclaraciones:\n\nLa distancia radial desde el punto central indica la temperatura diaria en Celsius.\nLos días del año están ordenados en el sentido contrario a las agujas del reloj, comenzando con el 1 de enero en la posición de las 6:00.\n\n\n\n\n\n\n\n\n\n\n\n\nEn el contexto de datos geo-espaciales suelen aparecer casos en los que se utilizan ejes curvos, pero que no son necesariamente sistemas de coordenadas polares. Más adelante, en la sección dedicada a visualizaciones mediante mapas, retomaremos este tema.",
+    "crumbs": [
+      "Unidad 1. Introducción",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Teoría de la Visualización</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_teoria_de_la_visualizacion.html#diferenciar-grupos",
+    "href": "capitulos/01_teoria_de_la_visualizacion.html#diferenciar-grupos",
+    "title": "1  Teoría de la Visualización",
+    "section": "5.1 Diferenciar grupos",
+    "text": "5.1 Diferenciar grupos\n\nCuando se usa el color como un medio para distinguir elementos discretos, o grupos que no tienen un orden intrínseco, debemos emplear una escala de color cualitativa.\nEn ese tipo de escala se cuenta con un conjunto finito de colores específicos que se eligen para que se vean claramente distintos entre sí, pero al mismo tiempo resulten similares (que ninguno se destaque sobre el resto).\nEn este caso, los colores no deben crear la impresión de un orden, por ejemplo, no se debe usar una secuencia de colores que se van aclarando u oscureciendo.\nHay escalas de colores predefinidas que tienen en cuenta estos aspectos:\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nEscalas de color cualitativas\n\n\n\n\nFila 1: la paleta de colores de Okabe-Ito fue propuesta en 2008 como una alternativa accesible a personas con deficiencia de la visión del color. Incluye colores vivos que se pueden nombrar fácilmente y que corresponden a los principales colores primarios y secundarios.\nFila 2: la escala Dark2 pertenece al proyecto ColorBrewer, desarrollado en 2017 por Cynthia Brewer, una cartógrafa que se ha dedicado a crear paletas de colores útiles para distintos contextos.\nFila 3: la escala ggplot2 hue es la escala cualitativa predeterminada en este paquete.\n\n\n\n\nEjemplo. Crecimiento de la población de Argentina de 2010 a 2022. Las provincias patagónicas (color naranja) han experimentado los mayores aumentos, mientras que las de la región pampeana (color rosa) han experimentado aumentos mucho menores.",
+    "crumbs": [
+      "Unidad 1. Introducción",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Teoría de la Visualización</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_teoria_de_la_visualizacion.html#representar-valores",
+    "href": "capitulos/01_teoria_de_la_visualizacion.html#representar-valores",
+    "title": "1  Teoría de la Visualización",
+    "section": "5.2 Representar valores",
+    "text": "5.2 Representar valores\n\nEn este caso utilizamos una escala de color secuencial. Este tipo de escala contiene una secuencia de colores que indican claramente:\n\nqué valores son más grandes o más pequeños que otros;\nqué tan distantes están dos valores específicos entre sí (se debe percibir que la escala de colores varía uniformemente en toda su gama).\n\n\n\n\n\nLas escalas secuenciales pueden basarse en un solo tono, por ejemplo de azul oscuro a azul claro, o en múltiples tonos (de rojo oscuro a amarillo claro, etc.).\nLas escalas de varios tonos tienden a seguir gradientes de color que se pueden ver en el mundo natural.\nUn uso muy frecuente de este tipo de escalas, como veremos más adelante, es para representar mapas coropléticos.\nLas siguientes son ejemplos de escalas predefinidas. La primera es monocromática, las otras no.\n\n\n\n\n\n\n\n\n\n\n\nAplicamos la escala viridis para recrear el gráfico sobre crecimiento porcentual de la población en cada provincia:\n\n\n\n\n\n\n\n\n\n\n\nEn algunos casos, necesitamos visualizar la desviación de los valores de los datos en una de dos direcciones con respecto a un punto medio neutral (ejemplo: números positivos y negativos).\nEs posible que queramos mostrarlos con diferentes colores, de modo que sea inmediatamente obvio si un valor es positivo o negativo, así como cuánto se desvía del punto medio elegido.\nEn estos casos hay que usar una escala de color divergente: es la combinación de dos escalas secuenciales unidas en un punto medio común, que generalmente se representa con un color claro.\n\n\n\n\n\n\n\n\n\n\n\nEs necesario equilibrar las escalas divergentes, de modo que la progresión de los colores claros en el centro a los colores oscuros en el exterior sea aproximadamente la misma en cualquier dirección (sería engañoso representar un valor de magnitud \\(x\\) con un color mucho más claro u oscuro que el utilizado para representar un valor de magnitud \\(-x\\)).\nA continuación graficamos nuevamente el % de crecimiento poblacional en cada provincia, pero asumiendo que el punto medio viene dado por la mediana de estos porcentajes:\n\n\n\n\n\n\n\n\n\n\n\nLas escalas divergentes suelen funcionar mejor cuando los datos son aproximadamente simétricos; en este caso, el punto medio corresponde a 18%, la mediana de los crecimientos observados entre ambos censos para cada jurisdicción. Tierra del Fuego, que podría llegar a considerarse como un outlier (crecimiento de casi 50%), hace que la escala de colores no se visualice en todo su rango.",
+    "crumbs": [
+      "Unidad 1. Introducción",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Teoría de la Visualización</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_teoria_de_la_visualizacion.html#resaltar-un-mensaje",
+    "href": "capitulos/01_teoria_de_la_visualizacion.html#resaltar-un-mensaje",
+    "title": "1  Teoría de la Visualización",
+    "section": "5.3 Resaltar un mensaje",
+    "text": "5.3 Resaltar un mensaje\n\nEn ciertas oportunidades se usan colores para enfatizar elementos relevantes de la figura, en especial cuando hay categorías o valores específicos en el conjunto de datos que contienen información clave sobre la historia que queremos contar.\nEn estos casos hay que usar una escala de colores acentuados, que son escalas de colores que contienen un conjunto de colores tenues y un conjunto coincidente de colores más fuertes, más oscuros y/o más saturados.\nAsí, se logra el énfasis coloreando ciertos elementos de la figura en un color o conjunto de colores que se destacan vívidamente en comparación al resto.\nEjemplos de escalas de colores acentuados, cada una con cuatro colores base y tres colores acentuados:\n\n\n\n\n\n\n\n\n\n\n\nLas escalas de colores acentuados se pueden derivar de varias maneras diferentes:\n\nFila 1: tomar una escala de colores existente como la de Okabe Ito y aclarar y/o desaturar parcialmente algunos colores mientras oscurecemos otros.\nFila 2: tomar valores grises y emparejarlos con colores más llamativos.\nFila 3: usar una escala existente, como alguna del proyecto ColorBrewer.\n\nEjemplo: destacamos la provincia de Santa Fe:",
+    "crumbs": [
+      "Unidad 1. Introducción",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Teoría de la Visualización</span>"
     ]
   }
 ]

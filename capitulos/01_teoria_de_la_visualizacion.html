@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>1&nbsp; Teoría de la Visualización – Análisis Exploratorio de Datos</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../capitulos/01.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-7dc4809af68284bc67e7de96a4bd5e3c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-83123365b82d3e0a114b8a4caf34d831.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Sin resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+<link href="../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="../site_libs/plotly-binding-4.10.4/plotly.js"></script>
+<script src="../site_libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="../site_libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+<script src="../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="../site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="../site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../webexercises/webex.css">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../capitulos/01.html">Unidad 1. Introducción</a></li><li class="breadcrumb-item"><a href="../capitulos/01_teoria_de_la_visualizacion.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Teoría de la Visualización</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Análisis Exploratorio de Datos</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/ee-unr/aed" title="Ejecutar el código" class="quarto-navigation-tool px-1" aria-label="Ejecutar el código"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Alternar modo oscuro"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bienvenida</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/00_info.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Información general sobre la asignatura</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../capitulos/01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Unidad 1. Introducción</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/01_teoria_de_la_visualizacion.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Teoría de la Visualización</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#introducción" id="toc-introducción" class="nav-link active" data-scroll-target="#introducción"><span class="header-section-number">2</span> Introducción</a></li>
+  <li><a href="#fundamentos-de-la-visualización" id="toc-fundamentos-de-la-visualización" class="nav-link" data-scroll-target="#fundamentos-de-la-visualización"><span class="header-section-number">3</span> Fundamentos de la Visualización</a>
+  <ul class="collapse">
+  <li><a href="#estéticas" id="toc-estéticas" class="nav-link" data-scroll-target="#estéticas"><span class="header-section-number">3.1</span> Estéticas</a>
+  <ul class="collapse">
+  <li><a href="#ejemplo-1" id="toc-ejemplo-1" class="nav-link" data-scroll-target="#ejemplo-1">Ejemplo 1</a></li>
+  <li><a href="#ejemplo-2" id="toc-ejemplo-2" class="nav-link" data-scroll-target="#ejemplo-2">Ejemplo 2</a></li>
+  <li><a href="#ejemplo-3" id="toc-ejemplo-3" class="nav-link" data-scroll-target="#ejemplo-3">Ejemplo 3</a></li>
+  <li><a href="#ejemplo-4" id="toc-ejemplo-4" class="nav-link" data-scroll-target="#ejemplo-4">Ejemplo 4</a></li>
+  <li><a href="#ejemplo-5" id="toc-ejemplo-5" class="nav-link" data-scroll-target="#ejemplo-5">Ejemplo 5</a></li>
+  <li><a href="#ejemplo-6" id="toc-ejemplo-6" class="nav-link" data-scroll-target="#ejemplo-6">Ejemplo 6</a></li>
+  <li><a href="#ejemplo-7" id="toc-ejemplo-7" class="nav-link" data-scroll-target="#ejemplo-7">Ejemplo 7</a></li>
+  </ul></li>
+  <li><a href="#escalas" id="toc-escalas" class="nav-link" data-scroll-target="#escalas"><span class="header-section-number">3.2</span> Escalas</a>
+  <ul class="collapse">
+  <li><a href="#ejemplo-temperaturas-mensuales" id="toc-ejemplo-temperaturas-mensuales" class="nav-link" data-scroll-target="#ejemplo-temperaturas-mensuales">Ejemplo: temperaturas mensuales</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#sistemas-de-coordenadas-y-ejes" id="toc-sistemas-de-coordenadas-y-ejes" class="nav-link" data-scroll-target="#sistemas-de-coordenadas-y-ejes"><span class="header-section-number">4</span> Sistemas de coordenadas y ejes</a>
+  <ul class="collapse">
+  <li><a href="#coordenadas-cartesianas" id="toc-coordenadas-cartesianas" class="nav-link" data-scroll-target="#coordenadas-cartesianas"><span class="header-section-number">4.1</span> Coordenadas cartesianas</a></li>
+  <li><a href="#ejes-lineales" id="toc-ejes-lineales" class="nav-link" data-scroll-target="#ejes-lineales"><span class="header-section-number">4.2</span> Ejes lineales</a></li>
+  <li><a href="#ejes-no-lineales" id="toc-ejes-no-lineales" class="nav-link" data-scroll-target="#ejes-no-lineales"><span class="header-section-number">4.3</span> Ejes no lineales</a>
+  <ul class="collapse">
+  <li><a href="#ejemplo-censo-2022" id="toc-ejemplo-censo-2022" class="nav-link" data-scroll-target="#ejemplo-censo-2022">Ejemplo: Censo 2022</a></li>
+  </ul></li>
+  <li><a href="#sistemas-de-coordenadas-con-ejes-curvos" id="toc-sistemas-de-coordenadas-con-ejes-curvos" class="nav-link" data-scroll-target="#sistemas-de-coordenadas-con-ejes-curvos"><span class="header-section-number">4.4</span> Sistemas de coordenadas con ejes curvos</a></li>
+  </ul></li>
+  <li><a href="#escalas-de-color" id="toc-escalas-de-color" class="nav-link" data-scroll-target="#escalas-de-color"><span class="header-section-number">5</span> Escalas de color</a>
+  <ul class="collapse">
+  <li><a href="#diferenciar-grupos" id="toc-diferenciar-grupos" class="nav-link" data-scroll-target="#diferenciar-grupos"><span class="header-section-number">5.1</span> Diferenciar grupos</a></li>
+  <li><a href="#representar-valores" id="toc-representar-valores" class="nav-link" data-scroll-target="#representar-valores"><span class="header-section-number">5.2</span> Representar valores</a></li>
+  <li><a href="#resaltar-un-mensaje" id="toc-resaltar-un-mensaje" class="nav-link" data-scroll-target="#resaltar-un-mensaje"><span class="header-section-number">5.3</span> Resaltar un mensaje</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/ee-unr/aed/edit/main/capitulos/01_teoria_de_la_visualizacion.qmd" class="toc-action"><i class="bi bi-github"></i>Editar esta página</a></li><li><a href="https://github.com/ee-unr/aed/issues/new" class="toc-action"><i class="bi empty"></i>Informar de un problema</a></li><li><a href="https://github.com/ee-unr/aed/blob/main/capitulos/01_teoria_de_la_visualizacion.qmd" class="toc-action"><i class="bi empty"></i>Ver el código</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../capitulos/01.html">Unidad 1. Introducción</a></li><li class="breadcrumb-item"><a href="../capitulos/01_teoria_de_la_visualizacion.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Teoría de la Visualización</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Teoría de la Visualización</span></h1>
+<p class="subtitle lead">Análisis Exploratorio de Datos | Licenciatura en Estadística | FCEyE | UNR</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- themes: https://bootswatch.com/ -->
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Disclaimer
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Esta unidad está basada en el libro <strong>Fundamentals of Data Visualization</strong> (2019) de Claus O. Wilke, disponible online en <a href="https://clauswilke.com/dataviz/">clauswilke.com/dataviz</a>.</p>
+</div>
+</div>
+<section id="introducción" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Introducción</h1>
+<ul>
+<li><p>En general, los/as estadísticos/as sabemos cómo visualizar datos sin ser demasiado engañosos. Sin embargo, es posible que no tengamos un sentido bien desarrollado de la estética visual y que tomemos decisiones que restan valor al mensaje.</p></li>
+<li><p>Los diseñadores, por otro lado, pueden preparar visualizaciones atractivas pero muchas veces descuidan la integridad de los datos. Lo ideal, entonces, es tomar lo mejor de ambos mundos.</p></li>
+<li><p>Como dice Wilke:</p></li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Cita
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>La visualización de datos es en parte arte y en parte ciencia. El desafío es hacer bien el arte sin equivocarse con la ciencia, y viceversa.</strong></p>
+</div>
+</div>
+<ul>
+<li><p>Una visualización de datos tiene la obligación de:</p>
+<ul>
+<li>transmitir los datos con precisión</li>
+<li>no distorsionar la información ni inducir al error</li>
+<li>ser estéticamente agradable</li>
+<li>ser fácilmente interpretable</li>
+<li>enfocarse en un mensaje puntual (no tratar de mostrar todo junto en un mismo lugar)</li>
+<li>evitar características que distraigan (efectos 3D innecesarios, etc.): “menos es más”</li>
+</ul></li>
+<li><p>El objetivo de esta materia es estudiar cómo aplicar estos ideales a los gráficos estadísticos más comunes y, al mismo tiempo, afianzar los conocimientos sobre programación orientada a visualizaciones.</p></li>
+<li><p>La visualización de datos está íntimamente ligada al concepto de <strong>comunicación</strong>. Supongamos que deseamos transmitir una idea sobre el conjunto de datos que estamos analizando, a una cierta audiencia que puede estar compuesta por compañeros de facultad o de trabajo, al público de un congreso, usuarios de redes sociales, etc. Para comunicarnos con éxito, tendremos que presentarle a esa audiencia una historia <strong>clara e interesante</strong>.</p></li>
+</ul>
+<!-- * La necesidad de "crear una historia" puede sonar rara en este ámbito, ya que se asocia esta idea a inventar o exagerar resultados. No es esto lo que estamos proponiendo, sino que consideramos que no se debe pasar por alto el papel importante que juegan las emociones a la hora de comprender, razonar y captar contenido. -->
+<!-- * Nos animamos cuando escuchamos una buena historia y nos aburrimos cuando la historia es mala, o cuando directamente no hay historia para contar. Este hecho obvio (que se puede observar en nuestra vida cotidiana cuando hablamos con ciertas personas o miramos algún video) también se traslada a la comunicación de la ciencia, y en particular a la **comunicación de resultados** mediante visualizaciones. -->
+<!-- * Cualquier comunicación crea una historia en la mente de la audiencia, y si nosotros mismos no la proporcionamos, el público la inventará. En el mejor de los casos, la historia que inventan estará razonablemente cerca de nuestra propia manera de entender las cosas, pero esto no siempre será así. Lo ideal es contar una historia usando hechos y razonamientos lógicos que logre interesar y entusiasmar a la audiencia. -->
+<ul>
+<li><p>En su formato tradicional, una historia se puede dividir en 3 partes: inicio, desarrollo (nudo) y final (desenlace). Un buen gráfico también debe contar con estas características:</p>
+<ul>
+<li><strong>Inicio:</strong> plantea el interrogante que el gráfico desea resolver. Seguramente existe una pregunta o hipótesis que marca el inicio de esta historia. Presentar gráficos sin contexto, o sin explicar qué fue lo que los motivó, puede afectar nuestra capacidad de comprender la visualización o de interesarnos en ella.</li>
+<li><strong>Desarrollo:</strong> en este contexto, podemos pensar al desarrollo de la historia como las decisiones estadísticas que se tomaron para dar respuesta a la pregunta planteada inicialmente. Cuándo y cómo se recolectaron los datos, qué se hizo con ellos, cómo se los manipuló (en el buen sentido), cómo se los analizó, por qué se eligió este gráfico en particular, etc.</li>
+<li><strong>Final:</strong> el desenlace de la historia consiste en la presentación del gráfico como producto final, adjuntando interpretaciones que podemos obtener como estadísticos/as al analizar las figuras generadas. En este punto es importante aplicar los conceptos mencionados arriba (visualizaciones que transmitan un mensaje fiel a los datos, estéticamente agradables, etc.), y al mismo tiempo acompañarla de conclusiones válidas que dejen claramente planteada nuestra visión de esta historia.</li>
+</ul></li>
+<li><p>No siempre vamos a poder aplicar la estructura recién mencionada: hay contextos donde la historia detrás de la visualización no es tan importante, o donde un gráfico individual no alcanza para contarla de manera completa. También es cierto que resulta difícil “vender” algunos gráficos en particular (¿alguien alguna vez se emocionó mirando un boxplot?) 🤣.</p></li>
+<li><p>Más allá de esto, consideramos importante que el análisis exploratorio de datos sea <strong>riguroso desde el punto de vista estadístico</strong>, pero que al mismo tiempo incorpore conceptos que realcen su <strong>impacto visual</strong> y su <strong>potencial comunicativo</strong>.</p></li>
+</ul>
+</section>
+<section id="fundamentos-de-la-visualización" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Fundamentos de la Visualización</h1>
+<ul>
+<li><p>Cada vez que visualizamos datos, estamos tomando sus valores y convirtiéndolos de manera sistemática y lógica en los elementos visuales que conforman el gráfico final. El proceso de asignar ciertos <strong>datos</strong> a ciertas <strong>características</strong> del gráfico es la esencia de la visualización de datos.</p></li>
+<li><p>Le decimos <strong>mapeo</strong> (en inglés, <em>mapping</em>) a esta correspondencia entre dato/característica. A su vez, las características que conforman el gráfico son llamadas <strong>estéticas</strong> (<em>aesthetics</em>). Este vocabulario puede sonar familiar, ya que es empleado por el paquete <code>ggplot2</code> de R.</p></li>
+<li><p>No debe confundirse este concepto de estética con el utilizado usualmente (estudio y valoración de lo que se percibe como bello, artístico, de buen gusto, etc.), sino que debe entenderse como <strong>aquello que se puede percibir con los sentidos</strong>, la cual es su definición original en idioma griego.</p></li>
+<li><p>Por lo tanto, cuando hablemos de elementos estéticos en esta materia, estamos haciendo referencia a las características que percibimos visualmente en un gráfico.</p></li>
+</ul>
+<section id="estéticas" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="estéticas"><span class="header-section-number">3.1</span> Estéticas</h2>
+<ul>
+<li><p>Las estéticas describen cada aspecto de un determinado gráfico. Las más comunes son:</p>
+<ul>
+<li><strong>Posición</strong> (<em>position</em>): generalmente como coordenadas cartesianas <span class="math inline">\((x, y)\)</span> en gráficos en 2D, aunque existen otras posibilidades (coordenadas polares, gráficos tridimensionales, etc.)</li>
+<li><strong>Forma</strong> (<em>shape</em>)</li>
+<li><strong>Tamaño</strong> (<em>size</em>)</li>
+<li><strong>Color</strong></li>
+<li><strong>Ancho de línea</strong> (<em>line width</em>)</li>
+<li><strong>Tipo de línea</strong> (<em>line type</em>)</li>
+</ul></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad01/common-aesthetics-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="../imagenes/unidad01/common-aesthetics-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>Todas las estéticas se pueden clasificar dentro de 2 posibles grupos: las que permiten representar datos continuos, y las que no. Entre las mencionadas arriba, tenemos que posición, tamaño, color y ancho de línea pueden ser utilizadas para datos continuos, mientras que forma y tipo de línea sólo sirven para datos categóricos o discretos.</p></li>
+<li><p>Veamos a continuación algunos ejemplos sencillos con el tradicional <a href="https://es.wikipedia.org/wiki/Conjunto_de_datos_flor_iris">conjunto de datos de las flores de Iris</a>.</p></li>
+</ul>
+<section id="ejemplo-1" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="ejemplo-1">Ejemplo 1</h3>
+<p>Representamos dos variables cuantitativas continuas en un sistema de ejes cartesianos (estética de la posición). Tamaño, forma (círculo) y color (negro) permanecen constantes para todos los datos; son estéticas presentes pero que no agregan información.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-2-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="ejemplo-2" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="ejemplo-2">Ejemplo 2</h3>
+<p>Utilizamos la estética ‘forma’ para representar una variable categórica (especie) que agrega información. Recordemos que la forma sólo puede asociarse a una cantidad finita (discreta) de valores; no tendría sentido asociar el ancho del pétalo con la forma. Notemos además la necesidad de incorporar una leyenda al gráfico que permita relacionar formas con valores puntuales de los datos.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-3-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="ejemplo-3" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="ejemplo-3">Ejemplo 3</h3>
+<p>Usamos la estética ‘tamaño’ para representar una tercera variable, en este caso ancho del sépalo. El diámetro de cada punto ahora depende de esta variable: flores con sépalo más anchos se grafican con puntos de mayor diámetro. Una vez más, necesitamos una leyenda adecuada para interpretar el gráfico.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-4-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="ejemplo-4" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="ejemplo-4">Ejemplo 4</h3>
+<p>Estéticas que se pueden usar para datos continuos, como el tamaño, también sirven para representar datos discretos. Advertimos que este uso no es recomendable, ya que la diferencia de tamaño entre especies dificulta la correcta interpretación de los datos graficados.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-5-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="ejemplo-5" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="ejemplo-5">Ejemplo 5</h3>
+<p>Una manera correcta de diferenciar las especies es asignando una paleta de colores que las distinga (es importante que la elección de colores no opaque el mensaje; hablaremos de esto más adelante). Si bien la estética del ‘color’ fue planteada arriba como continua, también resulta muy útil para representar datos discretos. Este gráfico es una alternativa al ejemplo 2: ambos muestran exactamente la misma información, pero haciendo uso de diferentes estéticas.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-6-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6"><img src="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="ejemplo-6" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="ejemplo-6">Ejemplo 6</h3>
+<p>Ahora usamos la estética ‘color’ para representar datos continuos, en este caso nuevamente el ancho del sépalo. Acá también debemos prestar especial atención a la paleta elegida para que el mensaje sea lo más claro posible. Este gráfico es una versión alternativa al del ejemplo 3: muestra la misma información pero con estéticas distintas.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-7-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7"><img src="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="ejemplo-7" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="ejemplo-7">Ejemplo 7</h3>
+<p>Un mamarracho donde el color se asigna al ancho de sépalo, el tamaño al largo del sépalo y la forma a la especie. No debemos olvidar la máxima que postula que ‘menos es más’. Al querer mostrar todas las variables al mismo tiempo, terminamos creando una visualización demasiado cargada de información, compleja y difícil de interpretar.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-8-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8"><img src="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="escalas" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="escalas"><span class="header-section-number">3.2</span> Escalas</h2>
+<ul>
+<li><p>Para unir el mundo de las <strong>estéticas</strong> con el mundo de los <strong>datos</strong> necesitamos especificar qué valores de los datos se corresponden con qué valores específicos de las estéticas.</p></li>
+<li><p>Por ejemplo, si nuestro gráfico tiene un eje X, sabemos que el valor “5” estará a una distancia de 5 unidades del origen, el valor “10” estará al doble de distancia, etc. Este <em>mapeo</em> en particular, que corresponde a la estética de <strong>posición</strong>, se da de manera natural, casi inconsciente.</p></li>
+<li><p>Los restantes mapeos requieren de un poco más de reflexión. Si vamos a usar colores para representar grupos, debemos especificar cómo relacionarlos (ej: Argentina = celeste, Brasil = verde, etc.).</p></li>
+<li><p>Esta asociación entre valores de los datos y valores de las estéticas se crea mediante la definición de una <strong>escala</strong>, la cual determina una relación entre datos y estéticas, y al mismo tiempo crea la necesidad de incluir en el gráfico una leyenda que deje en claro los detalles de esa asociación.</p></li>
+<li><p>Siempre que se defina una escala, cada valor necesita estar asociado a una única posición, forma o color, y viceversa. En otras palabras, la relación debe ser <strong>biunívoca</strong> (uno a uno). Escalas que no cumplan esta propiedad básica deben evitarse a toda costa, ya que el gráfico no será coherente.</p></li>
+</ul>
+<section id="ejemplo-temperaturas-mensuales" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="ejemplo-temperaturas-mensuales">Ejemplo: temperaturas mensuales</h3>
+<ul>
+<li>A continuación se presentan las primeras filas de un conjunto de datos que proporciona las temperaturas mensuales normales (temperatura promedio en cada mes durante una ventana de 30 años) para cuatro ciudades de Argentina. Esta tabla contiene 5 variables: mes, ciudad, provincia, código de la estación meteorológica que mide los datos, y temperatura (en grados centígrados).</li>
+</ul>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Mes</th>
+<th style="text-align: left;">Ciudad</th>
+<th style="text-align: left;">Provincia</th>
+<th>Código</th>
+<th>Temperatura</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ene</td>
+<td style="text-align: left;">La Quiaca</td>
+<td style="text-align: left;">Jujuy</td>
+<td>SASQ</td>
+<td>13.2</td>
+</tr>
+<tr class="even">
+<td>Ene</td>
+<td style="text-align: left;">Rosario</td>
+<td style="text-align: left;">Santa Fe</td>
+<td>SAAR</td>
+<td>24.8</td>
+</tr>
+<tr class="odd">
+<td>Ene</td>
+<td style="text-align: left;">Bariloche</td>
+<td style="text-align: left;">Río Negro</td>
+<td>SAZS</td>
+<td>15.4</td>
+</tr>
+<tr class="even">
+<td>Ene</td>
+<td style="text-align: left;">Ushuaia</td>
+<td style="text-align: left;">Tierra del Fuego</td>
+<td>SAWH</td>
+<td>9.4</td>
+</tr>
+<tr class="odd">
+<td>Feb</td>
+<td style="text-align: left;">La Quiaca</td>
+<td style="text-align: left;">Jujuy</td>
+<td>SASQ</td>
+<td>13</td>
+</tr>
+<tr class="even">
+<td>Feb</td>
+<td style="text-align: left;">Rosario</td>
+<td style="text-align: left;">Santa Fe</td>
+<td>SAAR</td>
+<td>23.4</td>
+</tr>
+<tr class="odd">
+<td>Feb</td>
+<td style="text-align: left;">Bariloche</td>
+<td style="text-align: left;">Río Negro</td>
+<td>SAZS</td>
+<td>15</td>
+</tr>
+<tr class="even">
+<td>Feb</td>
+<td style="text-align: left;">Ushuaia</td>
+<td style="text-align: left;">Tierra del Fuego</td>
+<td>SAWH</td>
+<td>8.4</td>
+</tr>
+<tr class="odd">
+<td>Mar</td>
+<td style="text-align: left;">La Quiaca</td>
+<td style="text-align: left;">Jujuy</td>
+<td>SASQ</td>
+<td>12.8</td>
+</tr>
+<tr class="even">
+<td>Mar</td>
+<td style="text-align: left;">Rosario</td>
+<td style="text-align: left;">Santa Fe</td>
+<td>SAAR</td>
+<td>21.5</td>
+</tr>
+<tr class="odd">
+<td>Mar</td>
+<td style="text-align: left;">Bariloche</td>
+<td style="text-align: left;">Río Negro</td>
+<td>SAZS</td>
+<td>12.1</td>
+</tr>
+<tr class="even">
+<td>Mar</td>
+<td style="text-align: left;">Ushuaia</td>
+<td style="text-align: left;">Tierra del Fuego</td>
+<td>SAWH</td>
+<td>6.2</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Con estos datos se realizaron las siguientes figuras:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad01/tempnorm.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9"><img src="../imagenes/unidad01/tempnorm.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad01/tempnorm2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10"><img src="../imagenes/unidad01/tempnorm2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Responder
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p>¿Con qué estéticas se asoció a cada variable en el primer gráfico?</p></li>
+<li><p>¿Con qué estéticas se asoció a cada variable en el segundo gráfico?</p></li>
+<li><p>¿Podríamos cambiar el orden en el que aparecen las categorías representadas en los ejes del segundo gráfico?</p></li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="sistemas-de-coordenadas-y-ejes" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Sistemas de coordenadas y ejes</h1>
+<ul>
+<li>Para realizar cualquier tipo de visualización de datos necesitamos definir <strong>escalas de posición</strong>, las cuales determinan en qué parte del gráfico se ubican los diferentes datos. Además, tenemos que especificar la disposición geométrica relativa de estas escalas.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Definición
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La combinación de un conjunto de escalas de posición y su disposición geométrica relativa se denomina <strong>sistema de coordenadas</strong>.</p>
+</div>
+</div>
+<ul>
+<li><p>En visualizaciones 2D se requieren dos números para especificar un punto de manera única en el plano y, por lo tanto, necesitamos dos escalas de posición. Estas dos escalas suelen ser los ejes X e Y del gráfico.</p></li>
+<li><p>Convencionalmente, ambos ejes son perpendiculares entre sí y representan escalas <strong>lineales</strong>, pero también podríamos elegir disposiciones <strong>no lineales</strong>. Más adelante veremos ejemplos de ambos casos.</p></li>
+</ul>
+<section id="coordenadas-cartesianas" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="coordenadas-cartesianas"><span class="header-section-number">4.1</span> Coordenadas cartesianas</h2>
+<ul>
+<li><p>El sistema de coordenadas 2D más utilizado para la visualización de datos es el <strong>cartesiano</strong>, llamado así en honor al filósofo y matemático francés René Descartes, quien desarrolló este concepto en el siglo XVII.</p></li>
+<li><p>Cada ubicación en el plano bidimensional se especifica de forma única mediante un valor correspondiente al eje X (eje de las abscisas) y un valor correspondiente al eje Y (eje de las ordenadas).</p></li>
+</ul>
+<!-- - Principales características de los ejes cartesianos: -->
+<!--     - Son perpendiculares entre sí -->
+<!--     - Se corresponden con escalas de posición continuas -->
+<!--     - Pueden representar números reales positivos y negativos -->
+<!--     - Se cruzan en el punto $(0,0)$, denominado **origen** -->
+<ul>
+<li><p>Muchas veces los ejes representan variables con unidades de medida diferentes. En estos casos es válido estirar o comprimir uno en relación con el otro; el grado de distorsión utilizado dependerá de qué <strong>mensaje queremos transmitir</strong> a partir del gráfico en cuestión:</p>
+<ul>
+<li>una figura baja y ancha resalta cambios a lo largo del eje X</li>
+<li>una figura alta y angosta resalta cambios a lo largo del eje Y</li>
+</ul></li>
+<li><p>Idealmente, vamos a elegir una relación de aspecto que asegure que cualquier diferencia importante sea perceptible, y que al mismo tiempo no distorsione demasiado la visualización.</p></li>
+<li><p><strong>Ejemplo:</strong> temperaturas medias (suavizadas) de Rosario entre el 01/08/2022 y el 31/07/2023. ¿Qué ocurre cuando la relación de aspecto (alto/ancho) está muy distante del 1?</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad01/rosario_temp.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11"><img src="../imagenes/unidad01/rosario_temp.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>Si los ejes se definen en las mismas unidades de medida, se recomienda que los espaciados de la grilla sean iguales, de modo que una distancia de <span class="math inline">\(z\)</span> unidades a lo largo del eje X tenga la misma longitud que una distancia de <span class="math inline">\(z\)</span> unidades a lo largo del eje Y.</p></li>
+<li><p>Por último, cabe destacar que el sistema de coordenadas cartesiano es <strong>invariante ante transformaciones lineales</strong> de las unidades de medida. Esto implica que la forma, aspecto y distancias presentes en el gráfico no se modifican si pasamos de centímetros a kilómetros, gramos a toneladas, Celsius a Fahrenheit, etc.</p></li>
+</ul>
+</section>
+<section id="ejes-lineales" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="ejes-lineales"><span class="header-section-number">4.2</span> Ejes lineales</h2>
+<ul>
+<li><p>En los ejemplos presentados hasta ahora, las líneas de la cuadrícula a lo largo de cada eje están espaciadas uniformemente. Esto implica que dos pares de puntos que están a la misma distancia tienen la misma magnitud de diferencia entre sus valores.</p></li>
+<li><p>En estos sistemas de coordenadas decimos que las escalas de posición son <strong>lineales</strong>.</p></li>
+</ul>
+</section>
+<section id="ejes-no-lineales" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="ejes-no-lineales"><span class="header-section-number">4.3</span> Ejes no lineales</h2>
+<ul>
+<li><p>Existen escenarios en los que se prefieren escalas <strong>no lineales</strong>, en las cuales dos pares de puntos que visualmente se encuentran a la misma distancia, no poseen la misma magnitud de diferencia entre sus valores.</p></li>
+<li><p>La escala no lineal más utilizada es la <strong>logarítmica</strong>. Recordemos que <span class="math inline">\(\log_b x = y \implies b^y = x\)</span>.</p></li>
+<li><p>La siguiente figura muestra la relación entre una escala lineal y otra logarítmica, en base 10. Se representan 5 datos (1, 3.16, 10, 31.6 y 100):</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad01/linear-log-scales-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12"><img src="../imagenes/unidad01/linear-log-scales-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>Las escalas logarítmicas son lineales en la multiplicación, de modo que un salto constante en la escala corresponde a una multiplicación por un valor fijo. Por ejemplo, en este caso cada dato se obtiene multiplicando el anterior por <span class="math inline">\(\sqrt{10} \approx 3.16\)</span>, y debido a esto se ven equiespaciados en la escala logarítmica de base 10.</p></li>
+<li><p>Geométricamente no hay diferencia entre graficar los datos transformados logarítmicamente en una escala lineal o graficar los datos originales en una escala logarítmica: la única diferencia radica en el <strong>etiquetado del eje</strong>.</p></li>
+<li><p>Generalmente es preferible etiquetar la escala logarítmica con los valores originales (tercer panel en la figura), porque es más fácil interpretar los números que se muestran. Además, nunca debemos olvidarnos de aclarar la base utilizada en el cálculo de los logaritmos.</p></li>
+<li><p>Debido a que la multiplicación en una escala logarítmica se comporta de manera similar que la suma en una escala lineal, las escalas logarítmicas son la elección natural para cualquier dato que se haya obtenido mediante multiplicación o división (por ejemplo, tasas o razones).</p></li>
+</ul>
+<section id="ejemplo-censo-2022" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="ejemplo-censo-2022">Ejemplo: Censo 2022</h3>
+<!-- - En Argentina, cada división administrativa de primer orden (23 provincias + CABA) se encuentra dividida en departamentos, partidos o comunas. A estas divisiones se las denomina "de segundo orden" y actualmente existen 529 en todo el país. -->
+<!-- - Para los gráficos que se muestran a continuación, se tomó el número de habitantes de cada división de 2º orden, según el Censo 2022, y se lo dividió por la mediana de los 529 valores. -->
+<ul>
+<li><p>Para los gráficos que se muestran a continuación, se tomó el número de habitantes de cada provincia de Argentina, según el Censo 2022, y se lo dividió por la mediana de esos 24 valores (23 provincias + CABA).</p></li>
+<li><p>La razón resultante es un número que puede ser:</p>
+<ul>
+<li>Mayor a 1 si la provincia tiene más habitantes que la mediana</li>
+<li>Igual a 1 si la provincia tiene una población igual a la mediana</li>
+<li>Menor a 1 si la provincia tiene menos habitantes que la mediana</li>
+</ul></li>
+<li><p>Cuando trabajamos con razones, el 1 es el punto medio (como el 0 en una escala lineal). Cada valor de 1 a <span class="math inline">\(+\infty\)</span> se corresponde con un valor entre 0 y 1.</p></li>
+</ul>
+<!-- - En una escala logarítmica, el valor 0 no puede ocurrir, debido a que yace "infinitamente" lejos de 1: $log(0)=-\infty$. -->
+<ul>
+<li>Veamos estas razones graficadas en escala logarítmica (la línea punteada indica una razón de 1):</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-8b8d0a3bc1d0b8b6bf73" style="width:65%;height:1500px;"></div>
+<script type="application/json" data-for="htmlwidget-8b8d0a3bc1d0b8b6bf73">{"x":{"data":[{"x":[-0.15000000000000013,25.149999999999999],"y":[0,0],"text":"","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(169,169,169,1)","dash":"dash"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24],"y":[1.2734117258074957,0.62843556564374448,0.57968887235618261,0.5229031470446075,0.33283775879365796,0.25992545143958201,0.18722848842544754,0.18291261913444751,0.13619894127212379,0.10695811589253545,0.086695544488309809,0.05151552080521056,-0.058459105418062172,-0.069358226783032439,-0.089343471494216495,-0.11004721074524548,-0.1888346210205375,-0.19093289684870529,-0.23821563117509878,-0.33831683755228303,-0.3863194428466093,-0.4078294374102337,-0.44827595059657344,-0.69112031973358712],"text":["Buenos Aires: 18.77","Córdoba: 4.25","Santa Fe: 3.8","CABA: 3.33","Mendoza: 2.15","Tucumán: 1.82","Salta: 1.54","Entre Ríos: 1.52","Misiones: 1.37","Corrientes: 1.28","Chaco: 1.22","Santiago del Estero: 1.13","San Juan: 0.87","Jujuy: 0.85","Río Negro: 0.81","Neuquén: 0.78","Formosa: 0.65","Chubut: 0.64","San Luis: 0.58","Catamarca: 0.46","La Rioja: 0.41","La Pampa: 0.39","Santa Cruz: 0.36","Tierra del Fuego: 0.2"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(70,130,180,1)","opacity":1,"size":7.559055118110237,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(70,130,180,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.762557077625573,"r":7.3059360730593621,"b":28.493150684931511,"l":54.794520547945211},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"Provincias Argentinas según Población Censo 2022","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-0.15000000000000013,25.149999999999999],"tickmode":"array","ticktext":["0","5","10","15","20","25"],"tickvals":[0,5,10,15,20,25],"categoryorder":"array","categoryarray":["0","5","10","15","20","25"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":false,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y","title":{"text":"<b> Provincias, desde la más hasta la menos poblada <\/b>","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-0.78934692201064127,1.3716383280845499],"tickmode":"array","ticktext":[0.316,1,3.1619999999999999,10],"tickvals":[-0.5,0,0.5,1],"categoryorder":"array","categoryarray":[0.316,1,3.1619999999999999,10],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":{"text":"<b> Razón Población/Mediana (escala log10) <\/b>","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176002,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"3f8933a5f08":{"intercept":{},"slope":{},"type":"scatter"},"3f8957272789":{"x":{},"y":{},"text":{}}},"cur_data":"3f8933a5f08","visdat":{"3f8933a5f08":["function (y) ","x"],"3f8957272789":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>
+</p>
+<ul>
+<li>Por el contrario, para los mismos datos, una escala lineal esconde las diferencias entre provincias con poblaciones mucho más pequeñas:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-f7f3433cdc02a75abcdd" style="width:65%;height:1500px;"></div>
+<script type="application/json" data-for="htmlwidget-f7f3433cdc02a75abcdd">{"x":{"data":[{"x":[-0.15000000000000013,25.149999999999999],"y":[1,1],"text":"","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(169,169,169,1)","dash":"dash"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24],"y":[18.767729089197985,4.2504563997987459,3.7991712698329616,3.3335206290572579,2.151977661246129,1.8193885257512037,1.5389640979734673,1.5237461423668268,1.3683554972541236,1.2792579243716959,1.2209434363352993,1.1259407070164325,0.87405929298356744,0.85239672652652243,0.81406021165841103,0.77616273790740831,0.64738909404773481,0.64426880425923294,0.57780908868523739,0.45886312919879801,0.41084741344961334,0.39099442278911817,0.35622471641255338,0.20364778006496953],"text":["Buenos Aires: 18.77","Córdoba: 4.25","Santa Fe: 3.8","CABA: 3.33","Mendoza: 2.15","Tucumán: 1.82","Salta: 1.54","Entre Ríos: 1.52","Misiones: 1.37","Corrientes: 1.28","Chaco: 1.22","Santiago del Estero: 1.13","San Juan: 0.87","Jujuy: 0.85","Río Negro: 0.81","Neuquén: 0.78","Formosa: 0.65","Chubut: 0.64","San Luis: 0.58","Catamarca: 0.46","La Rioja: 0.41","La Pampa: 0.39","Santa Cruz: 0.36","Tierra del Fuego: 0.2"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(70,130,180,1)","opacity":1,"size":7.559055118110237,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(70,130,180,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.762557077625573,"r":7.3059360730593621,"b":28.493150684931511,"l":37.260273972602747},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"Provincias Argentinas según Población Censo 2022","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-0.15000000000000013,25.149999999999999],"tickmode":"array","ticktext":["0","5","10","15","20","25"],"tickvals":[0,5,10,15,20,25],"categoryorder":"array","categoryarray":["0","5","10","15","20","25"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":false,"tickfont":{"color":null,"family":null,"size":0},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y","title":{"text":"<b> Provincias, desde la más hasta la menos poblada <\/b>","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-1,21],"tickmode":"array","ticktext":["0","5","10","15","20"],"tickvals":[0,5,10,15,20],"categoryorder":"array","categoryarray":["0","5","10","15","20"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":{"text":"<b> Razón Población/Mediana <\/b>","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176002,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"3f8954fd5b35":{"intercept":{},"slope":{},"type":"scatter"},"3f894e782e22":{"x":{},"y":{},"text":{}}},"cur_data":"3f8954fd5b35","visdat":{"3f8954fd5b35":["function (y) ","x"],"3f894e782e22":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>
+</p>
+<ul>
+<li>Las escalas logarítmicas también se usan cuando <strong>el conjunto de datos tiene números de magnitudes muy diferentes</strong>, aunque no representen multiplicaciones o divisiones. Si trabajamos con datos que toman el valor 0, se suele recomendar usar una escala de raíz cuadrada.</li>
+</ul>
+</section>
+</section>
+<section id="sistemas-de-coordenadas-con-ejes-curvos" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="sistemas-de-coordenadas-con-ejes-curvos"><span class="header-section-number">4.4</span> Sistemas de coordenadas con ejes curvos</h2>
+<ul>
+<li><p>Hasta ahora vimos el uso de dos ejes colocados de forma perpendicular (en ángulo recto) entre sí.</p></li>
+<li><p>Sin embargo, existen otros sistemas de coordenadas en los que los propios ejes son curvos.</p></li>
+<li><p>Uno de ellos es el <strong>sistema de coordenadas polares</strong>, en el que especificamos posiciones a través de un ángulo y una distancia radial desde el origen.</p></li>
+<li><p>La siguiente figura muestra la relación entre coordenadas cartesianas y polares.</p></li>
+<li><p>Las coordenadas <span class="math inline">\(x\)</span> se usan como coordenadas angulares y las coordenadas <span class="math inline">\(y\)</span> se usan como coordenadas radiales:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad01/polar-coord-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13"><img src="../imagenes/unidad01/polar-coord-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>En este ejemplo el eje circular <span class="math inline">\(x\)</span> va de 0 a 4 y, por lo tanto, <span class="math inline">\(x = 0\)</span> y <span class="math inline">\(x = 4\)</span> tienen la misma ubicación.</p></li>
+<li><p>Por eso, las coordenadas polares pueden ser útiles para datos de naturaleza periódica, de modo que los valores en un extremo de la escala se puedan unir lógicamente a los valores en el otro extremo (ejemplo: cuando se quiere ver cómo varía una cantidad a lo largo del año).</p></li>
+<li><p>El siguiente gráfico muestra ese caso. La figura es adecuada ya que las temperaturas normales diarias son temperaturas promedio que no están vinculadas a ningún año específico: el 31 de diciembre se puede considerar como “364 días después” o bien “un día antes” del 1° de enero.</p></li>
+<li><p>Al graficar las temperaturas normales diarias en un sistema de coordenadas polares, enfatizamos la propiedad cíclica que poseen. Además, esta versión polar destaca cuán similares o disímiles son las temperaturas en distintas ciudades a lo largo de ciertos períodos.</p></li>
+<li><p>Aclaraciones:</p>
+<ul>
+<li>La distancia radial desde el punto central indica la temperatura diaria en Celsius.</li>
+<li>Los días del año están ordenados en el sentido contrario a las agujas del reloj, comenzando con el 1 de enero en la posición de las 6:00.</li>
+</ul></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad01/temppolar.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14"><img src="../imagenes/unidad01/temppolar.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>En el contexto de datos geo-espaciales suelen aparecer casos en los que se utilizan ejes curvos, pero que no son necesariamente sistemas de coordenadas polares. Más adelante, en la sección dedicada a visualizaciones mediante mapas, retomaremos este tema.</li>
+</ul>
+</section>
+</section>
+<section id="escalas-de-color" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Escalas de color</h1>
+<ul>
+<li><p>Hay tres casos fundamentales del uso de colores en una visualización de datos:</p>
+<ul>
+<li>Diferenciar grupos</li>
+<li>Representar valores</li>
+<li>Resaltar un mensaje</li>
+</ul></li>
+</ul>
+<section id="diferenciar-grupos" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="diferenciar-grupos"><span class="header-section-number">5.1</span> Diferenciar grupos</h2>
+<ul>
+<li><p>Cuando se usa el color como un medio para distinguir elementos discretos, o grupos que no tienen un orden intrínseco, debemos emplear una <strong>escala de color cualitativa</strong>.</p></li>
+<li><p>En ese tipo de escala se cuenta con un conjunto finito de colores específicos que se eligen para que se vean claramente distintos entre sí, pero al mismo tiempo resulten similares (que ninguno se destaque sobre el resto).</p></li>
+<li><p>En este caso, los colores no deben crear la impresión de un orden, por ejemplo, no se debe usar una secuencia de colores que se van aclarando u oscureciendo.</p></li>
+<li><p>Hay escalas de colores predefinidas que tienen en cuenta estos aspectos:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad01/qualitative-scales-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15"><img src="../imagenes/unidad01/qualitative-scales-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Escalas de color cualitativas
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p><strong>Fila 1:</strong> la paleta de colores de Okabe-Ito fue propuesta en 2008 como una alternativa accesible a personas con deficiencia de la visión del color. Incluye colores vivos que se pueden nombrar fácilmente y que corresponden a los principales colores primarios y secundarios.</p></li>
+<li><p><strong>Fila 2:</strong> la escala <em>Dark2</em> pertenece al proyecto ColorBrewer, desarrollado en 2017 por Cynthia Brewer, una cartógrafa que se ha dedicado a crear paletas de colores útiles para distintos contextos.</p></li>
+<li><p><strong>Fila 3:</strong> la escala <em>ggplot2 hue</em> es la escala cualitativa predeterminada en este paquete.</p></li>
+</ul>
+</div>
+</div>
+<ul>
+<li><strong>Ejemplo</strong>. Crecimiento de la población de Argentina de 2010 a 2022. Las provincias patagónicas (color naranja) han experimentado los mayores aumentos, mientras que las de la región pampeana (color rosa) han experimentado aumentos mucho menores.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-21-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16"><img src="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="representar-valores" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="representar-valores"><span class="header-section-number">5.2</span> Representar valores</h2>
+<ul>
+<li><p>En este caso utilizamos una <strong>escala de color secuencial</strong>. Este tipo de escala contiene una secuencia de colores que indican claramente:</p>
+<ol type="1">
+<li>qué valores son más grandes o más pequeños que otros;</li>
+<li>qué tan distantes están dos valores específicos entre sí (se debe percibir que la escala de colores varía uniformemente en toda su gama).</li>
+</ol></li>
+</ul>
+<p>
+</p>
+<ul>
+<li>Las escalas secuenciales pueden basarse en un solo tono, por ejemplo de azul oscuro a azul claro, o en múltiples tonos (de rojo oscuro a amarillo claro, etc.).</li>
+<li>Las escalas de varios tonos tienden a seguir gradientes de color que se pueden ver en el mundo natural.</li>
+<li>Un uso muy frecuente de este tipo de escalas, como veremos más adelante, es para representar mapas coropléticos.</li>
+<li>Las siguientes son ejemplos de escalas predefinidas. La primera es monocromática, las otras no.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad01/sequential-scales-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17"><img src="../imagenes/unidad01/sequential-scales-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Aplicamos la escala <em>viridis</em> para recrear el gráfico sobre crecimiento porcentual de la población en cada provincia:</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-23-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18"><img src="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>En algunos casos, necesitamos visualizar la desviación de los valores de los datos en una de dos direcciones con respecto a un punto medio neutral (ejemplo: números positivos y negativos).</p></li>
+<li><p>Es posible que queramos mostrarlos con diferentes colores, de modo que sea inmediatamente obvio si un valor es positivo o negativo, así como cuánto se desvía del punto medio elegido.</p></li>
+<li><p>En estos casos hay que usar una <strong>escala de color divergente</strong>: es la combinación de dos escalas secuenciales unidas en un punto medio común, que generalmente se representa con un color claro.</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad01/diverging-scales-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-19"><img src="../imagenes/unidad01/diverging-scales-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>Es necesario equilibrar las escalas divergentes, de modo que la progresión de los colores claros en el centro a los colores oscuros en el exterior sea aproximadamente la misma en cualquier dirección (sería engañoso representar un valor de magnitud <span class="math inline">\(x\)</span> con un color mucho más claro u oscuro que el utilizado para representar un valor de magnitud <span class="math inline">\(-x\)</span>).</p></li>
+<li><p>A continuación graficamos nuevamente el % de crecimiento poblacional en cada provincia, pero asumiendo que el punto medio viene dado por la mediana de estos porcentajes:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-25-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-20"><img src="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Las escalas divergentes suelen funcionar mejor cuando los datos son aproximadamente simétricos; en este caso, el punto medio corresponde a 18%, la mediana de los crecimientos observados entre ambos censos para cada jurisdicción. Tierra del Fuego, que podría llegar a considerarse como un <em>outlier</em> (crecimiento de casi 50%), hace que la escala de colores no se visualice en todo su rango.</li>
+</ul>
+</section>
+<section id="resaltar-un-mensaje" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="resaltar-un-mensaje"><span class="header-section-number">5.3</span> Resaltar un mensaje</h2>
+<ul>
+<li><p>En ciertas oportunidades se usan colores para enfatizar elementos relevantes de la figura, en especial cuando hay categorías o valores específicos en el conjunto de datos que contienen información clave sobre la historia que queremos contar.</p></li>
+<li><p>En estos casos hay que usar una <strong>escala de colores acentuados</strong>, que son escalas de colores que contienen un conjunto de colores tenues y un conjunto coincidente de colores más fuertes, más oscuros y/o más saturados.</p></li>
+<li><p>Así, se logra el énfasis coloreando ciertos elementos de la figura en un color o conjunto de colores que se destacan vívidamente en comparación al resto.</p></li>
+<li><p>Ejemplos de escalas de colores acentuados, cada una con cuatro colores base y tres colores acentuados:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../imagenes/unidad01/accent-scales-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-21"><img src="../imagenes/unidad01/accent-scales-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>Las escalas de colores acentuados se pueden derivar de varias maneras diferentes:</p>
+<ul>
+<li>Fila 1: tomar una escala de colores existente como la de Okabe Ito y aclarar y/o desaturar parcialmente algunos colores mientras oscurecemos otros.</li>
+<li>Fila 2: tomar valores grises y emparejarlos con colores más llamativos.</li>
+<li>Fila 3: usar una escala existente, como alguna del proyecto ColorBrewer.</li>
+</ul></li>
+<li><p>Ejemplo: destacamos la provincia de Santa Fe:</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-27-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-22"><img src="01_teoria_de_la_visualizacion_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+
+/* update total correct if #webex-total_correct exists */
+update_total_correct = function() {
+  console.log("webex: update total_correct");
+
+  var t = document.getElementsByClassName("webex-total_correct");
+  for (var i = 0; i < t.length; i++) {
+    p = t[i].parentElement;
+    var correct = p.getElementsByClassName("webex-correct").length;
+    var solvemes = p.getElementsByClassName("webex-solveme").length;
+    var radiogroups = p.getElementsByClassName("webex-radiogroup").length;
+    var selects = p.getElementsByClassName("webex-select").length;
+
+    t[i].innerHTML = correct + " of " + (solvemes + radiogroups + selects) + " correct";
+  }
+}
+
+/* webex-solution button toggling function */
+b_func = function() {
+  console.log("webex: toggle hide");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('open')) {
+    cl.remove("open");
+  } else {
+    cl.add("open");
+  }
+}
+
+/* check answers */
+check_func = function() {
+  console.log("webex: check answers");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('unchecked')) {
+    cl.remove("unchecked");
+    this.innerHTML = "Hide Answers";
+  } else {
+    cl.add("unchecked");
+    this.innerHTML = "Show Answers";
+  }
+}
+
+/* function for checking solveme answers */
+solveme_func = function(e) {
+  console.log("webex: check solveme");
+
+  var real_answers = JSON.parse(this.dataset.answer);
+  var my_answer = this.value;
+  var cl = this.classList;
+  if (cl.contains("ignorecase")) {
+    my_answer = my_answer.toLowerCase();
+  }
+  if (cl.contains("nospaces")) {
+    my_answer = my_answer.replace(/ /g, "")
+  }
+
+  if (my_answer == "") {
+    cl.remove("webex-correct");
+    cl.remove("webex-incorrect");
+  } else if (real_answers.includes(my_answer)) {
+    cl.add("webex-correct");
+    cl.remove("webex-incorrect");
+  } else {
+    cl.add("webex-incorrect");
+    cl.remove("webex-correct");
+  }
+
+  // match numeric answers within a specified tolerance
+  if(this.dataset.tol > 0){
+    var tol = JSON.parse(this.dataset.tol);
+    var matches = real_answers.map(x => Math.abs(x - my_answer) < tol)
+    if (matches.reduce((a, b) => a + b, 0) > 0) {
+      cl.add("webex-correct");
+    } else {
+      cl.remove("webex-correct");
+    }
+  }
+
+  // added regex bit
+  if (cl.contains("regex")){
+    answer_regex = RegExp(real_answers.join("|"))
+    if (answer_regex.test(my_answer)) {
+      cl.add("webex-correct");
+    }
+  }
+
+  update_total_correct();
+}
+
+/* function for checking select answers */
+select_func = function(e) {
+  console.log("webex: check select");
+
+  var cl = this.classList
+
+  /* add style */
+  cl.remove("webex-incorrect");
+  cl.remove("webex-correct");
+  if (this.value == "answer") {
+    cl.add("webex-correct");
+  } else if (this.value != "blank") {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+/* function for checking radiogroups answers */
+radiogroups_func = function(e) {
+  console.log("webex: check radiogroups");
+
+  var checked_button = document.querySelector('input[name=' + this.id + ']:checked');
+  var cl = checked_button.parentElement.classList;
+  var labels = checked_button.parentElement.parentElement.children;
+
+  /* get rid of styles */
+  for (i = 0; i < labels.length; i++) {
+    labels[i].classList.remove("webex-incorrect");
+    labels[i].classList.remove("webex-correct");
+  }
+
+  /* add style */
+  if (checked_button.value == "answer") {
+    cl.add("webex-correct");
+  } else {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+window.onload = function() {
+  console.log("webex onload");
+  /* set up solution buttons */
+  var buttons = document.getElementsByTagName("button");
+
+  for (var i = 0; i < buttons.length; i++) {
+    if (buttons[i].parentElement.classList.contains('webex-solution')) {
+      buttons[i].onclick = b_func;
+    }
+  }
+
+  var check_sections = document.getElementsByClassName("webex-check");
+  console.log("check:", check_sections.length);
+  for (var i = 0; i < check_sections.length; i++) {
+    check_sections[i].classList.add("unchecked");
+
+    let btn = document.createElement("button");
+    btn.innerHTML = "Show Answers";
+    btn.classList.add("webex-check-button");
+    btn.onclick = check_func;
+    check_sections[i].appendChild(btn);
+
+    let spn = document.createElement("span");
+    spn.classList.add("webex-total_correct");
+    check_sections[i].appendChild(spn);
+  }
+
+  /* set up webex-solveme inputs */
+  var solveme = document.getElementsByClassName("webex-solveme");
+
+  for (var i = 0; i < solveme.length; i++) {
+    /* make sure input boxes don't auto-anything */
+    solveme[i].setAttribute("autocomplete","off");
+    solveme[i].setAttribute("autocorrect", "off");
+    solveme[i].setAttribute("autocapitalize", "off");
+    solveme[i].setAttribute("spellcheck", "false");
+    solveme[i].value = "";
+
+    /* adjust answer for ignorecase or nospaces */
+    var cl = solveme[i].classList;
+    var real_answer = solveme[i].dataset.answer;
+    if (cl.contains("ignorecase")) {
+      real_answer = real_answer.toLowerCase();
+    }
+    if (cl.contains("nospaces")) {
+      real_answer = real_answer.replace(/ /g, "");
+    }
+    solveme[i].dataset.answer = real_answer;
+
+    /* attach checking function */
+    solveme[i].onkeyup = solveme_func;
+    solveme[i].onchange = solveme_func;
+
+    solveme[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  /* set up radiogroups */
+  var radiogroups = document.getElementsByClassName("webex-radiogroup");
+  for (var i = 0; i < radiogroups.length; i++) {
+    radiogroups[i].onchange = radiogroups_func;
+  }
+
+  /* set up selects */
+  var selects = document.getElementsByClassName("webex-select");
+  for (var i = 0; i < selects.length; i++) {
+    selects[i].onchange = select_func;
+    selects[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  update_total_correct();
+}
+
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copiado");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copiado");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../capitulos/01.html" class="pagination-link" aria-label="Unidad 1. Introducción">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Unidad 1. Introducción</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Developed by Diego Marfetán Molina and Ivan Millanes</p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/ee-unr/aed/edit/main/capitulos/01_teoria_de_la_visualizacion.qmd" class="toc-action"><i class="bi bi-github"></i>Editar esta página</a></li><li><a href="https://github.com/ee-unr/aed/issues/new" class="toc-action"><i class="bi empty"></i>Informar de un problema</a></li><li><a href="https://github.com/ee-unr/aed/blob/main/capitulos/01_teoria_de_la_visualizacion.qmd" class="toc-action"><i class="bi empty"></i>Ver el código</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>
