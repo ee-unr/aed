@@ -329,6 +329,19 @@
       ],
       "Hash": "1acd2b3db6e118dd161ee6cabedc4d4e"
     },
+    "V8": {
+      "Package": "V8",
+      "Version": "6.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "Rcpp",
+        "curl",
+        "jsonlite",
+        "utils"
+      ],
+      "Hash": "c493baca86321dfdd7acc9d236562caf"
+    },
     "VennDiagram": {
       "Package": "VennDiagram",
       "Version": "1.7.3",
@@ -720,6 +733,21 @@
       "Source": "Repository",
       "Repository": "RSPM",
       "Hash": "14eb0596f987c71535d07c3aff814742"
+    },
+    "concaveman": {
+      "Package": "concaveman",
+      "Version": "1.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "V8",
+        "dplyr",
+        "jsonlite",
+        "magrittr",
+        "sf"
+      ],
+      "Hash": "6303d93b9a915fbb7dbbf31e1ba5d3a9"
     },
     "conflicted": {
       "Package": "conflicted",

@@ -948,6 +948,7 @@ hchart(amazon, type = "ohlc") %>%
 
 ```{r}
 library(ggforce)
+library(concaveman)
 
 ggplot(data = iris) +
   aes(x = Petal.Length, y = Petal.Width) +
