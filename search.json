@@ -1,0 +1,83 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Análisis Exploratorio de Datos",
+    "section": "",
+    "text": "Bienvenida\n\n\nPágina en construcción.",
+    "crumbs": [
+      "Bienvenida"
+    ]
+  },
+  {
+    "objectID": "capitulos/00_info.html",
+    "href": "capitulos/00_info.html",
+    "title": "Información general sobre la asignatura",
+    "section": "",
+    "text": "Cursado\nModalidad, comisiones, horarios",
+    "crumbs": [
+      "Información general sobre la asignatura"
+    ]
+  },
+  {
+    "objectID": "capitulos/00_info.html#aula-virtual",
+    "href": "capitulos/00_info.html#aula-virtual",
+    "title": "Información general sobre la asignatura",
+    "section": "Aula virtual?",
+    "text": "Aula virtual?",
+    "crumbs": [
+      "Información general sobre la asignatura"
+    ]
+  },
+  {
+    "objectID": "capitulos/00_info.html#programa",
+    "href": "capitulos/00_info.html#programa",
+    "title": "Información general sobre la asignatura",
+    "section": "Programa",
+    "text": "Programa\nenlace al programa aprobado",
+    "crumbs": [
+      "Información general sobre la asignatura"
+    ]
+  },
+  {
+    "objectID": "capitulos/00_info.html#evaluación",
+    "href": "capitulos/00_info.html#evaluación",
+    "title": "Información general sobre la asignatura",
+    "section": "Evaluación",
+    "text": "Evaluación",
+    "crumbs": [
+      "Información general sobre la asignatura"
+    ]
+  },
+  {
+    "objectID": "capitulos/00_info.html#código-de-conducta",
+    "href": "capitulos/00_info.html#código-de-conducta",
+    "title": "Información general sobre la asignatura",
+    "section": "Código de conducta",
+    "text": "Código de conducta",
+    "crumbs": [
+      "Información general sobre la asignatura"
+    ]
+  },
+  {
+    "objectID": "capitulos/01.html",
+    "href": "capitulos/01.html",
+    "title": "Unidad 1. Introducción",
+    "section": "",
+    "text": "Presentación de la Unidad 1.\n\nPágina en construcción.",
+    "crumbs": [
+      "Unidad 1. Introducción"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_a_intro.html",
+    "href": "capitulos/01_a_intro.html",
+    "title": "1  Programación: de qué se trata y para qué nos sirve",
+    "section": "",
+    "text": "1.1 primera subsección\nprogramacion, algoritmo, lenguajes, R, instalación",
+    "crumbs": [
+      "Unidad 1. Introducción",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Programación: de qué se trata y para qué nos sirve</span>"
+    ]
+  }
+]
